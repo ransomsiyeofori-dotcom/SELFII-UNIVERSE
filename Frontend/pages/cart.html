@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#F7F4EC">
+    <meta name="description" content="Review your SELFII UNIVERSE shopping cart before checkout.">
+
+    <title>Your Shopping Cart | SELFII UNIVERSE</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/cart.css">
+</head>
+
+<body>
+
+    <div class="announcement-bar">
+        Made personal. Made with care.
+        <span>Discover your universe.</span>
+    </div>
+
+    <header class="header">
+
+        <button class="icon-button menu-toggle"
+                id="menuToggle"
+                aria-label="Open navigation"
+                aria-expanded="false">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <a href="../index.html" class="logo">
+            SELFII <span>UNIVERSE</span>
+        </a>
+
+        <nav class="desktop-nav">
+            <a href="boutique.html">Boutique</a>
+            <a href="selfiitees.html">Selfiitees</a>
+            <a href="print-selfii.html">Print Selfii</a>
+        </nav>
+
+        <div class="header-actions">
+
+            <a href="shop.html"
+               class="icon-button"
+               aria-label="Continue shopping">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </a>
+
+            <a href="cart.html"
+               class="icon-button cart-link"
+               aria-label="Shopping cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-count" id="cartCount">0</span>
+            </a>
+
+            <a href="login.html"
+               class="icon-button account-link"
+               aria-label="My account">
+            <button type="button" class="icon-button search-toggle" id="searchToggle" aria-label="Search products" aria-expanded="false">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+
+    <nav class="mobile-nav" id="mobileNav">
+        <a href="../index.html">Home</a>
+        <a href="boutique.html">SELFII Boutique</a>
+        <a href="selfiitees.html">Selfiitees</a>
+        <a href="print-selfii.html">Print Selfii</a>
+        <a href="shop.html">Shop All Products</a>
+        <a href="cart.html">Shopping Cart</a>
+        <a href="login.html">My Account</a>
+    </nav>
+
+    <main class="cart-page">
+
+        <section class="cart-hero">
+            <p class="eyebrow">YOUR PERSONAL COLLECTION</p>
+            <h1>Your <span>Shopping Cart</span></h1>
+            <p>Review your favourites before making them yours.</p>
+        </section>
+
+        <section class="cart-container">
+
+            <div class="cart-heading">
+                <div>
+                    <p class="eyebrow">ALMOST YOURS</p>
+                    <h2>Cart Items <span id="cartItemCount">(0)</span></h2>
+                </div>
+
+                <a href="shop.html" class="continue-shopping">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Continue Shopping
+                </a>
+            </div>
+
+            <div class="cart-layout">
+
+                <div class="cart-items-column">
+
+                    <div class="cart-items" id="cartItems">
+                        <!-- Cart items are rendered by JavaScript. -->
+                    </div>
+
+                    <div class="cart-empty" id="cartEmpty" hidden>
+                        <div class="cart-empty-icon">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                        </div>
+
+                        <h2>Your cart is waiting for you</h2>
+
+                        <p>
+                            You haven't added anything yet.
+                            Explore our collection and find something special.
+                        </p>
+
+                        <a href="shop.html" class="btn btn-dark">
+                            Explore Products
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                </div>
+
+                <aside class="cart-summary" id="cartSummary">
+
+                    <p class="eyebrow">YOUR ORDER</p>
+                    <h2>Order Summary</h2>
+
+                    <div class="summary-line">
+                        <span>Items</span>
+                        <span id="summaryItemCount">0</span>
+                    </div>
+
+                    <div class="summary-line">
+                        <span>Subtotal</span>
+                        <span id="cartSubtotal">₦0</span>
+                    </div>
+
+                    <div class="summary-line">
+                        <span>Shipping</span>
+                        <span class="shipping-note">Calculated at checkout</span>
+                    </div>
+
+                    <div class="summary-divider"></div>
+
+                    <div class="summary-total">
+                        <span>Estimated Total</span>
+                        <strong id="cartTotal">₦0</strong>
+                    </div>
+
+                    <p class="summary-disclaimer">
+                        Shipping fees, customisation charges, and any applicable
+                        taxes will be confirmed before payment.
+                    </p>
+
+                    <a href="checkout.html"
+                       class="btn btn-dark checkout-button"
+                       id="checkoutButton">
+                        Proceed to Checkout
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+
+                    <div class="cart-trust">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Your shopping experience matters to us.</span>
+                    </div>
+
+                </aside>
+
+            </div>
+
+            <div class="cart-benefit">
+                <i class="fa-solid fa-heart"></i>
+                <p>Thoughtfully selected. Made personal. Made with care.</p>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="footer">
+
+        <div class="footer-main">
+
+            <div class="footer-brand">
+                <a href="../index.html" class="logo footer-logo">
+                    SELFII <span>UNIVERSE</span>
+                </a>
+
+                <p>
+                    Wear your story. Make it yours.
+                    A universe of fashion, memories and creativity.
+                </p>
+            </div>
+
+            <div class="footer-column">
+                <h3>Explore</h3>
+                <a href="../index.html">Home</a>
+                <a href="boutique.html">The Boutique</a>
+                <a href="selfiitees.html">Selfiitees</a>
+                <a href="print-selfii.html">Print Selfii</a>
+            </div>
+
+            <div class="footer-column">
+                <h3>Shopping</h3>
+                <a href="shop.html">Shop All</a>
+                <a href="cart.html">Shopping Cart</a>
+                <a href="orders.html">My Orders</a>
+                <a href="login.html">My Account</a>
+            </div>
+
+            <div class="footer-column">
+                <h3>Follow Our Journey</h3>
+
+                <div class="social-links">
+                    <a href="#" aria-label="Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+
+                    <a href="#" aria-label="Facebook">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </a>
+
+                    <a href="#" aria-label="TikTok">
+                        <i class="fa-brands fa-tiktok"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <p>
+                &copy; <span id="currentYear"></span>
+                SELFII UNIVERSE. All rights reserved.
+            </p>
+
+            <p>Made with care.</p>
+        </div>
+
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/cart-page.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color" content="#F7F4EC">
+
+    <meta name="description"
+          content="Explore African-inspired fashion, personalised gifts and custom printing at SELFII UNIVERSE.">
+
+    <title>Shop All | SELFII UNIVERSE</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+          rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/shop.css">
+</head>
+
+<body>
+
+    <!-- ANNOUNCEMENT BAR -->
+    <div class="announcement-bar">
+        Made personal. Made with care.
+        <span>Discover your universe.</span>
+    </div>
+
+    <!-- HEADER -->
+    <header class="header">
+
+        <button class="icon-button menu-toggle"
+                id="menuToggle"
+                aria-label="Open navigation"
+                aria-expanded="false">
+
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <a href="../index.html" class="logo">
+            SELFII <span>UNIVERSE</span>
+        </a>
+
+        <nav class="desktop-nav">
+            <a href="boutique.html">Boutique</a>
+            <a href="selfiitees.html">Selfiitees</a>
+            <a href="print-selfii.html">Print Selfii</a>
+        </nav>
+
+        <div class="header-actions">
+
+            <button class="icon-button search-toggle"
+                    id="searchToggle"
+                    aria-label="Search products">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+
+            <a href="cart.html"
+               class="icon-button cart-link"
+               aria-label="Shopping cart">
+
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-count" id="cartCount">0</span>
+            </a>
+
+            <a href="login.html"
+               class="icon-button account-link"
+               aria-label="My account">
+
+                <i class="fa-regular fa-user"></i>
+            </a>
+
+        </div>
+
+    </header>
+
+    <!-- MOBILE NAVIGATION -->
+    <nav class="mobile-nav" id="mobileNav">
+
+        <a href="../index.html">Home</a>
+        <a href="boutique.html">SELFII Boutique</a>
+        <a href="selfiitees.html">Selfiitees</a>
+        <a href="print-selfii.html">Print Selfii</a>
+        <a href="shop.html">Shop All Products</a>
+        <a href="cart.html">Shopping Cart</a>
+        <a href="login.html">My Account</a>
+
+    </nav>
+
+    <!-- SEARCH PANEL -->
+    <form class="search-panel" id="searchForm">
+
+        <input type="search"
+               id="searchInput"
+               placeholder="Search clothing, gifts and prints..."
+               aria-label="Search products">
+
+        <button type="submit" aria-label="Submit search">
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+
+    </form>
+
+    <main>
+
+        <!-- SHOP HERO -->
+        <section class="shop-hero">
+
+            <div class="shop-hero-content">
+
+                <p class="eyebrow">YOUR WORLD. YOUR STYLE.</p>
+
+                <h1>
+                    Discover your<br>
+                    <span>favourites.</span>
+                </h1>
+
+                <p>
+                    From African-inspired fashion to meaningful
+                    gifts and custom creations, find something
+                    that tells your story.
+                </p>
+
+                <a href="#shop-products" class="btn btn-dark">
+                    Explore Products
+                    <i class="fa-solid fa-arrow-down"></i>
+                </a>
+
+            </div>
+
+            <div class="shop-hero-decoration">
+                <span>SELFII</span>
+                <span>UNIVERSE</span>
+            </div>
+
+        </section>
+
+        <!-- SHOP CONTENT -->
+        <section class="shop-container section-container"
+                 id="shop-products">
+
+            <!-- HEADING -->
+            <div class="shop-page-heading">
+
+                <div>
+                    <p class="eyebrow">MADE FOR YOUR WORLD</p>
+                    <h2>Shop All Products</h2>
+                    <p class="shop-subtitle">
+                        Find something that feels like you.
+                    </p>
+                </div>
+
+                <div class="product-total">
+                    <span id="productCount">0</span> products
+                </div>
+
+            </div>
+
+            <!-- CATEGORY FILTERS -->
+            <div class="shop-categories"
+                 id="shopCategories"
+                 aria-label="Filter products by category">
+
+                <button class="category-btn active"
+                        data-category="all">
+                    All Products
+                </button>
+
+                <button class="category-btn"
+                        data-category="boutique">
+                    SELFII Boutique
+                </button>
+
+                <button class="category-btn"
+                        data-category="selfiitees">
+                    Selfiitees
+                </button>
+
+                <button class="category-btn"
+                        data-category="printing">
+                    Print Selfii
+                </button>
+
+            </div>
+
+            <!-- SEARCH AND SORT -->
+            <div class="shop-toolbar">
+
+                <form class="shop-search" id="shopSearchForm">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input type="search"
+                           id="shopSearch"
+                           placeholder="Search products..."
+                           aria-label="Search shop products">
+
+                    <button type="submit">Search</button>
+
+                </form>
+
+                <div class="shop-sort">
+
+                    <label for="sortProducts">Sort by:</label>
+
+                    <select id="sortProducts">
+
+                        <option value="featured">Featured</option>
+                        <option value="name">Name: A–Z</option>
+                        <option value="price-low">
+                            Price: Low to High
+                        </option>
+                        <option value="price-high">
+                            Price: High to Low
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <!-- PRODUCT GRID -->
+            <div class="shop-product-grid" id="shopProductGrid">
+
+                <!-- Products will be rendered using JavaScript. -->
+
+            </div>
+
+            <!-- EMPTY SEARCH STATE -->
+            <div class="shop-empty-state"
+                 id="shopEmptyState"
+                 hidden>
+
+                <i class="fa-solid fa-bag-shopping"></i>
+
+                <h3>No products found</h3>
+
+                <p>
+                    Try another search term or select a different
+                    category.
+                </p>
+
+                <button class="btn btn-dark"
+                        id="resetShopFilters">
+                    View All Products
+                </button>
+
+            </div>
+
+        </section>
+
+        <!-- BRAND MESSAGE -->
+        <section class="shop-brand-message">
+
+            <p class="eyebrow">MORE THAN PRODUCTS</p>
+
+            <h2>
+                Every piece has<br>
+                <span>a story to tell.</span>
+            </h2>
+
+            <p>
+                Wear it. Gift it. Create it.
+                Make every choice your own.
+            </p>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+
+        <div class="footer-main">
+
+            <div class="footer-brand">
+
+                <a href="../index.html"
+                   class="logo footer-logo">
+                    SELFII <span>UNIVERSE</span>
+                </a>
+
+                <p>
+                    Wear your story. Make it yours.
+                    A universe of fashion, memories and creativity.
+                </p>
+
+            </div>
+
+            <div class="footer-column">
+
+                <h3>Explore</h3>
+
+                <a href="../index.html">Home</a>
+                <a href="boutique.html">The Boutique</a>
+                <a href="selfiitees.html">Selfiitees</a>
+                <a href="print-selfii.html">Print Selfii</a>
+
+            </div>
+
+            <div class="footer-column">
+
+                <h3>Shopping</h3>
+
+                <a href="shop.html">Shop All</a>
+                <a href="cart.html">Shopping Cart</a>
+                <a href="orders.html">My Orders</a>
+                <a href="login.html">My Account</a>
+
+            </div>
+
+            <div class="footer-column">
+
+                <h3>Follow Our Journey</h3>
+
+                <div class="social-links">
+
+                    <a href="#"
+                       aria-label="Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+
+                    <a href="#"
+                       aria-label="Facebook">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </a>
+
+                    <a href="#"
+                       aria-label="TikTok">
+                        <i class="fa-brands fa-tiktok"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+
+            <p>
+                &copy; <span id="currentYear"></span>
+                SELFII UNIVERSE. All rights reserved.
+            </p>
+
+            <p>Made with care.</p>
+
+        </div>
+
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="../js/main.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/shop.js"></script>
+
+</body>
+</html>
