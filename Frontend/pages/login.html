@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#F7F4EC">
+    <meta name="description" content="Sign in to your SELFII UNIVERSE account to manage your orders and discover more.">
+
+    <title>Sign In | SELFII UNIVERSE</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/auth.css">
+</head>
+
+<body class="auth-page">
+
+    <header class="auth-header">
+        <a href="../index.html" class="auth-logo">
+            SELFII
+            <span>UNIVERSE</span>
+        </a>
+
+        <a href="../index.html" class="auth-back">
+            <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+            Back to store
+        </a>
+    </header>
+
+    <main class="auth-layout">
+
+        <section class="auth-showcase" aria-label="Welcome to SELFII UNIVERSE">
+            <div class="auth-showcase-content">
+                <p class="auth-eyebrow">WELCOME BACK</p>
+
+                <h2>Your universe.<span>Your story.</span></h2>
+
+                <p class="auth-showcase-description">
+                    Your favorite styles, meaningful gifts, and creative
+                    ideas are waiting for you.
+                </p>
+            </div>
+
+            <p class="auth-showcase-footer">
+                Fashion. Memories. Creativity.
+            </p>
+        </section>
+
+        <section class="auth-form-panel">
+            <div class="auth-form-heading">
+                <p class="auth-eyebrow">YOUR ACCOUNT</p>
+                <h1>Welcome back</h1>
+                <p>Enter your details to sign in to your account.</p>
+            </div>
+
+            <form class="auth-form" id="loginForm" novalidate>
+
+                <div class="auth-message" id="authMessage"
+                     role="status" aria-live="polite"></div>
+
+                <div class="auth-field">
+                    <label for="email">Email address</label>
+
+                    <input
+                        class="auth-input"
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                        maxlength="254"
+                        required
+                    >
+
+                    <span class="auth-field-error" id="emailError"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label for="password">Password</label>
+
+                    <div class="auth-input-wrap">
+                        <input
+                            class="auth-input auth-password-input"
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            class="auth-password-toggle"
+                            type="button"
+                            data-password-toggle="password"
+                            aria-label="Show password"
+                        >
+                            Show
+                        </button>
+                    </div>
+
+                    <span class="auth-field-error" id="passwordError"></span>
+                </div>
+
+                <div class="auth-options">
+                    <label class="auth-checkbox">
+                        <input type="checkbox" id="rememberMe">
+                        <span>Remember me on this device</span>
+                    </label>
+
+                    <a href="forgot-password.html" class="auth-link">
+                        Forgot password?
+                    </a>
+                </div>
+
+                <button class="auth-submit" type="submit" id="loginButton">
+                    Sign In
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </button>
+            </form>
+
+            <p class="auth-switch">
+                Don't have an account?
+                <a href="register.html" class="auth-link">Create one</a>
+            </p>
+        </section>
+
+    </main>
+
+    <footer class="auth-footer">
+        &copy; <span id="currentYear"></span> SELFII UNIVERSE. All rights reserved.
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js" defer></script>
+    <script src="../js/auth.js" defer></script>
+
+</body>
+</html>

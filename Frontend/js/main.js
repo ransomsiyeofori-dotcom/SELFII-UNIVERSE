@@ -44,6 +44,7 @@ const searchInput = document.getElementById("searchInput");
 if (searchToggle && searchForm) {
     searchToggle.addEventListener("click", () => {
         const isOpen = searchForm.classList.toggle("active");
+        searchToggle.setAttribute("aria-expanded", String(isOpen));
 
         if (isOpen && searchInput) {
             searchInput.focus();

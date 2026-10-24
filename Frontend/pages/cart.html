@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,12 +50,13 @@
 
         <div class="header-actions">
 
-            <a href="shop.html"
-               class="icon-button"
-               aria-label="Continue shopping">
+            <button type="button"
+                    class="icon-button search-toggle"
+                    id="searchToggle"
+                    aria-label="Search products"
+                    aria-expanded="false">
                 <i class="fa-solid fa-magnifying-glass"></i>
-            </a>
-
+            </button>
             <a href="cart.html"
                class="icon-button cart-link"
                aria-label="Shopping cart">
@@ -65,9 +67,18 @@
             <a href="login.html"
                class="icon-button account-link"
                aria-label="My account">
-            <button type="button" class="icon-button search-toggle" id="searchToggle" aria-label="Search products" aria-expanded="false">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
+                <i class="fa-regular fa-user"></i>
+            </a>
+
+        </div>
+    </header>
+
+    <form class="search-panel" id="searchForm">
+        <input type="search" id="searchInput" placeholder="Search clothing, gifts and prints..." aria-label="Search products">
+        <button type="submit" aria-label="Submit search">
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </form>
 
     <nav class="mobile-nav" id="mobileNav">
         <a href="../index.html">Home</a>

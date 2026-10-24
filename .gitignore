@@ -5,3 +5,14 @@ node_modules/
 *.log
 .DS_Store
 Thumbs.db
+
+# Backend environment secrets and session cookies
+Backend/.env
+Backend/.env.*
+!Backend/.env.example
+Backend/cookies.txt
+
+# Temporary backups
+*.backup
+*.broken-backup
+*.before-*

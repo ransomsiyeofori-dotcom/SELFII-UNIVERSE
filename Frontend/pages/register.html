@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#F7F4EC">
+    <meta name="description" content="Create your SELFII UNIVERSE account and make your shopping experience personal.">
+
+    <title>Create Account | SELFII UNIVERSE</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/auth.css">
+</head>
+
+<body class="auth-page">
+
+    <header class="auth-header">
+        <a href="../index.html" class="auth-logo">
+            SELFII
+            <span>UNIVERSE</span>
+        </a>
+
+        <a href="../index.html" class="auth-back">
+            <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+            Back to store
+        </a>
+    </header>
+
+    <main class="auth-layout">
+
+        <section class="auth-showcase" aria-label="Join SELFII UNIVERSE">
+            <div class="auth-showcase-content">
+                <p class="auth-eyebrow">YOUR STORY STARTS HERE</p>
+
+                <h2>Make it personal.<span>Make it yours.</span></h2>
+
+                <p class="auth-showcase-description">
+                    Create your account to make shopping, discovering
+                    and creating with SELFII UNIVERSE more personal.
+                </p>
+            </div>
+
+            <p class="auth-showcase-footer">
+                One universe. Endless possibilities.
+            </p>
+        </section>
+
+        <section class="auth-form-panel">
+            <div class="auth-form-heading">
+                <p class="auth-eyebrow">JOIN OUR UNIVERSE</p>
+                <h1>Create your account</h1>
+                <p>Fill in your details to get started.</p>
+            </div>
+
+            <form class="auth-form" id="registerForm" novalidate>
+
+                <div class="auth-message" id="authMessage"
+                     role="status" aria-live="polite"></div>
+
+                <div class="auth-field">
+                    <label for="fullName">Full name</label>
+
+                    <input
+                        class="auth-input"
+                        type="text"
+                        id="fullName"
+                        name="fullName"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        minlength="2"
+                        maxlength="100"
+                        required
+                    >
+
+                    <span class="auth-field-error" id="fullNameError"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label for="email">Email address</label>
+
+                    <input
+                        class="auth-input"
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                        maxlength="254"
+                        required
+                    >
+
+                    <span class="auth-field-error" id="emailError"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label for="password">Password</label>
+
+                    <div class="auth-input-wrap">
+                        <input
+                            class="auth-input auth-password-input"
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Create a password"
+                            autocomplete="new-password"
+                            minlength="8"
+                            maxlength="72"
+                            required
+                        >
+
+                        <button
+                            class="auth-password-toggle"
+                            type="button"
+                            data-password-toggle="password"
+                            aria-label="Show password"
+                        >
+                            Show
+                        </button>
+                    </div>
+
+                    <span class="auth-field-error" id="passwordError"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label for="confirmPassword">Confirm password</label>
+
+                    <div class="auth-input-wrap">
+                        <input
+                            class="auth-input auth-password-input"
+                            type="password"
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            placeholder="Enter your password again"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                        <button
+                            class="auth-password-toggle"
+                            type="button"
+                            data-password-toggle="confirmPassword"
+                            aria-label="Show password"
+                        >
+                            Show
+                        </button>
+                    </div>
+
+                    <span class="auth-field-error" id="confirmPasswordError"></span>
+                </div>
+
+                <p class="auth-terms">
+                    By creating an account, you agree to our
+                    <a href="terms.html">Terms of Service</a>
+                    and
+                    <a href="privacy.html">Privacy Policy</a>.
+                </p>
+
+                <button class="auth-submit" type="submit" id="registerButton">
+                    Create Account
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </button>
+
+            </form>
+
+            <p class="auth-switch">
+                Already have an account?
+                <a href="login.html" class="auth-link">Sign in</a>
+            </p>
+        </section>
+
+    </main>
+
+    <footer class="auth-footer">
+        &copy; <span id="currentYear"></span> SELFII UNIVERSE. All rights reserved.
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js" defer></script>
+    <script src="../js/auth.js" defer></script>
+
+</body>
+</html>
