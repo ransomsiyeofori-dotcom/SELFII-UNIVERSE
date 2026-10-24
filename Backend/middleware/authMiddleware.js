@@ -3,6 +3,11 @@ const User = require('../models/User');
 exports.requireAuth = async (req, res, next) => {
     try {
         if (!req.session || !req.session.userId) {
+            console.log("AUTH DEBUG:", {
+                hasSession: Boolean(req.session),
+                hasUserId: Boolean(req.session?.userId),
+                hasCookie: Boolean(req.headers.cookie?.includes("selfii.sid"))
+            });
             return res.status(401).json({
                 success: false,
                 message: 'Please log in to continue.'
