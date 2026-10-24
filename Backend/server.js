@@ -30,9 +30,16 @@ app.disable('x-powered-by');
 
 app.use(helmet());
 
+const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    "http://localhost:8158",
+    "http://127.0.0.1:8158"
+].filter(Boolean);
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
+    origin: allowedOrigins,
     credentials: true
+
 }));
 
 app.use(express.json({ limit: '20kb' }));
