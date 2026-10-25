@@ -42,6 +42,7 @@ async function authRequest(endpoint, data = null, method = "POST") {
     }
 
     const response = await fetch(`${API_BASE_URL}/auth${endpoint}`, options);
+   
 
     let result;
 
@@ -123,11 +124,17 @@ if (loginForm) {
         setButtonLoading(button, true, "Signing in...");
 
         try {
-            await authRequest("/login", { email, password });
+            const result = await authRequest("/login", { email, password });
 
             showAuthMessage("Login successful. Redirecting...", "success");
 
-            window.location.href = "../index.html";
+if (result.user?.role === "customer") {
+    window.location.href = "../dashboard/customer.html";
+} else if (result.user?.role === "admin") {
+    window.location.href = "../dashboard/admin.html";
+} else {
+    showAuthMessage("Login succeeded, but your account role is not recognized.");
+}
         } catch (error) {
             showAuthMessage(error.message);
         } finally {
