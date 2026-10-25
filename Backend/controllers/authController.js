@@ -134,6 +134,13 @@ exports.login = async (req, res, next) => {
                     return next(saveError);
                 }
 
+                console.log("LOGIN COOKIE DEBUG:", {
+                    sessionSaved: Boolean(req.session.userId),
+                    secureCookie: req.session.cookie.secure,
+                    sameSite: req.session.cookie.sameSite,
+                    setCookieIssued: Boolean(res.getHeader('Set-Cookie'))
+                });
+
                 return res.status(200).json({
                     success: true,
                     message: 'Login successful.',
