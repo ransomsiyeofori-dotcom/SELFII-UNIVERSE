@@ -22,9 +22,7 @@ if (!process.env.FRONTEND_URL) {
     throw new Error('FRONTEND_URL is missing from Backend/.env');
 }
 
-if (isProduction) {
-    app.set('trust proxy', 1);
-}
+app.set('trust proxy', 1);
 
 app.disable('x-powered-by');
 
