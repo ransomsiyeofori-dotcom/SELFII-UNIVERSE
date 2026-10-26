@@ -1227,3 +1227,135 @@ input:focus-visible {
         transition: none;
     }
 }
+
+
+/* Dashboard section back navigation */
+.dashboard-back-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: fit-content;
+    margin: 0 0 18px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--dark);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.dashboard-back-button:hover {
+    background: var(--surface);
+    border-color: var(--dark);
+}
+
+.dashboard-back-button:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 3px;
+}
+
+/* Customer profile photo */
+.profile-photo-panel {
+    margin-bottom: 22px;
+}
+
+.profile-photo-card {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.profile-photo-frame {
+    width: 112px;
+    height: 112px;
+    flex: 0 0 112px;
+    overflow: hidden;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--surface);
+}
+
+.profile-photo-preview {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.profile-photo-preview[hidden],
+.profile-photo-placeholder[hidden] {
+    display: none;
+}
+
+.profile-photo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 38px;
+}
+
+.profile-photo-details {
+    flex: 1 1 240px;
+    min-width: 0;
+}
+
+.profile-photo-details h3 {
+    margin: 0 0 8px;
+    color: var(--dark);
+}
+
+.profile-photo-details p {
+    margin: 6px 0;
+}
+
+.profile-photo-help {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.profile-photo-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+
+.profile-photo-actions button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.profile-photo-status {
+    min-height: 20px;
+    color: var(--muted);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+    .profile-photo-card {
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .profile-photo-frame {
+        width: 88px;
+        height: 88px;
+        flex-basis: 88px;
+    }
+
+    .profile-photo-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

@@ -84,6 +84,12 @@ const userSchema = new mongoose.Schema(
             default: ''
         },
 
+        profilePhotoUrl: {
+            type: String,
+            trim: true,
+            default: ''
+        },
+
         addresses: {
             type: [addressSchema],
             default: []

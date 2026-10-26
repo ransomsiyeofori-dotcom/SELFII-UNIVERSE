@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const { v2: cloudinary } = require('cloudinary');
 
 const SALT_ROUNDS = 12;
 
@@ -9,6 +10,7 @@ function publicUser(user) {
         fullName: user.fullName,
         email: user.email,
         phone: user.phone || '',
+        profilePhotoUrl: user.profilePhotoUrl || '',
         role: user.role
     };
 }
@@ -223,6 +225,7 @@ exports.updateProfile = async (req, res, next) => {
                 fullName: req.user.fullName,
                 email: req.user.email,
                 phone: req.user.phone,
+                profilePhotoUrl: req.user.profilePhotoUrl || '',
                 role: req.user.role
             }
         });
@@ -409,6 +412,64 @@ exports.deleteAddress = async (req, res, next) => {
             success: true,
             message: 'Delivery address deleted successfully.',
             addresses: req.user.addresses
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+// Upload a profile photo to Cloudinary.
+exports.updateProfilePhoto = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please select an image to upload.'
+            });
+        }
+
+        if (
+            !process.env.CLOUDINARY_CLOUD_NAME ||
+            !process.env.CLOUDINARY_API_KEY ||
+            !process.env.CLOUDINARY_API_SECRET
+        ) {
+            return res.status(503).json({
+                success: false,
+                message: 'Profile photo uploads are not configured yet.'
+            });
+        }
+
+        cloudinary.config({
+            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY,
+            api_secret: process.env.CLOUDINARY_API_SECRET
+        });
+
+        const dataUri =
+            'data:' + req.file.mimetype + ';base64,' +
+            req.file.buffer.toString('base64');
+
+        const uploaded = await cloudinary.uploader.upload(dataUri, {
+            folder: 'selfii-universe/profile-photos',
+            resource_type: 'image',
+            transformation: [
+                {
+                    width: 500,
+                    height: 500,
+                    crop: 'fill',
+                    gravity: 'face'
+                }
+            ]
+        });
+
+        req.user.profilePhotoUrl = uploaded.secure_url;
+        await req.user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Profile photo uploaded successfully.',
+            user: publicUser(req.user)
         });
     } catch (error) {
         next(error);

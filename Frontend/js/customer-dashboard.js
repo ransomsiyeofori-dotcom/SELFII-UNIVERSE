@@ -15,6 +15,13 @@ const elements = {
     profileRole: document.getElementById("profileRole"),
     saveProfileButton: document.getElementById("saveProfileButton"),
 
+    profilePhotoInput: document.getElementById("profilePhotoInput"),
+    profilePhotoPreview: document.getElementById("profilePhotoPreview"),
+    profilePhotoPlaceholder: document.getElementById("profilePhotoPlaceholder"),
+    chooseProfilePhoto: document.getElementById("chooseProfilePhoto"),
+    uploadProfilePhoto: document.getElementById("uploadProfilePhoto"),
+    profilePhotoStatus: document.getElementById("profilePhotoStatus"),
+
     addressList: document.getElementById("addressList"),
     addressForm: document.getElementById("addressForm"),
     addressFormTitle: document.getElementById("addressFormTitle"),
@@ -96,16 +103,20 @@ async function apiRequest(path, options = {}) {
 }
 
 function closeSidebar() {
-    elements.sidebar?.classList.remove("open");
+    elements.sidebar?.classList.remove("is-open");
     elements.overlay?.classList.remove("active");
+    document.body.classList.remove("sidebar-open");
     elements.menuToggle?.setAttribute("aria-expanded", "false");
 }
 
+
 function openSidebar() {
-    elements.sidebar?.classList.add("open");
+    elements.sidebar?.classList.add("is-open");
     elements.overlay?.classList.add("active");
+    document.body.classList.add("sidebar-open");
     elements.menuToggle?.setAttribute("aria-expanded", "true");
 }
+
 
 function navigateToSection(sectionName) {
     const target = document.getElementById(`section-${sectionName}`);
@@ -177,6 +188,174 @@ function displayUser(user) {
     if (elements.profileRole) {
         elements.profileRole.value = role;
     }
+
+    displayProfilePhoto(user.profilePhotoUrl || "");
+}
+
+
+let selectedProfilePhoto = null;
+let profilePhotoPreviewUrl = null;
+
+function displayProfilePhoto(url) {
+    const image = elements.profilePhotoPreview;
+    const placeholder = elements.profilePhotoPlaceholder;
+
+    if (!image || !placeholder) return;
+
+    if (profilePhotoPreviewUrl) {
+        URL.revokeObjectURL(profilePhotoPreviewUrl);
+        profilePhotoPreviewUrl = null;
+    }
+
+    if (url) {
+        image.src = url;
+        image.hidden = false;
+        placeholder.hidden = true;
+    } else {
+        image.removeAttribute("src");
+        image.hidden = true;
+        placeholder.hidden = false;
+    }
+}
+
+function initializeProfilePhoto() {
+    const input = elements.profilePhotoInput;
+    const chooseButton = elements.chooseProfilePhoto;
+    const uploadButton = elements.uploadProfilePhoto;
+    const status = elements.profilePhotoStatus;
+
+    if (!input || !chooseButton || !uploadButton) return;
+
+    chooseButton.addEventListener("click", () => {
+        input.click();
+    });
+
+    input.addEventListener("change", () => {
+        const file = input.files && input.files[0];
+
+        if (!file) return;
+
+        const allowedTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+            input.value = "";
+            selectedProfilePhoto = null;
+            uploadButton.disabled = true;
+
+            if (status) {
+                status.textContent = "Choose a JPG, PNG, or WebP image.";
+            }
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            input.value = "";
+            selectedProfilePhoto = null;
+            uploadButton.disabled = true;
+
+            if (status) {
+                status.textContent = "Your photo must be 5 MB or smaller.";
+            }
+            return;
+        }
+
+        selectedProfilePhoto = file;
+
+        if (profilePhotoPreviewUrl) {
+            URL.revokeObjectURL(profilePhotoPreviewUrl);
+        }
+
+        profilePhotoPreviewUrl = URL.createObjectURL(file);
+
+        const image = elements.profilePhotoPreview;
+        const placeholder = elements.profilePhotoPlaceholder;
+
+        if (image && placeholder) {
+            image.src = profilePhotoPreviewUrl;
+            image.hidden = false;
+            placeholder.hidden = true;
+        }
+
+        uploadButton.disabled = false;
+
+        if (status) {
+            status.textContent = "Preview ready. Upload your photo to save it.";
+        }
+    });
+
+    uploadButton.addEventListener("click", async () => {
+        if (!selectedProfilePhoto) {
+            if (status) status.textContent = "Choose a photo first.";
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("profilePhoto", selectedProfilePhoto);
+
+        chooseButton.disabled = true;
+        uploadButton.disabled = true;
+        uploadButton.textContent = "Uploading...";
+
+        if (status) status.textContent = "Uploading your photo...";
+
+        try {
+            const response = await fetch(
+                API_BASE_URL + "/auth/profile-photo",
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        Accept: "application/json"
+                    },
+                    body: formData
+                }
+            );
+
+            const result = await response.json().catch(() => ({}));
+
+            if (response.status === 401 || response.status === 403) {
+                window.location.replace(LOGIN_URL);
+                return;
+            }
+
+            if (!response.ok || !result.success || !result.user) {
+                throw new Error(
+                    result.message || "Unable to upload your photo."
+                );
+            }
+
+            selectedProfilePhoto = null;
+            input.value = "";
+
+            displayUser(result.user);
+
+            if (status) {
+                status.textContent = "Your profile photo has been saved.";
+            }
+
+            showNotice("Profile photo updated successfully.", "success");
+        } catch (error) {
+            console.error("Profile photo upload error:", error);
+
+            if (status) {
+                status.textContent =
+                    error.message || "Upload failed. Please try again.";
+            }
+
+            showNotice(
+                error.message || "Unable to upload your profile photo.",
+                "error"
+            );
+        } finally {
+            chooseButton.disabled = false;
+            uploadButton.textContent = "Upload Photo";
+            uploadButton.disabled = !selectedProfilePhoto;
+        }
+    });
 }
 
 async function loadCustomer() {
@@ -607,7 +786,7 @@ document.querySelectorAll("[data-section]").forEach(button => {
 });
 
 elements.menuToggle?.addEventListener("click", () => {
-    if (elements.sidebar?.classList.contains("open")) {
+    if (elements.sidebar?.classList.contains("is-open")) {
         closeSidebar();
     } else {
         openSidebar();
@@ -616,11 +795,19 @@ elements.menuToggle?.addEventListener("click", () => {
 
 elements.overlay?.addEventListener("click", closeSidebar);
 
+document.querySelectorAll("[data-dashboard-back]").forEach(button => {
+    button.addEventListener("click", () => {
+        navigateToSection("overview");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+});
+
 document.querySelectorAll("#logoutButton, [data-logout]").forEach(button => {
     button.addEventListener("click", logout);
 });
 
 elements.profileForm?.addEventListener("submit", saveProfile);
+initializeProfilePhoto();
 
 elements.showAddressForm?.addEventListener("click", () => {
     openAddressForm();

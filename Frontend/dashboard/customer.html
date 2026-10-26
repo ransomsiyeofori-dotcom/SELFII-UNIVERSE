@@ -200,6 +200,7 @@
 
                 <section class="dashboard-section" id="section-orders">
                     <div class="section-intro">
+                        <button type="button" class="dashboard-back-button" data-dashboard-back aria-label="Back to dashboard overview"><i class="fa-solid fa-arrow-left"></i><span>Back to Overview</span></button>
                         <span class="eyebrow">YOUR PURCHASES</span>
                         <h2>My Orders</h2>
                         <p>Keep track of your purchases and their progress.</p>
@@ -237,9 +238,49 @@
 
                 <section class="dashboard-section" id="section-profile">
     <div class="section-intro">
+        <button type="button" class="dashboard-back-button" data-dashboard-back aria-label="Back to dashboard overview"><i class="fa-solid fa-arrow-left"></i><span>Back to Overview</span></button>
         <span class="eyebrow">YOUR INFORMATION</span>
         <h2>My Profile</h2>
         <p>Keep your personal information up to date.</p>
+    </div>
+
+    <div class="content-panel profile-photo-panel">
+        <div class="profile-photo-card">
+            <div class="profile-photo-frame">
+                <img
+                    id="profilePhotoPreview"
+                    class="profile-photo-preview"
+                    alt="Your profile photo"
+                    hidden
+                >
+                <div id="profilePhotoPlaceholder" class="profile-photo-placeholder">
+                    <i class="fa-regular fa-user" aria-hidden="true"></i>
+                </div>
+            </div>
+
+            <div class="profile-photo-details">
+                <h3>Profile photo</h3>
+                <p>Choose a photo that represents you.</p>
+                <p class="profile-photo-help">JPG, PNG, or WebP. Maximum size: 5 MB.</p>
+
+                <input
+                    type="file"
+                    id="profilePhotoInput"
+                    accept="image/jpeg,image/png,image/webp"
+                    hidden
+                >
+
+                <div class="profile-photo-actions">
+                    <button type="button" id="chooseProfilePhoto" class="secondary-button">
+                        Choose Photo
+                    </button>
+                    <button type="button" id="uploadProfilePhoto" class="primary-button" disabled>
+                        Upload Photo
+                    </button>
+                </div>
+                <p id="profilePhotoStatus" class="profile-photo-status" role="status" aria-live="polite"></p>
+            </div>
+        </div>
     </div>
 
     <div class="content-panel">
