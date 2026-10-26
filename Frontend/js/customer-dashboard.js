@@ -197,10 +197,30 @@ let selectedProfilePhoto = null;
 let profilePhotoPreviewUrl = null;
 
 function displayProfilePhoto(url) {
+    const headerImage = document.getElementById("dashboardHeaderPhoto");
+    const headerPlaceholder = document.getElementById("dashboardHeaderPhotoPlaceholder");
+
     const image = elements.profilePhotoPreview;
     const placeholder = elements.profilePhotoPlaceholder;
 
     if (!image || !placeholder) return;
+
+    if (headerImage && headerPlaceholder) {
+        if (url) {
+            headerImage.src = url;
+            headerImage.hidden = false;
+            headerPlaceholder.hidden = true;
+            headerImage.onerror = () => {
+                headerImage.hidden = true;
+                headerPlaceholder.hidden = false;
+            };
+        } else {
+            headerImage.removeAttribute("src");
+            headerImage.hidden = true;
+            headerPlaceholder.hidden = false;
+        }
+    }
+
 
     if (profilePhotoPreviewUrl) {
         URL.revokeObjectURL(profilePhotoPreviewUrl);

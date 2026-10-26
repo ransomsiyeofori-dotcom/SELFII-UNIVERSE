@@ -71,12 +71,50 @@
                 <span class="cart-count" id="cartCount">0</span>
             </a>
 
-            <a href="pages/login.html"
-               class="icon-button account-link"
-               aria-label="My account">
+<div class="account-menu" id="accountMenu">
+    <a
+        href="pages/login.html"
+        class="icon-button account-link"
+        id="accountLink"
+        aria-label="Log in to your account"
+        title="My Account"
+    >
+        <i class="fa-regular fa-user"></i>
+    </a>
 
+    <div class="account-dropdown" id="accountDropdown" hidden>
+        <div class="account-dropdown-user">
+            <img
+                src=""
+                alt="Your profile photo"
+                class="account-dropdown-photo"
+                id="accountDropdownPhoto"
+                hidden
+            >
+
+            <div
+                class="account-dropdown-placeholder"
+                id="accountDropdownPlaceholder"
+            >
                 <i class="fa-regular fa-user"></i>
-            </a>
+            </div>
+
+            <div class="account-dropdown-details">
+                <strong id="accountDropdownName">My Account</strong>
+                <span id="accountDropdownEmail"></span>
+            </div>
+        </div>
+
+        <a href="dashboard/customer.html">My Dashboard</a>
+        <a href="dashboard/customer.html#section-profile">My Profile</a>
+        <a href="dashboard/customer.html#section-orders">My Orders</a>
+
+        <button type="button" id="accountSignOut">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Sign Out
+        </button>
+    </div>
+</div>
 
         </div>
 

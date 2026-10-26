@@ -1443,3 +1443,125 @@ padding-inline: 18px;
 }
 
 }
+
+/* ==========================================
+   HOMEPAGE ACCOUNT MENU
+========================================== */
+
+.account-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.account-link {
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.account-link .account-profile-photo {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.account-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    z-index: 1000;
+    width: min(300px, calc(100vw - 32px));
+    padding: 12px;
+    background: var(--white, #fffefa);
+    border: 1px solid var(--border, #d8d0c4);
+    border-radius: 14px;
+    box-shadow: 0 12px 35px rgb(0 0 0 / 12%);
+}
+
+.account-dropdown[hidden] {
+    display: none;
+}
+
+.account-dropdown-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--border, #d8d0c4);
+}
+
+.account-dropdown-photo,
+.account-dropdown-placeholder {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    border-radius: 50%;
+}
+
+.account-dropdown-photo {
+    object-fit: cover;
+}
+
+.account-dropdown-placeholder {
+    display: grid;
+    place-items: center;
+    background: var(--surface, #f0eadf);
+    color: var(--dark, #17262d);
+    font-size: 19px;
+}
+
+.account-dropdown-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.account-dropdown-details strong,
+.account-dropdown-details span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.account-dropdown-details strong {
+    color: var(--dark, #17262d);
+    font-size: 14px;
+}
+
+.account-dropdown-details span {
+    color: var(--muted, #68645f);
+    font-size: 12px;
+}
+
+.account-dropdown > a,
+.account-dropdown > button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 11px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--dark, #17262d);
+    text-decoration: none;
+    text-align: left;
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.account-dropdown > a:hover,
+.account-dropdown > button:hover {
+    background: var(--surface, #f0eadf);
+}
+
+@media (max-width: 480px) {
+    .account-dropdown {
+        right: -8px;
+    }
+}

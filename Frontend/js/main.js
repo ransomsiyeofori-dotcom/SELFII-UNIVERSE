@@ -272,6 +272,8 @@ if (currentYear) {
 
 updateCartCount();
 // ==========================================
+
+// ==========================================
 // SELFII UNIVERSE - HOMEPAGE ACCOUNT
 // ==========================================
 
@@ -311,15 +313,15 @@ updateCartCount();
         }
 
         if (photo && placeholder) {
-            photo.onerror = () => {
-                photo.hidden = true;
-                placeholder.hidden = false;
-            };
-
             if (url) {
                 photo.src = url;
                 photo.hidden = false;
                 placeholder.hidden = true;
+
+                photo.onerror = () => {
+                    photo.hidden = true;
+                    placeholder.hidden = false;
+                };
             } else {
                 photo.removeAttribute("src");
                 photo.hidden = true;
@@ -328,60 +330,84 @@ updateCartCount();
         }
     }
 
+    function closeDropdown() {
+        dropdown.hidden = true;
+        link.setAttribute("aria-expanded", "false");
+    }
+
+    // Initialize the account interaction immediately.
+    link.addEventListener("click", event => {
+        event.preventDefault();
+
+        if (!loggedIn) {
+            window.location.href = "pages/login.html";
+            return;
+        }
+
+        dropdown.hidden = !dropdown.hidden;
+        link.setAttribute(
+            "aria-expanded",
+            String(!dropdown.hidden)
+        );
+    });
+
+    document.addEventListener("click", event => {
+        if (!menu.contains(event.target)) {
+            closeDropdown();
+        }
+    });
+
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+            closeDropdown();
+        }
+    });
+
+    // Retrieve the actual logged-in customer.
     try {
         const response = await fetch(`${API}/auth/me`, {
             method: "GET",
             credentials: "include",
-            headers: { Accept: "application/json" }
+            headers: {
+                Accept: "application/json"
+            }
         });
 
-        if (!response.ok) return;
+        if (!response.ok) {
+            displayPhoto("");
+            return;
+        }
 
         const result = await response.json();
 
-        if (!result.success || !result.user) return;
+        if (!result.success || !result.user) {
+            displayPhoto("");
+            return;
+        }
 
         const user = result.user;
         loggedIn = true;
 
         link.href = "#";
         link.setAttribute("aria-label", "Open account menu");
-        link.setAttribute("aria-expanded", "false");
+        link.setAttribute("title", "My Account");
 
-        if (name) name.textContent = user.fullName || "My Account";
-        if (email) email.textContent = user.email || "";
+        if (name) {
+            name.textContent = user.fullName || "My Account";
+        }
+
+        if (email) {
+            email.textContent = user.email || "";
+        }
 
         displayPhoto(user.profilePhotoUrl || "");
+
     } catch (error) {
         console.error("Could not load homepage account:", error);
+        displayPhoto("");
     }
 
-    link.addEventListener("click", event => {
-        if (!loggedIn) {
-            event.preventDefault();
-            window.location.href = "pages/login.html";
-            return;
-        }
-
-        event.preventDefault();
-        dropdown.hidden = !dropdown.hidden;
-        link.setAttribute("aria-expanded", String(!dropdown.hidden));
-    });
-
-    document.addEventListener("click", event => {
-        if (!menu.contains(event.target)) {
-            dropdown.hidden = true;
-            link.setAttribute("aria-expanded", "false");
-        }
-    });
-
-    document.addEventListener("keydown", event => {
-        if (event.key === "Escape") {
-            dropdown.hidden = true;
-            link.setAttribute("aria-expanded", "false");
-        }
-    });
-
+    // Sign out.
     if (signOut) {
         signOut.addEventListener("click", async () => {
             signOut.disabled = true;
@@ -390,19 +416,29 @@ updateCartCount();
                 const response = await fetch(`${API}/auth/logout`, {
                     method: "POST",
                     credentials: "include",
-                    headers: { Accept: "application/json" }
+                    headers: {
+                        Accept: "application/json"
+                    }
                 });
 
                 const result = await response.json().catch(() => ({}));
 
                 if (!response.ok || result.success === false) {
-                    throw new Error(result.message || "Sign out failed.");
+                    throw new Error(
+                        result.message || "Sign out failed."
+                    );
                 }
 
                 window.location.replace("index.html");
+
             } catch (error) {
                 console.error("Sign out failed:", error);
-                alert(error.message || "Unable to sign out. Please try again.");
+
+                alert(
+                    error.message ||
+                    "Unable to sign out. Please try again."
+                );
+
                 signOut.disabled = false;
             }
         });

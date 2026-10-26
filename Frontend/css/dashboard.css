@@ -1359,3 +1359,47 @@ input:focus-visible {
         align-items: stretch;
     }
 }
+
+/* Dashboard header profile photo */
+.dashboard-header-account {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: 12px;
+}
+
+.dashboard-header-photo,
+.dashboard-header-photo-placeholder {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 2px solid var(--terracotta, #BF5B40);
+    box-sizing: border-box;
+}
+
+.dashboard-header-photo {
+    object-fit: cover;
+}
+
+.dashboard-header-photo[hidden],
+.dashboard-header-photo-placeholder[hidden] {
+    display: none;
+}
+
+.dashboard-header-photo-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface, #F0EADF);
+    color: var(--dark, #17262D);
+    font-size: 18px;
+}
+
+@media (max-width: 480px) {
+    .dashboard-header-photo,
+    .dashboard-header-photo-placeholder {
+        width: 36px;
+        height: 36px;
+    }
+}
