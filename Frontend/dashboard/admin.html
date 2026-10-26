@@ -1,0 +1,454 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#17262D">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin Dashboard | SELFII UNIVERSE</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <div class="admin-loading" id="adminLoading">
+        <div class="loading-mark">S</div>
+        <p>Verifying administrator access...</p>
+    </div>
+
+    <div class="admin-app" id="adminApp" hidden>
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <aside class="admin-sidebar" id="adminSidebar">
+            <a href="../index.html" class="admin-brand" aria-label="SELFII UNIVERSE home">
+                <span class="brand-mark">S</span>
+                <span class="brand-copy">
+                    <strong>SELFII</strong>
+                    <small>UNIVERSE</small>
+                </span>
+            </a>
+
+            <div class="sidebar-label">WORKSPACE</div>
+
+            <nav class="admin-navigation" aria-label="Admin navigation">
+                <button class="admin-nav-link active" type="button" data-section="overview">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Overview</span>
+                </button>
+
+                <button class="admin-nav-link" type="button" data-section="products">
+                    <i class="fa-solid fa-box-open"></i>
+                    <span>Products</span>
+                    <span class="nav-count" id="navProductCount">0</span>
+                </button>
+
+                <button class="admin-nav-link" type="button" data-section="collections">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Collections</span>
+                </button>
+
+                <button class="admin-nav-link" type="button" data-section="orders">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span>Orders</span>
+                </button>
+
+                <button class="admin-nav-link" type="button" data-section="customers">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Customers</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="admin-help-card">
+                    <span class="help-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                    <strong>Store control</strong>
+                    <p>Manage your store from one secure workspace.</p>
+                </div>
+
+                <a href="../index.html" class="sidebar-store-link">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    <span>View storefront</span>
+                </a>
+
+                <button class="sidebar-logout" id="adminLogout" type="button">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Sign out</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <button class="icon-button mobile-menu-button" id="adminMenuToggle" type="button" aria-label="Open navigation" aria-expanded="false">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+
+                    <div>
+                        <p class="eyebrow">SELFII UNIVERSE / ADMIN</p>
+                        <h1 id="pageTitle">Overview</h1>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <a href="../index.html" class="view-store-button">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <span>View store</span>
+                    </a>
+
+                    <div class="admin-identity">
+                        <span class="admin-avatar" id="adminAvatar">S</span>
+                        <span class="admin-identity-copy">
+                            <strong id="adminName">Administrator</strong>
+                            <small>Administrator</small>
+                        </span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="admin-notice" id="adminNotice" role="status" aria-live="polite" hidden></div>
+
+                <!-- OVERVIEW -->
+                <section class="admin-section active" id="section-overview">
+                    <div class="welcome-banner">
+                        <div>
+                            <p class="eyebrow">YOUR CREATIVE BUSINESS</p>
+                            <h2>Welcome back<span id="welcomeName"></span>.</h2>
+                            <p>Here is what's happening across your store.</p>
+                        </div>
+                        <span class="welcome-art"><i class="fa-solid fa-sparkles"></i></span>
+                    </div>
+
+                    <div class="section-heading">
+                        <div>
+                            <h2>Store overview</h2>
+                            <p>Your business at a glance.</p>
+                        </div>
+                        <button class="secondary-button" id="refreshOverview" type="button">
+                            <i class="fa-solid fa-rotate"></i>
+                            Refresh data
+                        </button>
+                    </div>
+
+                    <div class="stats-grid">
+                        <article class="stat-card">
+                            <div class="stat-card-top">
+                                <span>Total products</span>
+                                <span class="stat-icon terracotta"><i class="fa-solid fa-box-open"></i></span>
+                            </div>
+                            <strong class="stat-value" id="statProducts">—</strong>
+                            <small>Active products in your catalog</small>
+                        </article>
+
+                        <article class="stat-card">
+                            <div class="stat-card-top">
+                                <span>Total orders</span>
+                                <span class="stat-icon blue"><i class="fa-solid fa-bag-shopping"></i></span>
+                            </div>
+                            <strong class="stat-value" id="statOrders">—</strong>
+                            <small>Orders recorded in your store</small>
+                        </article>
+
+                        <article class="stat-card">
+                            <div class="stat-card-top">
+                                <span>Customers</span>
+                                <span class="stat-icon green"><i class="fa-solid fa-users"></i></span>
+                            </div>
+                            <strong class="stat-value" id="statCustomers">—</strong>
+                            <small>Registered customer accounts</small>
+                        </article>
+
+                        <article class="stat-card">
+                            <div class="stat-card-top">
+                                <span>Total revenue</span>
+                                <span class="stat-icon purple"><i class="fa-solid fa-wallet"></i></span>
+                            </div>
+                            <strong class="stat-value" id="statRevenue">—</strong>
+                            <small>Revenue from recorded orders</small>
+                        </article>
+                    </div>
+
+                    <div class="overview-columns">
+                        <section class="panel">
+                            <div class="panel-heading">
+                                <div>
+                                    <h3>Recent orders</h3>
+                                    <p>The latest customer purchases.</p>
+                                </div>
+                                <button class="text-button" type="button" data-section="orders">View all</button>
+                            </div>
+
+                            <div id="recentOrders" class="table-scroll">
+                                <div class="empty-inline">Loading recent orders...</div>
+                            </div>
+                        </section>
+
+                        <section class="panel quick-actions-panel">
+                            <div class="panel-heading">
+                                <div>
+                                    <h3>Quick actions</h3>
+                                    <p>Keep your store moving.</p>
+                                </div>
+                            </div>
+
+                            <button class="quick-action" type="button" data-action="add-product">
+                                <span class="quick-action-icon"><i class="fa-solid fa-plus"></i></span>
+                                <span><strong>Add a product</strong><small>Expand your catalog</small></span>
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+
+                            <button class="quick-action" type="button" data-action="manage-products">
+                                <span class="quick-action-icon"><i class="fa-solid fa-boxes-stacked"></i></span>
+                                <span><strong>Manage products</strong><small>Update prices and stock</small></span>
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+
+                            <button class="quick-action" type="button" data-action="view-orders">
+                                <span class="quick-action-icon"><i class="fa-solid fa-receipt"></i></span>
+                                <span><strong>Review orders</strong><small>Check customer purchases</small></span>
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </section>
+                    </div>
+                </section>
+
+                <!-- PRODUCTS -->
+                <section class="admin-section" id="section-products">
+                    <div class="section-heading">
+                        <div>
+                            <h2>Product management</h2>
+                            <p>Add products, update pricing, and keep inventory accurate.</p>
+                        </div>
+                        <button class="primary-button" id="addProductButton" type="button">
+                            <i class="fa-solid fa-plus"></i>
+                            Add product
+                        </button>
+                    </div>
+
+                    <section class="panel">
+                        <div class="toolbar">
+                            <label class="admin-search">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input id="productSearch" type="search" placeholder="Search products..." autocomplete="off">
+                            </label>
+
+                            <select id="productCategoryFilter" aria-label="Filter products by category">
+                                <option value="">All categories</option>
+                                <option value="boutique">Boutique</option>
+                                <option value="selfiitees">SelfiiTees</option>
+                                <option value="printing">Printing</option>
+                            </select>
+
+                            <select id="productStatusFilter" aria-label="Filter products by status">
+                                <option value="">All stock statuses</option>
+                                <option value="in-stock">In stock</option>
+                                <option value="out-of-stock">Out of stock</option>
+                            </select>
+                        </div>
+
+                        <div id="productsTable" class="table-scroll">
+                            <div class="empty-inline">Products will appear here when loaded.</div>
+                        </div>
+                    </section>
+                </section>
+
+                <!-- COLLECTIONS -->
+                <section class="admin-section" id="section-collections">
+                    <div class="section-heading">
+                        <div>
+                            <h2>Collections</h2>
+                            <p>Explore the product categories available in your store.</p>
+                        </div>
+                    </div>
+
+                    <div class="collection-admin-grid">
+                        <button class="collection-admin-card" type="button" data-category="boutique">
+                            <span class="collection-admin-icon"><i class="fa-solid fa-shirt"></i></span>
+                            <span class="collection-admin-copy">
+                                <strong>Boutique</strong>
+                                <small>Fashion and lifestyle products</small>
+                            </span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+
+                        <button class="collection-admin-card" type="button" data-category="selfiitees">
+                            <span class="collection-admin-icon"><i class="fa-solid fa-palette"></i></span>
+                            <span class="collection-admin-copy">
+                                <strong>SelfiiTees</strong>
+                                <small>Custom apparel and designs</small>
+                            </span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+
+                        <button class="collection-admin-card" type="button" data-category="printing">
+                            <span class="collection-admin-icon"><i class="fa-solid fa-print"></i></span>
+                            <span class="collection-admin-copy">
+                                <strong>Printing</strong>
+                                <small>Personalized printing products</small>
+                            </span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+
+                    <section class="panel collection-note">
+                        <span class="note-icon"><i class="fa-solid fa-circle-info"></i></span>
+                        <div>
+                            <h3>Product categories</h3>
+                            <p>These categories use the existing backend product model. Choose a category when adding a product to determine where it belongs. We can add editable collection banners and descriptions separately when the collection-management API is implemented.</p>
+                        </div>
+                    </section>
+                </section>
+
+                <!-- ORDERS -->
+                <section class="admin-section" id="section-orders">
+                    <div class="section-heading">
+                        <div>
+                            <h2>Order management</h2>
+                            <p>Review purchases and follow their progress.</p>
+                        </div>
+                        <button class="secondary-button" id="refreshOrders" type="button">
+                            <i class="fa-solid fa-rotate"></i>
+                            Refresh
+                        </button>
+                    </div>
+
+                    <section class="panel">
+                        <div class="toolbar">
+                            <label class="admin-search">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input id="orderSearch" type="search" placeholder="Search orders..." autocomplete="off">
+                            </label>
+
+                            <select id="orderStatusFilter" aria-label="Filter orders by status">
+                                <option value="">All order statuses</option>
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="shipped">Shipped</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+
+                        <div id="ordersTable" class="table-scroll">
+                            <div class="empty-inline">Order management will load when the orders API is connected.</div>
+                        </div>
+                    </section>
+                </section>
+
+                <!-- CUSTOMERS -->
+                <section class="admin-section" id="section-customers">
+                    <div class="section-heading">
+                        <div>
+                            <h2>Customers</h2>
+                            <p>View registered accounts and customer contact details.</p>
+                        </div>
+                        <button class="secondary-button" id="refreshCustomers" type="button">
+                            <i class="fa-solid fa-rotate"></i>
+                            Refresh
+                        </button>
+                    </div>
+
+                    <section class="panel">
+                        <div class="toolbar">
+                            <label class="admin-search">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input id="customerSearch" type="search" placeholder="Search customers..." autocomplete="off">
+                            </label>
+                        </div>
+
+                        <div id="customersTable" class="table-scroll">
+                            <div class="empty-inline">Customer management will load when the admin customers API is connected.</div>
+                        </div>
+                    </section>
+                </section>
+            </div>
+
+            <footer class="admin-footer">
+                <span>© <span id="adminFooterYear"></span> SELFII UNIVERSE</span>
+                <span>Made with intention.</span>
+            </footer>
+        </main>
+    </div>
+
+    <!-- PRODUCT EDITOR -->
+    <div class="modal-backdrop" id="productModal" hidden>
+        <section class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="productModalTitle">
+            <div class="modal-heading">
+                <div>
+                    <p class="eyebrow">CATALOG MANAGEMENT</p>
+                    <h2 id="productModalTitle">Add a product</h2>
+                    <p>Give your next creation a place in the store.</p>
+                </div>
+                <button class="icon-button" id="closeProductModal" type="button" aria-label="Close product form">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="productForm">
+                <input id="productId" type="hidden">
+
+                <div class="form-field">
+                    <label for="productName">Product name *</label>
+                    <input id="productName" name="name" type="text" maxlength="150" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="productDescription">Description *</label>
+                    <textarea id="productDescription" name="description" rows="4" maxlength="3000" required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="productPrice">Price (NGN) *</label>
+                        <input id="productPrice" name="price" type="number" min="0" step="0.01" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="productStock">Stock quantity *</label>
+                        <input id="productStock" name="stock" type="number" min="0" step="1" value="0" required>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="productCategory">Category *</label>
+                    <select id="productCategory" name="category" required>
+                        <option value="boutique">Boutique</option>
+                        <option value="selfiitees">SelfiiTees</option>
+                        <option value="printing">Printing</option>
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="productImageUrl">Product image URL *</label>
+                    <input id="productImageUrl" name="image" type="url" placeholder="https://..." required>
+                    <small>Use a secure HTTPS image URL. We'll integrate direct Cloudinary uploads next.</small>
+                </div>
+
+                <div class="form-field">
+                    <label class="checkbox-field">
+                        <input id="productFeatured" name="featured" type="checkbox">
+                        <span>Feature this product in the store</span>
+                    </label>
+                </div>
+
+                <div class="form-error" id="productFormError" role="alert" hidden></div>
+
+                <div class="modal-actions">
+                    <button class="secondary-button" id="cancelProductForm" type="button">Cancel</button>
+                    <button class="primary-button" id="saveProductButton" type="submit">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save product</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <script src="../js/admin.js"></script>
+</body>
+</html>
