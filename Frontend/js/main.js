@@ -271,3 +271,140 @@ if (currentYear) {
 // INITIAL CART COUNT
 
 updateCartCount();
+// ==========================================
+// SELFII UNIVERSE - HOMEPAGE ACCOUNT
+// ==========================================
+
+(async function initializeHomepageAccount() {
+    const API = "https://selfii-universe-api.onrender.com/api";
+
+    const menu = document.getElementById("accountMenu");
+    const link = document.getElementById("accountLink");
+    const dropdown = document.getElementById("accountDropdown");
+    const name = document.getElementById("accountDropdownName");
+    const email = document.getElementById("accountDropdownEmail");
+    const photo = document.getElementById("accountDropdownPhoto");
+    const placeholder = document.getElementById("accountDropdownPlaceholder");
+    const signOut = document.getElementById("accountSignOut");
+
+    if (!menu || !link || !dropdown) return;
+
+    let loggedIn = false;
+
+    function displayPhoto(url) {
+        link.replaceChildren();
+
+        if (url) {
+            const image = document.createElement("img");
+            image.className = "account-profile-photo";
+            image.src = url;
+            image.alt = "My profile photo";
+
+            image.onerror = () => {
+                image.remove();
+                link.innerHTML = '<i class="fa-regular fa-user"></i>';
+            };
+
+            link.appendChild(image);
+        } else {
+            link.innerHTML = '<i class="fa-regular fa-user"></i>';
+        }
+
+        if (photo && placeholder) {
+            photo.onerror = () => {
+                photo.hidden = true;
+                placeholder.hidden = false;
+            };
+
+            if (url) {
+                photo.src = url;
+                photo.hidden = false;
+                placeholder.hidden = true;
+            } else {
+                photo.removeAttribute("src");
+                photo.hidden = true;
+                placeholder.hidden = false;
+            }
+        }
+    }
+
+    try {
+        const response = await fetch(`${API}/auth/me`, {
+            method: "GET",
+            credentials: "include",
+            headers: { Accept: "application/json" }
+        });
+
+        if (!response.ok) return;
+
+        const result = await response.json();
+
+        if (!result.success || !result.user) return;
+
+        const user = result.user;
+        loggedIn = true;
+
+        link.href = "#";
+        link.setAttribute("aria-label", "Open account menu");
+        link.setAttribute("aria-expanded", "false");
+
+        if (name) name.textContent = user.fullName || "My Account";
+        if (email) email.textContent = user.email || "";
+
+        displayPhoto(user.profilePhotoUrl || "");
+    } catch (error) {
+        console.error("Could not load homepage account:", error);
+    }
+
+    link.addEventListener("click", event => {
+        if (!loggedIn) {
+            event.preventDefault();
+            window.location.href = "pages/login.html";
+            return;
+        }
+
+        event.preventDefault();
+        dropdown.hidden = !dropdown.hidden;
+        link.setAttribute("aria-expanded", String(!dropdown.hidden));
+    });
+
+    document.addEventListener("click", event => {
+        if (!menu.contains(event.target)) {
+            dropdown.hidden = true;
+            link.setAttribute("aria-expanded", "false");
+        }
+    });
+
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+            dropdown.hidden = true;
+            link.setAttribute("aria-expanded", "false");
+        }
+    });
+
+    if (signOut) {
+        signOut.addEventListener("click", async () => {
+            signOut.disabled = true;
+
+            try {
+                const response = await fetch(`${API}/auth/logout`, {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { Accept: "application/json" }
+                });
+
+                const result = await response.json().catch(() => ({}));
+
+                if (!response.ok || result.success === false) {
+                    throw new Error(result.message || "Sign out failed.");
+                }
+
+                window.location.replace("index.html");
+            } catch (error) {
+                console.error("Sign out failed:", error);
+                alert(error.message || "Unable to sign out. Please try again.");
+                signOut.disabled = false;
+            }
+        });
+    }
+})();
