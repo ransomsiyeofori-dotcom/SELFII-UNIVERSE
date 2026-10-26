@@ -363,6 +363,13 @@ updateCartCount();
         }
     });
 
+    // Display the saved photo immediately.
+    try {
+        displayPhoto(localStorage.getItem("selfiiProfilePhotoUrl") || "");
+    } catch (error) {
+        console.warn("Could not read the saved profile photo:", error);
+    }
+
     // Retrieve the actual logged-in customer.
     try {
         const response = await fetch(`${API}/auth/me`, {
@@ -374,14 +381,12 @@ updateCartCount();
         });
 
         if (!response.ok) {
-            displayPhoto("");
             return;
         }
 
         const result = await response.json();
 
         if (!result.success || !result.user) {
-            displayPhoto("");
             return;
         }
 
@@ -402,9 +407,18 @@ updateCartCount();
 
         displayPhoto(user.profilePhotoUrl || "");
 
+        try {
+            if (user.profilePhotoUrl) {
+                localStorage.setItem("selfiiProfilePhotoUrl", user.profilePhotoUrl);
+            } else {
+                localStorage.removeItem("selfiiProfilePhotoUrl");
+            }
+        } catch (error) {
+            console.warn("Could not save the profile photo URL:", error);
+        }
+
     } catch (error) {
         console.error("Could not load homepage account:", error);
-        displayPhoto("");
     }
 
     // Sign out.
