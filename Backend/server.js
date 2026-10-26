@@ -9,6 +9,7 @@ const rateLimit = require('express-rate-limit');
 
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
+const productRoutes = require('./routes/productRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -71,6 +72,7 @@ const apiLimiter = rateLimit({
 app.use('/api', apiLimiter);
 
 app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({
