@@ -190,6 +190,15 @@ function displayUser(user) {
     }
 
     displayProfilePhoto(user.profilePhotoUrl || "");
+    try {
+        if (user.profilePhotoUrl) {
+            localStorage.setItem("selfiiProfilePhotoUrl", user.profilePhotoUrl);
+        } else {
+            localStorage.removeItem("selfiiProfilePhotoUrl");
+        }
+    } catch (error) {
+        console.warn("Could not cache profile photo URL:", error);
+    }
 }
 
 
