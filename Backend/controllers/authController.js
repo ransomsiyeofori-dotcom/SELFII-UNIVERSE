@@ -8,6 +8,7 @@ function publicUser(user) {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
+        phone: user.phone || '',
         role: user.role
     };
 }
@@ -178,4 +179,238 @@ exports.me = async (req, res) => {
         success: true,
         user: publicUser(req.user)
     });
+};
+
+// Update the authenticated customer's profile.
+exports.updateProfile = async (req, res, next) => {
+    try {
+        const { fullName, phone } = req.body;
+
+        if (typeof fullName !== 'string' || typeof phone !== 'string') {
+            return res.status(400).json({
+                success: false,
+                message: 'Full name and phone number are required.'
+            });
+        }
+
+        const cleanName = fullName.trim();
+        const cleanPhone = phone.trim();
+
+        if (cleanName.length < 2 || cleanName.length > 100) {
+            return res.status(400).json({
+                success: false,
+                message: 'Full name must be between 2 and 100 characters.'
+            });
+        }
+
+        if (cleanPhone.length > 25) {
+            return res.status(400).json({
+                success: false,
+                message: 'Phone number cannot exceed 25 characters.'
+            });
+        }
+
+        req.user.fullName = cleanName;
+        req.user.phone = cleanPhone;
+
+        await req.user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Profile updated successfully.',
+            user: {
+                id: req.user._id,
+                fullName: req.user.fullName,
+                email: req.user.email,
+                phone: req.user.phone,
+                role: req.user.role
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Return the authenticated customer's saved addresses.
+exports.getAddresses = async (req, res, next) => {
+    try {
+        return res.status(200).json({
+            success: true,
+            addresses: req.user.addresses || []
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Add a delivery address.
+exports.addAddress = async (req, res, next) => {
+    try {
+        const {
+            label,
+            recipientName,
+            phone,
+            addressLine,
+            city,
+            state,
+            country,
+            isDefault
+        } = req.body;
+
+        const requiredFields = {
+            recipientName,
+            phone,
+            addressLine,
+            city,
+            state,
+            country
+        };
+
+        for (const [field, value] of Object.entries(requiredFields)) {
+            if (typeof value !== 'string' || !value.trim()) {
+                return res.status(400).json({
+                    success: false,
+                    message: `${field} is required.`
+                });
+            }
+        }
+
+        if (req.user.addresses.length >= 20) {
+            return res.status(400).json({
+                success: false,
+                message: 'You can save up to 20 addresses.'
+            });
+        }
+
+        if (isDefault) {
+            req.user.addresses.forEach(address => {
+                address.isDefault = false;
+            });
+        }
+
+        const address = {
+            label: typeof label === 'string' && label.trim()
+                ? label.trim()
+                : 'Home',
+            recipientName: recipientName.trim(),
+            phone: phone.trim(),
+            addressLine: addressLine.trim(),
+            city: city.trim(),
+            state: state.trim(),
+            country: country.trim(),
+            isDefault: Boolean(isDefault) || req.user.addresses.length === 0
+        };
+
+        req.user.addresses.push(address);
+        await req.user.save();
+
+        return res.status(201).json({
+            success: true,
+            message: 'Delivery address added successfully.',
+            addresses: req.user.addresses
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Update a saved delivery address.
+exports.updateAddress = async (req, res, next) => {
+    try {
+        const address = req.user.addresses.id(req.params.addressId);
+
+        if (!address) {
+            return res.status(404).json({
+                success: false,
+                message: 'Delivery address not found.'
+            });
+        }
+
+        const fields = [
+            'label',
+            'recipientName',
+            'phone',
+            'addressLine',
+            'city',
+            'state',
+            'country'
+        ];
+
+        for (const field of fields) {
+            if (req.body[field] !== undefined) {
+                if (typeof req.body[field] !== 'string') {
+                    return res.status(400).json({
+                        success: false,
+                        message: `Invalid ${field}.`
+                    });
+                }
+
+                address[field] = req.body[field].trim();
+            }
+        }
+
+        for (const field of [
+            'recipientName',
+            'phone',
+            'addressLine',
+            'city',
+            'state',
+            'country'
+        ]) {
+            if (!address[field]) {
+                return res.status(400).json({
+                    success: false,
+                    message: `${field} is required.`
+                });
+            }
+        }
+
+        if (req.body.isDefault === true) {
+            req.user.addresses.forEach(item => {
+                item.isDefault = item._id.equals(address._id);
+            });
+        }
+
+        await req.user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Delivery address updated successfully.',
+            addresses: req.user.addresses
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Delete a saved delivery address.
+exports.deleteAddress = async (req, res, next) => {
+    try {
+        const address = req.user.addresses.id(req.params.addressId);
+
+        if (!address) {
+            return res.status(404).json({
+                success: false,
+                message: 'Delivery address not found.'
+            });
+        }
+
+        const wasDefault = address.isDefault;
+
+        req.user.addresses.pull({ _id: address._id });
+
+        if (wasDefault && req.user.addresses.length > 0) {
+            req.user.addresses[0].isDefault = true;
+        }
+
+        await req.user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Delivery address deleted successfully.',
+            addresses: req.user.addresses
+        });
+    } catch (error) {
+        next(error);
+    }
 };

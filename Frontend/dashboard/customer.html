@@ -236,51 +236,127 @@
                 </section>
 
                 <section class="dashboard-section" id="section-profile">
-                    <div class="section-intro">
-                        <span class="eyebrow">YOUR INFORMATION</span>
-                        <h2>My Profile</h2>
-                        <p>View the details associated with your account.</p>
-                    </div>
+    <div class="section-intro">
+        <span class="eyebrow">YOUR INFORMATION</span>
+        <h2>My Profile</h2>
+        <p>Keep your personal information up to date.</p>
+    </div>
 
-                    <div class="content-panel">
-                        <div class="profile-form">
-                            <div class="form-field">
-                                <label for="profileFullName">Full name</label>
-                                <input id="profileFullName" type="text" readonly>
-                            </div>
+    <div class="content-panel">
+        <form id="profileForm" class="profile-form">
+            <div class="form-field">
+                <label for="profileFullName">Full name</label>
+                <input id="profileFullName" name="fullName" type="text"
+                       minlength="2" maxlength="100" required autocomplete="name">
+            </div>
 
-                            <div class="form-field">
-                                <label for="profileEmail">Email address</label>
-                                <input id="profileEmail" type="email" readonly>
-                            </div>
+            <div class="form-field">
+                <label for="profileEmail">Email address</label>
+                <input id="profileEmail" name="email" type="email" readonly>
+                <small class="form-help">Your email address cannot be changed here.</small>
+            </div>
 
-                            <div class="form-field">
-                                <label for="profileRole">Account type</label>
-                                <input id="profileRole" type="text" readonly>
-                            </div>
+            <div class="form-field">
+                <label for="profilePhone">Phone number</label>
+                <input id="profilePhone" name="phone" type="tel"
+                       maxlength="25" autocomplete="tel">
+            </div>
 
-                            <p class="form-help">
-                                Profile editing will be enabled after the backend update endpoint is implemented.
-                            </p>
-                        </div>
-                    </div>
-                </section>
+            <div class="form-field">
+                <label for="profileRole">Account type</label>
+                <input id="profileRole" name="role" type="text" readonly>
+            </div>
 
-                <section class="dashboard-section" id="section-addresses">
-                    <div class="section-intro">
-                        <span class="eyebrow">DELIVERY DETAILS</span>
-                        <h2>Addresses</h2>
-                        <p>Manage where your SELFII purchases should be delivered.</p>
-                    </div>
+            <button class="primary-button" id="saveProfileButton" type="submit">
+                Save changes
+            </button>
+        </form>
+    </div>
+</section>
 
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fa-solid fa-location-dot"></i>
-                        </div>
-                        <h3>Your delivery addresses</h3>
-                        <p>Address management will be connected to your customer profile and checkout system.</p>
-                    </div>
-                </section>
+<section class="dashboard-section" id="section-addresses">
+    <div class="section-intro">
+        <span class="eyebrow">DELIVERY DETAILS</span>
+        <h2>My Addresses</h2>
+        <p>Manage where your SELFII purchases should be delivered.</p>
+    </div>
+
+    <div class="content-panel">
+        <div class="panel-heading">
+            <div>
+                <h2>Saved addresses</h2>
+                <p>Save an address for a quicker checkout.</p>
+            </div>
+            <button type="button" class="primary-button" id="showAddressForm">
+                <i class="fa-solid fa-plus"></i> Add address
+            </button>
+        </div>
+
+        <div id="addressList" aria-live="polite">
+            <div class="loading-state">
+                <span class="loader"></span>
+                <p>Loading your addresses...</p>
+            </div>
+        </div>
+
+        <form id="addressForm" class="profile-form" hidden>
+            <h3 id="addressFormTitle">Add delivery address</h3>
+            <input type="hidden" id="addressId">
+
+            <div class="form-field">
+                <label for="addressLabel">Address label</label>
+                <input id="addressLabel" type="text" maxlength="40"
+                       placeholder="Home, Work, etc.">
+            </div>
+
+            <div class="form-field">
+                <label for="addressRecipient">Recipient name</label>
+                <input id="addressRecipient" type="text" maxlength="100" required>
+            </div>
+
+            <div class="form-field">
+                <label for="addressPhone">Phone number</label>
+                <input id="addressPhone" type="tel" maxlength="25" required>
+            </div>
+
+            <div class="form-field">
+                <label for="addressLine">Street address</label>
+                <input id="addressLine" type="text" maxlength="200" required
+                       autocomplete="street-address">
+            </div>
+
+            <div class="form-field">
+                <label for="addressCity">City</label>
+                <input id="addressCity" type="text" maxlength="100" required>
+            </div>
+
+            <div class="form-field">
+                <label for="addressState">State</label>
+                <input id="addressState" type="text" maxlength="100" required>
+            </div>
+
+            <div class="form-field">
+                <label for="addressCountry">Country</label>
+                <input id="addressCountry" type="text" maxlength="100"
+                       value="Nigeria" required>
+            </div>
+
+            <label class="address-default-option">
+                <input id="addressDefault" type="checkbox">
+                Set as my default delivery address
+            </label>
+
+            <div class="form-actions">
+                <button class="primary-button" id="saveAddressButton" type="submit">
+                    Save address
+                </button>
+                <button class="secondary-button" id="cancelAddressForm" type="button">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
 
                 <section class="dashboard-section" id="section-settings">
                     <div class="section-intro">

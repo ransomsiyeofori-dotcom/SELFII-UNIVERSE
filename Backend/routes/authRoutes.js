@@ -5,7 +5,12 @@ const {
     register,
     login,
     logout,
-    me
+    me,
+    updateProfile,
+    getAddresses,
+    addAddress,
+    updateAddress,
+    deleteAddress
 } = require('../controllers/authController');
 
 const { requireAuth } = require('../middleware/authMiddleware');
@@ -27,5 +32,12 @@ router.post('/register', authLimiter, register);
 router.post('/login', authLimiter, login);
 router.post('/logout', requireAuth, logout);
 router.get('/me', requireAuth, me);
+
+router.patch('/profile', requireAuth, updateProfile);
+
+router.get('/addresses', requireAuth, getAddresses);
+router.post('/addresses', requireAuth, addAddress);
+router.patch('/addresses/:addressId', requireAuth, updateAddress);
+router.delete('/addresses/:addressId', requireAuth, deleteAddress);
 
 module.exports = router;

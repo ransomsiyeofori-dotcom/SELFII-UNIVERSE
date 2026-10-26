@@ -1034,3 +1034,196 @@ input:focus-visible {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* =========================================
+   CUSTOMER PROFILE AND DELIVERY ADDRESSES
+========================================= */
+
+.address-empty-state {
+    padding: 32px 24px;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--dark);
+    text-align: center;
+}
+
+.address-empty-state::before {
+    content: "\f2bb";
+    display: block;
+    margin-bottom: 14px;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 30px;
+    color: var(--muted);
+}
+
+.address-empty-state p {
+    margin: 9px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.address-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 22px;
+}
+
+.address-card {
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--white);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.address-card:hover {
+    border-color: var(--muted);
+    box-shadow: 0 8px 24px rgba(23, 38, 45, 0.06);
+}
+
+.address-card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.address-card-title {
+    margin: 0;
+    color: var(--dark);
+    font-size: 16px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.address-default-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border-radius: 20px;
+    background: #E4EFE6;
+    color: #285C3A;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.address-default-badge::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #39834F;
+}
+
+.address-card-details {
+    display: grid;
+    gap: 7px;
+}
+
+.address-card-details p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.address-card-details p:first-child {
+    color: var(--dark);
+    font-weight: 600;
+}
+
+.address-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+}
+
+.address-action-button {
+    min-height: 36px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--white);
+    color: var(--dark);
+    font: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.address-action-button:hover {
+    border-color: var(--dark);
+    background: var(--surface);
+}
+
+.address-action-button:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 3px;
+}
+
+.address-action-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.address-delete-button {
+    color: #A33A32;
+}
+
+.address-delete-button:hover {
+    border-color: #A33A32;
+    background: #FFF0EE;
+}
+
+.profile-form button:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+.profile-form input[type="checkbox"] {
+    width: 17px;
+    min-height: 17px;
+    accent-color: var(--dark);
+    cursor: pointer;
+}
+
+@media (max-width: 760px) {
+    .address-cards {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .address-card {
+        padding: 18px;
+    }
+
+    .address-card-actions {
+        gap: 7px;
+    }
+
+    .address-action-button {
+        min-height: 40px;
+        padding: 9px 11px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .address-card,
+    .address-action-button {
+        transition: none;
+    }
+}
