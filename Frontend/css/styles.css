@@ -655,7 +655,7 @@ input:focus-visible {
 .product-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 
     transition: transform 0.4s ease;
 }
@@ -1564,4 +1564,30 @@ padding-inline: 18px;
     .account-dropdown {
         right: -8px;
     }
+}
+/* Homepage product image and featured badge fixes */
+.product-image {
+    position: relative;
+    width: 100%;
+}
+
+.product-image img {
+    display: block;
+    max-width: 100%;
+}
+
+.product-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    padding: 6px 10px;
+    border-radius: 20px;
+    background: var(--terracotta, #BF5B40);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    pointer-events: none;
 }
