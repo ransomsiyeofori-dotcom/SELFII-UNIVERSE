@@ -1,8 +1,14 @@
+"use strict";
+
 /* ========================================
-   SELFII UNIVERSE — SHOP FUNCTIONALITY
+   SELFII UNIVERSE — LIVE SHOP
 ======================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
+    const API_BASE = window.SELFII_API_URL ||
+        (["localhost", "127.0.0.1"].includes(window.location.hostname)
+            ? "http://localhost:5000/api"
+            : "https://selfii-universe-api.onrender.com/api");
 
     const productGrid = document.getElementById("shopProductGrid");
     const categoryButtons = document.querySelectorAll(".category-btn");
@@ -15,288 +21,331 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!productGrid) return;
 
-    /*
-     * DEMONSTRATION PRODUCTS
-     *
-     * These are sample products to help us build and test
-     * the storefront. Replace them with your actual products,
-     * images, and prices before accepting customer orders.
-     */
-
-    const products = [
-        {
-            id: 1,
-            name: "Classic African Print",
-            category: "boutique",
-            categoryName: "SELFII Boutique",
-            price: 18500,
-            description: "A stylish piece inspired by African fashion.",
-            image: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600&auto=format&fit=crop&q=80",
-            badge: "Featured"
-        },
-        {
-            id: 2,
-            name: "Elegant Everyday Outfit",
-            category: "boutique",
-            categoryName: "SELFII Boutique",
-            price: 22000,
-            description: "Effortless style for everyday occasions.",
-            image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&auto=format&fit=crop&q=80",
-            badge: "Popular"
-        },
-        {
-            id: 3,
-            name: "Signature Graphic Tee",
-            category: "selfiitees",
-            categoryName: "Selfiitees",
-            price: 9500,
-            description: "Express your personality through your style.",
-            image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&auto=format&fit=crop&q=80",
-            badge: "Bestseller"
-        },
-        {
-            id: 4,
-            name: "Personalized Photo Tee",
-            category: "selfiitees",
-            categoryName: "Selfiitees",
-            price: 12000,
-            description: "Turn your favorite memories into wearable art.",
-            image: "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=600&auto=format&fit=crop&q=80",
-            badge: "Personalize"
-        },
-        {
-            id: 5,
-            name: "Custom Printed Mug",
-            category: "printing",
-            categoryName: "Print Selfii",
-            price: 6500,
-            description: "Create a memorable gift with your own design.",
-            image: "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=600&auto=format&fit=crop&q=80",
-            badge: "Gift Idea"
-        },
-        {
-            id: 6,
-            name: "Custom Tote Bag",
-            category: "printing",
-            categoryName: "Print Selfii",
-            price: 8000,
-            description: "Make your everyday essentials uniquely yours.",
-            image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=600&auto=format&fit=crop&q=80",
-            badge: "Creative"
-        },
-        {
-            id: 7,
-            name: "Premium Minimal Tee",
-            category: "selfiitees",
-            categoryName: "Selfiitees",
-            price: 11000,
-            description: "A clean, versatile look with a premium feel.",
-            image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&auto=format&fit=crop&q=80",
-            badge: ""
-        },
-        {
-            id: 8,
-            name: "Personalized Gift Set",
-            category: "printing",
-            categoryName: "Print Selfii",
-            price: 15000,
-            description: "A thoughtful custom gift for someone special.",
-            image: "https://images.unsplash.com/photo-1513883049090-d0b7439799bf?w=600&auto=format&fit=crop&q=80",
-            badge: "Special"
-        }
-    ];
-
+    let products = [];
     let activeCategory = "all";
     let searchTerm = "";
-    let sortMode = "featured";
+    let sortMode = sortSelect?.value || "featured";
 
-    // Format prices in Nigerian Naira.
     function formatPrice(price) {
         return new Intl.NumberFormat("en-NG", {
             style: "currency",
             currency: "NGN",
             maximumFractionDigits: 0
-        }).format(price);
+        }).format(Number(price) || 0);
     }
 
-    // Render product cards.
-    function renderProducts() {
+    function getProductId(product) {
+        return product._id || product.id || product.slug;
+    }
 
-        let filteredProducts = products.filter(product => {
+    function getCategoryName(category) {
+        const names = {
+            boutique: "SELFII Boutique",
+            selfiitees: "Selfiitees",
+            printing: "Print Selfii"
+        };
 
+        return names[category] || "SELFII UNIVERSE";
+    }
+
+    function getFilteredProducts() {
+        const query = searchTerm.toLowerCase();
+
+        const filtered = products.filter(product => {
             const matchesCategory =
                 activeCategory === "all" ||
                 product.category === activeCategory;
 
-            const searchableText = (
-                product.name + " " +
-                product.categoryName + " " +
-                product.description
-            ).toLowerCase();
+            const searchableText = [
+                product.name,
+                product.description,
+                getCategoryName(product.category),
+                product.category
+            ].join(" ").toLowerCase();
 
-            const matchesSearch = searchableText.includes(
-                searchTerm.toLowerCase()
-            );
-
-            return matchesCategory && matchesSearch;
+            return matchesCategory && searchableText.includes(query);
         });
 
-        // Sort products.
-        if (sortMode === "name") {
-            filteredProducts.sort((a, b) =>
-                a.name.localeCompare(b.name)
-            );
+        switch (sortMode) {
+            case "name":
+                filtered.sort((a, b) =>
+                    String(a.name).localeCompare(String(b.name))
+                );
+                break;
+
+            case "price-low":
+                filtered.sort((a, b) =>
+                    Number(a.price) - Number(b.price)
+                );
+                break;
+
+            case "price-high":
+                filtered.sort((a, b) =>
+                    Number(b.price) - Number(a.price)
+                );
+                break;
+
+            default:
+                filtered.sort((a, b) =>
+                    Number(Boolean(b.featured)) -
+                    Number(Boolean(a.featured))
+                );
         }
 
-        if (sortMode === "price-low") {
-            filteredProducts.sort((a, b) => a.price - b.price);
-        }
-
-        if (sortMode === "price-high") {
-            filteredProducts.sort((a, b) => b.price - a.price);
-        }
-
-        productGrid.innerHTML = "";
-
-        filteredProducts.forEach(product => {
-
-            const card = document.createElement("article");
-            card.className = "shop-product-card";
-
-            const image = document.createElement("div");
-            image.className = "shop-product-image";
-
-            const img = document.createElement("img");
-            img.src = product.image;
-            img.alt = product.name;
-            img.loading = "lazy";
-
-            // Display a fallback if the image fails to load.
-            img.addEventListener("error", () => {
-                img.style.display = "none";
-                image.style.background = "#EDE7DA";
-            });
-
-            image.appendChild(img);
-
-            if (product.badge) {
-                const badge = document.createElement("span");
-                badge.className = "shop-product-badge";
-                badge.textContent = product.badge;
-                image.appendChild(badge);
-            }
-
-            const info = document.createElement("div");
-            info.className = "shop-product-info";
-
-            const category = document.createElement("p");
-            category.className = "shop-product-category";
-            category.textContent = product.categoryName;
-
-            const title = document.createElement("h3");
-            title.textContent = product.name;
-
-            const description = document.createElement("p");
-            description.className = "shop-product-description";
-            description.textContent = product.description;
-
-            const price = document.createElement("p");
-            price.className = "shop-product-price";
-            price.textContent = formatPrice(product.price);
-
-            const button = document.createElement("button");
-            button.className = "shop-add-to-cart";
-            button.type = "button";
-            button.textContent = "Add to Cart";
-
-            button.addEventListener("click", () => {
-                if (window.SelfiiCart && window.SelfiiCart.addItem(product)) {
-                    const originalText = button.textContent;
-                    button.textContent = "Added to Cart ✓";
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                    }, 1500);
-                } else {
-                    alert("Unable to add this product to your cart.");
-                }
-            });
-
-            info.append(
-                category,
-                title,
-                description,
-                price,
-                button
-            );
-
-            card.append(image, info);
-            productGrid.appendChild(card);
-        });
-
-        productCount.textContent = filteredProducts.length;
-
-        emptyState.hidden = filteredProducts.length !== 0;
-        productGrid.hidden = filteredProducts.length === 0;
+        return filtered;
     }
 
-    // Category buttons.
-    categoryButtons.forEach(button => {
+    function createProductCard(product) {
+        const card = document.createElement("article");
+        card.className = "shop-product-card";
+
+        const imageWrapper = document.createElement("div");
+        imageWrapper.className = "shop-product-image";
+
+        const imageLink = document.createElement("a");
+        imageLink.href =
+            `product.html?slug=${encodeURIComponent(product.slug || "")}`;
+        imageLink.setAttribute("aria-label", `View ${product.name}`);
+
+        const image = document.createElement("img");
+        image.src = product.image || product.images?.[0] || "";
+        image.alt = product.name || "SELFII UNIVERSE product";
+        image.loading = "lazy";
+        image.decoding = "async";
+
+        image.addEventListener("error", () => {
+            image.removeAttribute("src");
+            image.alt = "Product image unavailable";
+            imageWrapper.classList.add("image-unavailable");
+        }, { once: true });
+
+        if (!image.src || image.src === window.location.href) {
+            image.removeAttribute("src");
+            imageWrapper.classList.add("image-unavailable");
+        }
+
+        imageLink.appendChild(image);
+        imageWrapper.appendChild(imageLink);
+
+        if (product.featured) {
+            const badge = document.createElement("span");
+            badge.className = "shop-product-badge";
+            badge.textContent = "Featured";
+            imageWrapper.appendChild(badge);
+        }
+
+        const info = document.createElement("div");
+        info.className = "shop-product-info";
+
+        const category = document.createElement("p");
+        category.className = "shop-product-category";
+        category.textContent = getCategoryName(product.category);
+
+        const title = document.createElement("h3");
+        const titleLink = document.createElement("a");
+        titleLink.href = imageLink.href;
+        titleLink.textContent = product.name;
+        title.appendChild(titleLink);
+
+        const description = document.createElement("p");
+        description.className = "shop-product-description";
+        description.textContent = product.description || "";
+
+        const price = document.createElement("p");
+        price.className = "shop-product-price";
+        price.textContent = formatPrice(product.price);
+
+        const button = document.createElement("button");
+        button.className = "shop-add-to-cart";
+        button.type = "button";
+        button.textContent = "Add to Cart";
+
+        const outOfStock = Number(product.stock) <= 0;
+
+        if (outOfStock) {
+            button.disabled = true;
+            button.textContent = "Out of Stock";
+        }
 
         button.addEventListener("click", () => {
+            if (!window.SelfiiCart) {
+                alert("Your shopping cart could not be loaded. Please refresh.");
+                return;
+            }
 
+            const added = window.SelfiiCart.addItem({
+                id: getProductId(product),
+                name: product.name,
+                price: product.price,
+                image: product.image || product.images?.[0] || "",
+                category: getCategoryName(product.category),
+                description: product.description || ""
+            });
+
+            if (added) {
+                button.textContent = "Added to Cart ✓";
+
+                window.setTimeout(() => {
+                    if (button.isConnected && !button.disabled) {
+                        button.textContent = "Add to Cart";
+                    }
+                }, 1500);
+            } else {
+                alert("Unable to add this product to your cart.");
+            }
+        });
+
+        info.append(category, title, description, price, button);
+        card.append(imageWrapper, info);
+
+        return card;
+    }
+
+    function renderProducts() {
+        const filtered = getFilteredProducts();
+
+        productGrid.replaceChildren();
+
+        filtered.forEach(product => {
+            productGrid.appendChild(createProductCard(product));
+        });
+
+        if (productCount) {
+            productCount.textContent = String(filtered.length);
+        }
+
+        if (emptyState) {
+            emptyState.hidden = filtered.length > 0;
+
+            const heading = emptyState.querySelector("h3");
+            const message = emptyState.querySelector("p");
+
+            if (heading) heading.textContent = "No products found";
+
+            if (message) {
+                message.textContent = products.length
+                    ? "Try changing your search or category."
+                    : "Products will appear here when they become available.";
+            }
+        }
+
+        productGrid.hidden = filtered.length === 0;
+
+        if (window.SelfiiCart) {
+            window.SelfiiCart.updateCartCount();
+        }
+    }
+
+    async function loadProducts() {
+        productGrid.hidden = true;
+
+        if (emptyState) {
+            emptyState.hidden = false;
+
+            const heading = emptyState.querySelector("h3");
+            const message = emptyState.querySelector("p");
+
+            if (heading) heading.textContent = "Loading products...";
+            if (message) message.textContent = "Please wait while we load the latest products.";
+        }
+
+        try {
+            const response = await fetch(
+                `${API_BASE}/products?limit=50`,
+                {
+                    method: "GET",
+                    headers: { Accept: "application/json" }
+                }
+            );
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok || data.success !== true) {
+                throw new Error(
+                    data.message || "Unable to load products."
+                );
+            }
+
+            products = Array.isArray(data.products)
+                ? data.products
+                : [];
+
+            renderProducts();
+        } catch (error) {
+            console.error("Shop products error:", error);
+
+            products = [];
+            productGrid.replaceChildren();
+            productGrid.hidden = true;
+
+            if (emptyState) {
+                emptyState.hidden = false;
+
+                const heading = emptyState.querySelector("h3");
+                const message = emptyState.querySelector("p");
+
+                if (heading) heading.textContent = "Unable to load products";
+
+                if (message) {
+                    message.textContent =
+                        "Please check your connection and try again.";
+                }
+            }
+        }
+    }
+
+    categoryButtons.forEach(button => {
+        button.addEventListener("click", () => {
             categoryButtons.forEach(item => {
                 item.classList.remove("active");
             });
 
             button.classList.add("active");
-
             activeCategory = button.dataset.category || "all";
 
             renderProducts();
         });
     });
 
-    // Search products.
-    searchForm.addEventListener("submit", event => {
-        event.preventDefault();
-        searchTerm = searchInput.value.trim();
-        renderProducts();
-    });
-
-    // Update results while typing.
-    searchInput.addEventListener("input", () => {
-        searchTerm = searchInput.value.trim();
-        renderProducts();
-    });
-
-    // Sort products.
-    sortSelect.addEventListener("change", () => {
-        sortMode = sortSelect.value;
-        renderProducts();
-    });
-
-    // Reset filters.
-    resetButton.addEventListener("click", () => {
-
-        activeCategory = "all";
-        searchTerm = "";
-        sortMode = "featured";
-
-        searchInput.value = "";
-        sortSelect.value = "featured";
-
-        categoryButtons.forEach(button => {
-            button.classList.toggle(
-                "active",
-                button.dataset.category === "all"
-            );
+    if (searchForm && searchInput) {
+        searchForm.addEventListener("submit", event => {
+            event.preventDefault();
+            searchTerm = searchInput.value.trim();
+            renderProducts();
         });
 
-        renderProducts();
-    });
+        searchInput.addEventListener("input", () => {
+            searchTerm = searchInput.value.trim();
+            renderProducts();
+        });
+    }
 
-    // Initial display.
-    renderProducts();
-    if (window.SelfiiCart) window.SelfiiCart.updateCartCount();
+    if (sortSelect) {
+        sortSelect.addEventListener("change", () => {
+            sortMode = sortSelect.value;
+            renderProducts();
+        });
+    }
 
+    if (resetButton) {
+        resetButton.addEventListener("click", () => {
+            activeCategory = "all";
+            searchTerm = "";
+            sortMode = "featured";
+
+            if (searchInput) searchInput.value = "";
+            if (sortSelect) sortSelect.value = "featured";
+
+            categoryButtons.forEach(button => {
+                button.classList.toggle(
+                    "active",
+                    (button.dataset.category || "all") === "all"
+                );
+            });
+
+            renderProducts();
+        });
+    }
+
+    loadProducts();
 });

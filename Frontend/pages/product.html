@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#17262D">
+    <meta name="description" content="Explore premium fashion, personalized gifts, and custom printing at SELFII UNIVERSE.">
+    <title>Product Details | SELFII UNIVERSE</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/product.css">
+</head>
+<body>
+    <div class="product-announcement">
+        Custom printing and creative design by SELFII Studio
+    </div>
+
+    <header class="header product-header">
+        <div class="container header-inner">
+            <a class="logo" href="../index.html" aria-label="SELFII UNIVERSE home">
+                SELFII<span> UNIVERSE</span>
+            </a>
+
+            <nav class="product-nav" aria-label="Main navigation">
+                <a href="../index.html">Home</a>
+                <a href="shop.html">Shop</a>
+                <a href="boutique.html">Boutique</a>
+                <a href="cart.html" class="product-cart-link">
+                    Cart <span id="cartCount">0</span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="product-page container">
+        <nav class="product-breadcrumb" aria-label="Breadcrumb">
+            <a href="../index.html">Home</a>
+            <span>/</span>
+            <a href="shop.html">Shop</a>
+            <span>/</span>
+            <span id="breadcrumbProduct">Product</span>
+        </nav>
+
+        <div id="productLoading" class="product-message" role="status">
+            <span class="product-loader"></span>
+            <p>Loading product details...</p>
+        </div>
+
+        <div id="productError" class="product-message" role="alert" hidden>
+            <h2 id="productErrorTitle">Product unavailable</h2>
+            <p id="productErrorText">We couldn't load this product.</p>
+            <a class="product-primary-button" href="shop.html">Explore the Shop</a>
+        </div>
+
+        <section id="productDetails" class="product-details" hidden>
+            <div class="product-gallery">
+                <div class="product-main-image">
+                    <img id="productMainImage" src="" alt="">
+                    <span id="productFeaturedBadge" class="product-featured-badge" hidden>
+                        Featured
+                    </span>
+                </div>
+                <div id="productThumbnails" class="product-thumbnails" aria-label="Product images"></div>
+            </div>
+
+            <div class="product-information">
+                <p id="productCategory" class="product-category"></p>
+                <h1 id="productName"></h1>
+                <p id="productPrice" class="product-price"></p>
+
+                <div class="product-stock-row">
+                    <span id="productStockDot" class="product-stock-dot"></span>
+                    <span id="productStock"></span>
+                </div>
+
+                <div class="product-divider"></div>
+
+                <h2>Product details</h2>
+                <p id="productDescription" class="product-description"></p>
+
+                <div class="product-purchase">
+                    <label for="productQuantity">Quantity</label>
+                    <div class="product-quantity-control">
+                        <button id="decreaseQuantity" type="button" aria-label="Decrease quantity">−</button>
+                        <input id="productQuantity" type="number" min="1" value="1" inputmode="numeric">
+                        <button id="increaseQuantity" type="button" aria-label="Increase quantity">+</button>
+                    </div>
+                </div>
+
+                <p id="productNotice" class="product-notice" role="status" hidden></p>
+
+                <button id="addProductToCart" class="product-primary-button product-add-button" type="button">
+                    Add to Cart
+                </button>
+
+                <a class="product-secondary-button" href="cart.html">View Shopping Cart</a>
+
+                <div class="product-service-note">
+                    <p><strong>Made for your story.</strong></p>
+                    <p>Discover African-inspired style, personalized gifts, and creative printing from SELFII UNIVERSE.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="product-back-link">
+            <a href="shop.html">← Continue shopping</a>
+        </section>
+    </main>
+
+    <footer class="product-footer">
+        <div class="container">
+            <p>© <span id="productYear"></span> SELFII UNIVERSE. Wear Your Story.</p>
+        </div>
+    </footer>
+
+    <script src="../js/cart.js"></script>
+    <script src="../js/product.js"></script>
+</body>
+</html>

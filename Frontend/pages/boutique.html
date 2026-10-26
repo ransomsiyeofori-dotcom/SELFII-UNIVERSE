@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#F7F4EC">
+    <meta name="description" content="Explore the SELFII UNIVERSE Boutique — thoughtfully curated fashion, statement pieces, and African-inspired style.">
+    <title>Boutique | SELFII UNIVERSE</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/shop.css">
+    <link rel="stylesheet" href="../css/boutique.css">
+</head>
+
+<body class="boutique-page">
+
+    <div class="announcement-bar">
+        <p>Wear your story. Express your universe.</p>
+    </div>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="../index.html" class="brand-logo" aria-label="SELFII UNIVERSE home">
+                SELFII<span>.</span>
+            </a>
+
+            <nav class="desktop-nav" aria-label="Main navigation">
+                <a href="../index.html">Home</a>
+                <a href="shop.html">Shop All</a>
+                <a href="boutique.html" class="active" aria-current="page">Boutique</a>
+                <a href="selfiitees.html">SELFII Tees</a>
+                <a href="print-selfii.html">Custom Printing</a>
+            </nav>
+
+            <div class="header-actions">
+                <button type="button" class="icon-button" id="searchToggle" aria-label="Open search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+
+                <a href="account.html" class="icon-button" aria-label="My account">
+                    <i class="fa-regular fa-user"></i>
+                </a>
+
+                <a href="cart.html" class="icon-button cart-link" aria-label="Shopping cart">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span id="cartCount">0</span>
+                </a>
+
+                <button type="button" class="icon-button menu-toggle" id="menuToggle"
+                    aria-label="Open navigation menu" aria-expanded="false">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="mobile-nav" id="mobileNav">
+            <a href="../index.html">Home</a>
+            <a href="shop.html">Shop All</a>
+            <a href="boutique.html" aria-current="page">Boutique</a>
+            <a href="selfiitees.html">SELFII Tees</a>
+            <a href="print-selfii.html">Custom Printing</a>
+            <a href="account.html">My Account</a>
+        </div>
+
+        <form class="header-search" id="searchForm" role="search">
+            <label for="searchInput">Search the boutique</label>
+            <div class="search-input-wrap">
+                <input type="search" id="searchInput" name="search"
+                    placeholder="Search styles and collections..." autocomplete="off">
+                <button type="submit" aria-label="Search products">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </form>
+    </header>
+
+    <main>
+        <section class="boutique-hero">
+            <div class="boutique-hero-content">
+                <span class="eyebrow">THE SELFII BOUTIQUE</span>
+                <h1>Style that tells <em>your story.</em></h1>
+                <p>
+                    Discover thoughtfully selected pieces that celebrate
+                    individuality, culture, and everyday expression.
+                </p>
+                <a href="#boutiqueProducts" class="button button-primary">
+                    Explore the collection
+                    <i class="fa-solid fa-arrow-down"></i>
+                </a>
+            </div>
+
+            <div class="boutique-hero-image">
+                <img src="../assets/images/boutique.jpeg"
+                    alt="Fashion and creative style from SELFII UNIVERSE"
+                    fetchpriority="high">
+                <div class="hero-image-caption">
+                    <span>SELFII UNIVERSE</span>
+                    <span>Wear your story.</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="boutique-intro">
+            <span class="eyebrow">CURATED FOR YOU</span>
+            <h2>More than fashion.<br><em>It's personal.</em></h2>
+            <p>
+                Find pieces that fit your personality, elevate your everyday
+                wardrobe, and let your style speak before you do.
+            </p>
+        </section>
+
+        <section class="boutique-products-section" id="boutiqueProducts">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">THE COLLECTION</span>
+                    <h2>Explore the boutique</h2>
+                    <p>Discover your next favorite piece.</p>
+                </div>
+
+                <label class="product-sort">
+                    <span>Sort by</span>
+                    <select id="boutiqueSort">
+                        <option value="featured">Featured</option>
+                        <option value="newest">Newest</option>
+                        <option value="price-low">Price: low to high</option>
+                        <option value="price-high">Price: high to low</option>
+                        <option value="name">Name: A–Z</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="boutique-status" id="boutiqueStatus" role="status" aria-live="polite">
+                Loading boutique products...
+            </div>
+
+            <div class="shop-product-grid boutique-product-grid" id="boutiqueProductGrid"></div>
+
+            <div class="boutique-empty" id="boutiqueEmpty" hidden>
+                <i class="fa-solid fa-bag-shopping"></i>
+                <h3>No products found</h3>
+                <p>Try another search, or check back soon for new arrivals.</p>
+                <button type="button" class="button button-primary" id="clearBoutiqueSearch">
+                    View all boutique products
+                </button>
+            </div>
+        </section>
+
+        <section class="boutique-note">
+            <span class="eyebrow">THE SELFII EXPERIENCE</span>
+            <h2>Find what feels <em>like you.</em></h2>
+            <p>
+                Personal style has no single definition. Explore pieces that
+                reflect who you are and how you want to show up in the world.
+            </p>
+            <a href="shop.html" class="button button-secondary">Explore the full store</a>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <a href="../index.html" class="brand-logo">SELFII<span>.</span></a>
+            <p>Custom printing and creative design by SELFII Studio.</p>
+
+            <div class="footer-links">
+                <a href="shop.html">Shop</a>
+                <a href="boutique.html">Boutique</a>
+                <a href="account.html">My Account</a>
+                <a href="cart.html">Shopping Bag</a>
+            </div>
+
+            <p class="footer-copyright">
+                &copy; <span id="footerYear"></span> SELFII UNIVERSE. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/boutique.js"></script>
+</body>
+</html>

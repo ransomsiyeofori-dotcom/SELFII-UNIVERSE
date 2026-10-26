@@ -53,196 +53,228 @@ if (searchToggle && searchForm) {
 }
 
 
-// TEMPORARY PRODUCTS
-// These sample products are for layout testing only.
-// Real products will come from the backend later.
+// LIVE HOMEPAGE PRODUCTS
 
-const products = [
-    {
-        id: 1,
-        name: "Signature T-Shirt",
-        description: "Personalised everyday wear",
-        price: 18000,
-        category: "Clothing"
-    },
-    {
-        id: 2,
-        name: "Framed Portrait",
-        description: "A memory worth displaying",
-        price: 25000,
-        category: "Artwork"
-    },
-    {
-        id: 3,
-        name: "Custom Tote Bag",
-        description: "Your art, your everyday essential",
-        price: 12000,
-        category: "Accessories"
-    },
-    {
-        id: 4,
-        name: "Personalised Mug",
-        description: "A little something made for you",
-        price: 8500,
-        category: "Gifts"
-    }
-];
+const API_BASE = window.SELFII_API_URL ||
+    (["localhost", "127.0.0.1"].includes(window.location.hostname)
+        ? "http://localhost:5000/api"
+        : "https://selfii-universe-api.onrender.com/api");
 
-
-// FORMAT PRICES
+let products = [];
 
 function formatPrice(price) {
     return new Intl.NumberFormat("en-NG", {
         style: "currency",
         currency: "NGN",
         maximumFractionDigits: 0
-    }).format(price);
+    }).format(Number(price) || 0);
 }
-
-
-// RENDER PRODUCTS
 
 const productGrid = document.getElementById("productGrid");
 
 function renderProducts(items) {
     if (!productGrid) return;
 
-    if (items.length === 0) {
-        productGrid.innerHTML = `
-            <p class="empty-products">
-                No matching products found.
-            </p>
-        `;
+    productGrid.replaceChildren();
 
+    if (!items.length) {
+        const message = document.createElement("p");
+        message.className = "empty-products";
+        message.textContent = "Products will appear here soon.";
+        productGrid.appendChild(message);
         return;
     }
 
-    productGrid.innerHTML = items.map(product => `
-        <article class="product-card">
+    items.forEach(product => {
+        const card = document.createElement("article");
+        card.className = "product-card";
 
-            <div class="product-image">
+        const imageWrapper = document.createElement("div");
+        imageWrapper.className = "product-image";
 
-                <div class="product-placeholder">
-                    ${product.category.toUpperCase()}
-                </div>
+        const imageLink = document.createElement("a");
+        imageLink.href =
+            "pages/product.html?slug=" +
+            encodeURIComponent(product.slug || "");
 
-            </div>
+        const image = document.createElement("img");
+        image.src = product.image || product.images?.[0] || "";
+        image.alt = product.name || "SELFII UNIVERSE product";
+        image.loading = "lazy";
+        image.decoding = "async";
 
-            <div class="product-info">
+        image.addEventListener("error", () => {
+            image.removeAttribute("src");
+            imageWrapper.classList.add("image-unavailable");
+        }, { once: true });
 
-                <h3>${product.name}</h3>
+        if (!image.src || image.src === window.location.href) {
+            image.removeAttribute("src");
+            imageWrapper.classList.add("image-unavailable");
+        }
 
-                <p class="product-description">
-                    ${product.description}
-                </p>
+        imageLink.appendChild(image);
+        imageWrapper.appendChild(imageLink);
 
-                <p class="product-price">
-                    ${formatPrice(product.price)}
-                </p>
+        if (product.featured) {
+            const badge = document.createElement("span");
+            badge.className = "product-badge";
+            badge.textContent = "Featured";
+            imageWrapper.appendChild(badge);
+        }
 
-                <button
-                    class="product-add"
-                    type="button"
-                    data-product-id="${product.id}">
+        const info = document.createElement("div");
+        info.className = "product-info";
 
-                    Add to Cart
+        const title = document.createElement("h3");
+        const titleLink = document.createElement("a");
+        titleLink.href = imageLink.href;
+        titleLink.textContent = product.name;
+        title.appendChild(titleLink);
 
-                </button>
+        const description = document.createElement("p");
+        description.className = "product-description";
+        description.textContent = product.description || "";
 
-            </div>
+        const price = document.createElement("p");
+        price.className = "product-price";
+        price.textContent = formatPrice(product.price);
 
-        </article>
-    `).join("");
+        const button = document.createElement("button");
+        button.className = "product-add";
+        button.type = "button";
+        button.dataset.productId = product._id || product.id || product.slug;
+
+        const outOfStock = Number(product.stock) <= 0;
+        button.disabled = outOfStock;
+        button.textContent = outOfStock ? "Out of Stock" : "Add to Cart";
+
+        info.append(title, description, price, button);
+        card.append(imageWrapper, info);
+        productGrid.appendChild(card);
+    });
 }
 
-renderProducts(products);
+async function loadHomepageProducts() {
+    if (!productGrid) return;
 
+    productGrid.setAttribute("aria-busy", "true");
 
-// TEMPORARY SHOPPING CART
+    try {
+        let response = await fetch(
+            API_BASE + "/products?featured=true&limit=8",
+            { headers: { Accept: "application/json" } }
+        );
 
-let cart = [];
+        let data = await response.json();
 
+        if (!response.ok || data.success !== true) {
+            throw new Error(data.message || "Unable to load products.");
+        }
+
+        products = Array.isArray(data.products) ? data.products : [];
+
+        if (products.length === 0) {
+            response = await fetch(
+                API_BASE + "/products?limit=8",
+                { headers: { Accept: "application/json" } }
+            );
+
+            data = await response.json();
+
+            if (!response.ok || data.success !== true) {
+                throw new Error(data.message || "Unable to load products.");
+            }
+
+            products = Array.isArray(data.products) ? data.products : [];
+        }
+
+        renderProducts(products);
+    } catch (error) {
+        console.error("Homepage products error:", error);
+
+        const message = document.createElement("p");
+        message.className = "empty-products";
+        message.textContent =
+            "We couldn't load products right now. Please try again later.";
+
+        productGrid.replaceChildren(message);
+    } finally {
+        productGrid.removeAttribute("aria-busy");
+    }
+}
+
+loadHomepageProducts();
+
+// Use the shared shopping cart.
 function updateCartCount() {
-    const cartCount = document.getElementById("cartCount");
-
-    if (!cartCount) return;
-
-    const totalItems = cart.reduce((total, item) => {
-        return total + item.quantity;
-    }, 0);
-
-    cartCount.textContent = totalItems;
+    if (window.SelfiiCart) {
+        window.SelfiiCart.updateCartCount();
+    }
 }
-
-
-// EVENT DELEGATION FOR PRODUCT BUTTONS
 
 if (productGrid) {
     productGrid.addEventListener("click", event => {
         const button = event.target.closest(".product-add");
+        if (!button || button.disabled) return;
 
-        if (!button) return;
+        const productId = String(button.dataset.productId);
+        const product = products.find(item =>
+            String(item._id || item.id || item.slug) === productId
+        );
 
-        const productId = Number(button.dataset.productId);
-
-        const product = products.find(item => {
-            return item.id === productId;
-        });
-
-        if (!product) return;
-
-        const existingItem = cart.find(item => {
-            return item.id === productId;
-        });
-
-        if (existingItem) {
-            existingItem.quantity++;
-        } else {
-            cart.push({
-                ...product,
-                quantity: 1
-            });
+        if (!product || !window.SelfiiCart) {
+            alert("Your shopping cart could not be loaded. Please refresh the page.");
+            return;
         }
 
-        updateCartCount();
+        const added = window.SelfiiCart.addItem({
+            id: product._id || product.id || product.slug,
+            name: product.name,
+            price: product.price,
+            image: product.image || product.images?.[0] || "",
+            category: product.category,
+            description: product.description || ""
+        });
 
-        const originalText = button.textContent;
+        if (added) {
+            button.textContent = "Added to Cart ✓";
 
-        button.textContent = "Added to Cart";
+            window.setTimeout(() => {
+                if (button.isConnected && !button.disabled) {
+                    button.textContent = "Add to Cart";
+                }
+            }, 1500);
 
-        window.setTimeout(() => {
-            button.textContent = originalText;
-        }, 1000);
+            updateCartCount();
+        } else {
+            alert("Unable to add this product to your cart.");
+        }
     });
 }
 
-
-// PRODUCT SEARCH
-
-if (searchForm && searchInput) {
+// Homepage product search.
+if (searchForm && searchInput && document.getElementById("shop")) {
     searchForm.addEventListener("submit", event => {
         event.preventDefault();
 
-        const query = searchInput.value
-            .trim()
-            .toLowerCase();
+        const query = searchInput.value.trim().toLowerCase();
 
-        const filteredProducts = products.filter(product => {
-            return (
-                product.name.toLowerCase().includes(query) ||
-                product.description.toLowerCase().includes(query) ||
-                product.category.toLowerCase().includes(query)
-            );
-        });
+        const filtered = products.filter(product =>
+            [
+                product.name,
+                product.description,
+                product.category
+            ].join(" ").toLowerCase().includes(query)
+        );
 
-        renderProducts(filteredProducts);
+        renderProducts(filtered);
 
         document.getElementById("shop")?.scrollIntoView({
             behavior: "smooth"
         });
     });
 }
-
 
 // NEWSLETTER FORM DEMONSTRATION
 
