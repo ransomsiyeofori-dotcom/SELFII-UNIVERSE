@@ -423,10 +423,44 @@
                     </select>
                 </div>
 
-                <div class="form-field">
-                    <label for="productImageUrl">Product image URL *</label>
-                    <input id="productImageUrl" name="image" type="url" placeholder="https://..." required>
-                    <small>Use a secure HTTPS image URL. We'll integrate direct Cloudinary uploads next.</small>
+                <div class="form-field product-image-field">
+                    <label for="productImageFile">Product image *</label>
+
+                    <input
+                        id="productImageFile"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        hidden
+                    >
+
+                    <button
+                        class="secondary-button"
+                        id="chooseProductImageButton"
+                        type="button"
+                    >
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        Choose product image
+                    </button>
+
+                    <div id="productImagePreviewContainer" hidden>
+                        <img
+                            id="productImagePreview"
+                            alt="Product image preview"
+                            style="display:block;width:100%;max-width:240px;max-height:240px;object-fit:contain;margin-top:12px;border-radius:10px;"
+                        >
+                        <button
+                            class="secondary-button"
+                            id="removeProductImageButton"
+                            type="button"
+                            style="margin-top:8px;"
+                        >
+                            Remove image
+                        </button>
+                    </div>
+
+                    <small id="productImageUploadStatus" role="status">
+                        JPG, PNG, or WebP. Maximum file size: 5 MB.
+                    </small>
                 </div>
 
                 <div class="form-field">

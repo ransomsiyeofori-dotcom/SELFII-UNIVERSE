@@ -14,7 +14,10 @@
         products: [],
         currentSection: "overview",
         noticeTimer: null,
-        loadingProducts: false
+        loadingProducts: false,
+        selectedProductImage: null,
+        currentProductImageUrl: "",
+        productImagePreviewUrl: ""
     };
 
     const elements = {
@@ -28,6 +31,12 @@
         productForm: $("#productForm"),
         productFormError: $("#productFormError"),
         saveProductButton: $("#saveProductButton"),
+        productImageFile: $("#productImageFile"),
+        chooseProductImageButton: $("#chooseProductImageButton"),
+        removeProductImageButton: $("#removeProductImageButton"),
+        productImagePreview: $("#productImagePreview"),
+        productImagePreviewContainer: $("#productImagePreviewContainer"),
+        productImageUploadStatus: $("#productImageUploadStatus"),
         productGrid: $("#productsTable"),
         recentOrders: $("#recentOrders")
     };
@@ -37,7 +46,7 @@
             ...options,
             credentials: "include",
             headers: {
-                ...(options.body ? { "Content-Type": "application/json" } : {}),
+                ...(options.body && !(options.body instanceof FormData) ? { "Content-Type": "application/json" } : {}),
                 ...options.headers
             }
         };
@@ -235,6 +244,16 @@
         $("#closeProductModal").addEventListener("click", closeProductModal);
         $("#cancelProductForm").addEventListener("click", closeProductModal);
         elements.productForm.addEventListener("submit", saveProduct);
+
+        elements.chooseProductImageButton.addEventListener("click", () => {
+            elements.productImageFile.click();
+        });
+
+        elements.productImageFile.addEventListener("change", handleProductImageSelection);
+
+        elements.removeProductImageButton.addEventListener("click", () => {
+            clearSelectedProductImage(true);
+        });
 
         elements.productModal.addEventListener("click", (event) => {
             if (event.target === elements.productModal) {
@@ -601,10 +620,102 @@
         elements.recentOrders.append(message);
     }
 
+
+    function clearSelectedProductImage(clearExisting = false) {
+        if (state.productImagePreviewUrl) {
+            URL.revokeObjectURL(state.productImagePreviewUrl);
+            state.productImagePreviewUrl = "";
+        }
+
+        state.selectedProductImage = null;
+        elements.productImageFile.value = "";
+
+        if (clearExisting) {
+            state.currentProductImageUrl = "";
+        }
+
+        const previewUrl = state.selectedProductImage
+            ? state.productImagePreviewUrl
+            : state.currentProductImageUrl;
+
+        if (previewUrl) {
+            elements.productImagePreview.src = previewUrl;
+            elements.productImagePreviewContainer.hidden = false;
+        } else {
+            elements.productImagePreview.removeAttribute("src");
+            elements.productImagePreviewContainer.hidden = true;
+        }
+
+        elements.productImageUploadStatus.textContent = previewUrl
+            ? "Image ready. Choose another image to replace it."
+            : "JPG, PNG, or WebP. Maximum file size: 5 MB.";
+    }
+
+    function handleProductImageSelection(event) {
+        const input = event.currentTarget;
+        const selectedFile = input.files && input.files[0];
+
+        if (!selectedFile) return;
+
+        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+        if (!allowedTypes.includes(selectedFile.type)) {
+            input.value = "";
+            showFormError("Choose a JPG, PNG, or WebP image.");
+            return;
+        }
+
+        if (selectedFile.size > 5 * 1024 * 1024) {
+            input.value = "";
+            showFormError("The image must not exceed 5 MB.");
+            return;
+        }
+
+        if (state.productImagePreviewUrl) {
+            URL.revokeObjectURL(state.productImagePreviewUrl);
+        }
+
+        state.selectedProductImage = selectedFile;
+        state.productImagePreviewUrl = URL.createObjectURL(selectedFile);
+
+        elements.productImagePreview.src = state.productImagePreviewUrl;
+        elements.productImagePreviewContainer.hidden = false;
+        elements.productImageUploadStatus.textContent =
+            selectedFile.name + " selected. It will upload when you save the product.";
+
+        elements.productFormError.hidden = true;
+    }
+
+    async function uploadProductImage(file) {
+        const formData = new FormData();
+        formData.append("image", file);
+
+        const data = await api("/products/upload-image", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!data.image || !/^https:\/\//i.test(data.image)) {
+            throw new Error("The server did not return a valid secure image URL.");
+        }
+
+        return data.image;
+    }
+
     function openProductModal(product = null) {
         elements.productForm.reset();
         elements.productFormError.hidden = true;
         $("#productId").value = "";
+
+        clearSelectedProductImage(true);
+        state.currentProductImageUrl = product ? (product.image || "") : "";
+
+        if (state.currentProductImageUrl) {
+            elements.productImagePreview.src = state.currentProductImageUrl;
+            elements.productImagePreviewContainer.hidden = false;
+            elements.productImageUploadStatus.textContent =
+                "Current image. Choose another image if you want to replace it.";
+        }
 
         $("#productModalTitle").textContent = product
             ? "Edit product"
@@ -620,7 +731,7 @@
             $("#productPrice").value = product.price ?? "";
             $("#productStock").value = product.stock ?? 0;
             $("#productCategory").value = product.category || "boutique";
-            $("#productImageUrl").value = product.image || "";
+
             $("#productFeatured").checked = Boolean(product.featured);
         }
 
@@ -636,12 +747,18 @@
         elements.productModal.hidden = true;
         document.body.classList.remove("modal-open");
         elements.productFormError.hidden = true;
+
+        if (state.productImagePreviewUrl) {
+            URL.revokeObjectURL(state.productImagePreviewUrl);
+            state.productImagePreviewUrl = "";
+        }
     }
 
     function showFormError(message) {
         elements.productFormError.textContent = message;
         elements.productFormError.hidden = false;
     }
+
 
     async function saveProduct(event) {
         event.preventDefault();
@@ -653,11 +770,10 @@
         const price = Number($("#productPrice").value);
         const stock = Number($("#productStock").value);
         const category = $("#productCategory").value;
-        const image = $("#productImageUrl").value.trim();
         const featured = $("#productFeatured").checked;
         const id = $("#productId").value;
 
-        if (!name || !description || !image) {
+        if (!name || !description) {
             showFormError("Complete all required fields.");
             return;
         }
@@ -672,37 +788,52 @@
             return;
         }
 
-        let imageUrl;
-
-        try {
-            imageUrl = new URL(image);
-
-            if (imageUrl.protocol !== "https:") {
-                showFormError("The product image must use HTTPS.");
-                return;
-            }
-        } catch {
-            showFormError("Enter a valid HTTPS image URL.");
+        if (!id && !state.selectedProductImage) {
+            showFormError("Please choose a product image.");
             return;
         }
-
-        const payload = {
-            name,
-            description,
-            price,
-            stock,
-            category,
-            image: imageUrl.href,
-            featured
-        };
 
         const button = elements.saveProductButton;
         const originalText = button.querySelector("span").textContent;
 
         button.disabled = true;
-        button.querySelector("span").textContent = "Saving...";
+        elements.chooseProductImageButton.disabled = true;
+        elements.removeProductImageButton.disabled = true;
 
         try {
+            let image = state.currentProductImageUrl;
+
+            if (state.selectedProductImage) {
+                button.querySelector("span").textContent = "Uploading image...";
+                elements.productImageUploadStatus.textContent =
+                    "Uploading image securely to Cloudinary...";
+
+                image = await uploadProductImage(state.selectedProductImage);
+                state.currentProductImageUrl = image;
+
+                elements.productImagePreview.src = image;
+                elements.productImagePreviewContainer.hidden = false;
+                elements.productImageUploadStatus.textContent =
+                    "Image uploaded. Saving product...";
+            }
+
+            if (!image) {
+                showFormError("Please choose a product image.");
+                return;
+            }
+
+            const payload = {
+                name,
+                description,
+                price,
+                stock,
+                category,
+                image,
+                featured
+            };
+
+            button.querySelector("span").textContent = "Saving product...";
+
             if (id) {
                 await api(`/products/${encodeURIComponent(id)}`, {
                     method: "PATCH",
@@ -727,6 +858,8 @@
 
         } finally {
             button.disabled = false;
+            elements.chooseProductImageButton.disabled = false;
+            elements.removeProductImageButton.disabled = false;
             button.querySelector("span").textContent = originalText;
         }
     }
