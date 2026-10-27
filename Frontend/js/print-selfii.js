@@ -1,308 +1,413 @@
-"use strict";
+/* =========================================
+   PRINT SELFII — SERVICE REQUEST INTERACTIONS
+   ========================================= */
 
 (() => {
-    const API_BASE = window.SELFII_API_URL ||
-        (["localhost", "127.0.0.1"].includes(window.location.hostname)
-            ? "http://localhost:5000/api"
-            : "https://selfii-universe-api.onrender.com/api");
+    "use strict";
 
-    const grid = document.getElementById("printSelfiiProductGrid");
-    const status = document.getElementById("printSelfiiStatus");
-    const emptyState = document.getElementById("printSelfiiEmpty");
-    const sortSelect = document.getElementById("printSelfiiSort");
-    const clearSearchButton = document.getElementById("clearPrintSelfiiSearch");
-    const searchForm = document.getElementById("searchForm");
-    const searchInput = document.getElementById("searchInput");
-    const footerYear = document.getElementById("footerYear");
+    const API_BASE_URL = (
+        window.SELFII_API_URL ||
+        "https://selfii-universe-api.onrender.com/api"
+    ).replace(/\/+$/, "");
 
-    if (!grid || !status || !emptyState) return;
+    const prices = {
+        "T-shirt": { "customer-item": 3000, "selfii-item": 6000 },
+        "Hoodie": { "customer-item": 5000, "selfii-item": 12000 },
+        "Polo shirt": { "customer-item": 3500, "selfii-item": 7000 },
+        "Mug": { "customer-item": 2500, "selfii-item": 4500 },
+        "Tote bag": { "customer-item": 2000, "selfii-item": 4000 },
+        "Cap": { "customer-item": 2000, "selfii-item": 4000 },
+        "Jersey": { "customer-item": 3500, "selfii-item": 7500 },
+        "Other item": { "customer-item": null, "selfii-item": null }
+    };
 
-    let products = [];
-    let searchTerm = "";
-    let requestNumber = 0;
+    const form = document.getElementById("printRequestForm");
+    if (!form) return;
 
-    if (footerYear) {
-        footerYear.textContent = String(new Date().getFullYear());
-    }
+    const serviceGrid = document.getElementById("printServiceGrid");
+    const itemSelect = document.getElementById("printItem");
+    const supplySelect = document.getElementById("printSupplyOption");
+    const quantityInput = document.getElementById("printQuantity");
+    const artworkInput = document.getElementById("printArtwork");
+    const designInput = document.getElementById("printDesign");
+    const onlyPrice = document.getElementById("printingOnlyPrice");
+    const suppliedPrice = document.getElementById("itemAndPrintingPrice");
+    const feedback = document.getElementById("printFormFeedback");
+    const submitButton = document.getElementById("printSubmitButton");
+    const optionButtons = document.querySelectorAll("[data-print-option]");
+    const priceCards = document.querySelectorAll(".print-price-card");
 
-    function formatPrice(value) {
-        return new Intl.NumberFormat("en-NG", {
+    let isSubmitting = false;
+
+    const formatNaira = (amount) =>
+        new Intl.NumberFormat("en-NG", {
             style: "currency",
             currency: "NGN",
             maximumFractionDigits: 0
-        }).format(Number(value) || 0);
+        }).format(amount);
+
+    function showFeedback(message, type = "error") {
+        if (!feedback) return;
+
+        feedback.textContent = message;
+        feedback.hidden = false;
+        feedback.classList.add("is-visible");
+        feedback.classList.toggle("is-error", type === "error");
+        feedback.classList.toggle("is-success", type === "success");
+
+        feedback.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+        });
     }
 
-    function createElement(tag, className, text) {
-        const element = document.createElement(tag);
+    function clearFeedback() {
+        if (!feedback) return;
 
-        if (className) element.className = className;
-        if (text !== undefined) element.textContent = text;
-
-        return element;
+        feedback.textContent = "";
+        feedback.hidden = true;
+        feedback.classList.remove(
+            "is-visible",
+            "is-error",
+            "is-success"
+        );
     }
 
-    function getProductId(product) {
-        return product._id || product.id || product.slug;
+    function getPrice(item, option) {
+        return prices[item]?.[option] ?? null;
     }
 
-    function getFilteredProducts() {
-        const query = searchTerm.trim().toLowerCase();
+    function updateServiceCards() {
+        if (!serviceGrid) return;
 
-        const result = products.filter(product => {
-            const searchableText = [
-                product.name,
-                product.description,
-                product.category
-            ].join(" ").toLowerCase();
+        serviceGrid.querySelectorAll("[data-item]").forEach((card) => {
+            const selected = card.dataset.item === itemSelect.value;
 
-            return searchableText.includes(query);
+            card.classList.toggle("is-selected", selected);
+            card.setAttribute("aria-pressed", String(selected));
+        });
+    }
+
+    function updatePricing() {
+        const item = itemSelect.value;
+        const option = supplySelect.value;
+        const quantity = Math.max(1, Number(quantityInput.value) || 1);
+
+        const printingOnly = getPrice(item, "customer-item");
+        const itemAndPrinting = getPrice(item, "selfii-item");
+
+        if (onlyPrice) {
+            onlyPrice.textContent = printingOnly === null
+                ? "Request a quote"
+                : `${formatNaira(printingOnly)} starting from`;
+        }
+
+        if (suppliedPrice) {
+            suppliedPrice.textContent = itemAndPrinting === null
+                ? "Request a quote"
+                : `${formatNaira(itemAndPrinting)} starting from`;
+        }
+
+        optionButtons.forEach((button) => {
+            const selected = button.dataset.printOption === option;
+
+            button.setAttribute("aria-pressed", String(selected));
+
+            const card = button.closest(".print-price-card");
+            if (card) card.classList.toggle("is-selected", selected);
         });
 
-        switch (sortSelect?.value) {
-            case "newest":
-                result.sort((a, b) =>
-                    new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
-                );
-                break;
+        priceCards.forEach((card) => {
+            const button = card.querySelector("[data-print-option]");
+            if (!button) return;
 
-            case "price-low":
-                result.sort((a, b) => Number(a.price) - Number(b.price));
-                break;
+            card.classList.toggle(
+                "is-selected",
+                button.dataset.printOption === option
+            );
+        });
 
-            case "price-high":
-                result.sort((a, b) => Number(b.price) - Number(a.price));
-                break;
+        updateServiceCards();
 
-            case "name":
-                result.sort((a, b) =>
-                    String(a.name).localeCompare(String(b.name))
-                );
-                break;
+        const estimate = getPrice(item, option);
+        const total = document.getElementById("printEstimatedTotal");
+        const estimateNote = document.getElementById("printEstimateNote");
 
-            default:
-                result.sort((a, b) =>
-                    Number(Boolean(b.featured)) - Number(Boolean(a.featured))
-                );
+        if (total) {
+            total.textContent = estimate === null
+                ? "Quote required"
+                : formatNaira(estimate * quantity);
         }
 
-        return result;
+        if (estimateNote) {
+            estimateNote.textContent = estimate === null
+                ? "SELFII will review this item and provide a quote."
+                : "Provisional estimate only; final pricing will be confirmed.";
+        }
     }
 
-    function renderProduct(product) {
-        const card = createElement("article", "boutique-product-card");
-        const imageWrapper = createElement("div", "boutique-product-image");
-        const imageLink = createElement("a");
-        const image = createElement("img");
+    function selectItem(item) {
+        if (!prices[item]) return;
 
-        image.src = product.image;
-        image.alt = product.name || "SELFII Boutique product";
-        image.loading = "lazy";
-        image.decoding = "async";
+        itemSelect.value = item;
+        clearFeedback();
+        updatePricing();
+    }
 
-        image.addEventListener("error", () => {
-            imageWrapper.replaceChildren(
-                createElement("div", "boutique-image-fallback", "SELFII UNIVERSE")
-            );
-        }, { once: true });
+    if (serviceGrid) {
+        serviceGrid.addEventListener("click", (event) => {
+            const card = event.target.closest("[data-item]");
 
-        imageLink.href = `product.html?slug=${encodeURIComponent(product.slug || "")}`;
-        imageLink.setAttribute("aria-label", `View ${product.name}`);
-        imageLink.appendChild(image);
-        imageWrapper.appendChild(imageLink);
+            if (!card || !serviceGrid.contains(card)) return;
 
-        if (product.featured) {
-            imageWrapper.appendChild(
-                createElement("span", "boutique-product-badge", "Featured")
-            );
-        }
+            selectItem(card.dataset.item);
+        });
+    }
 
-        const info = createElement("div", "boutique-product-info");
-        const category = createElement(
-            "p",
-            "boutique-product-category",
-            product.category || "Boutique"
-        );
-        const name = createElement("h3", "boutique-product-name");
-        const nameLink = createElement("a", "", product.name);
+    itemSelect.addEventListener("change", () => {
+        clearFeedback();
+        updatePricing();
+    });
 
-        nameLink.href = imageLink.href;
-        name.appendChild(nameLink);
+    supplySelect.addEventListener("change", () => {
+        clearFeedback();
+        updatePricing();
+    });
 
-        info.append(category, name);
+    quantityInput.addEventListener("input", () => {
+        clearFeedback();
+        updatePricing();
+    });
 
-        if (product.description) {
-            info.appendChild(
-                createElement(
-                    "p",
-                    "boutique-product-description",
-                    product.description
-                )
-            );
-        }
+    optionButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            supplySelect.value = button.dataset.printOption;
+            clearFeedback();
+            updatePricing();
 
-        const bottom = createElement("div", "boutique-product-bottom");
-        const price = createElement(
-            "span",
-            "boutique-product-price",
-            formatPrice(product.price)
-        );
+            const requestSection = document.getElementById("print-request");
 
-        const addButton = createElement(
-            "button",
-            "boutique-add-button",
-            "Add to bag"
-        );
+            if (requestSection) {
+                requestSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            }
+        });
+    });
 
-        addButton.type = "button";
+    if (artworkInput) {
+        artworkInput.addEventListener("change", () => {
+            clearFeedback();
 
-        const stock = Number(product.stock);
-        const outOfStock = !Number.isFinite(stock) || stock <= 0;
+            const file = artworkInput.files?.[0];
+            if (!file) return;
 
-        if (outOfStock) {
-            addButton.disabled = true;
-            addButton.textContent = "Out of stock";
-        }
+            const allowedExtensions = /\.(png|jpe?g|webp|pdf)$/i;
+            const maxBytes = 5 * 1024 * 1024;
 
-        addButton.addEventListener("click", () => {
-            const cart = window.SelfiiCart;
-
-            if (!cart || typeof cart.addItem !== "function") {
-                status.textContent =
-                    "The shopping cart could not be loaded. Please refresh the page.";
+            if (!allowedExtensions.test(file.name)) {
+                artworkInput.value = "";
+                showFeedback(
+                    "Please select a PNG, JPG, WEBP, or PDF artwork file."
+                );
                 return;
             }
 
-            const added = cart.addItem({
-                id: getProductId(product),
-                name: product.name,
-                price: product.price,
-                image: product.image,
-                category: product.category,
-                description: product.description
-            });
-
-            if (added) {
-                addButton.textContent = "Added to bag ✓";
-                status.textContent = `${product.name} added to your bag.`;
-
-                window.setTimeout(() => {
-                    if (addButton.isConnected && !addButton.disabled) {
-                        addButton.textContent = "Add to bag";
-                    }
-                }, 1600);
-            } else {
-                status.textContent =
-                    "We couldn't add this product to your bag. Please try again.";
+            if (file.size > maxBytes) {
+                artworkInput.value = "";
+                showFeedback(
+                    "Your artwork is larger than 5 MB. Please choose a smaller file."
+                );
+                return;
             }
+
+            if (file.size === 0) {
+                artworkInput.value = "";
+                showFeedback(
+                    "The selected file is empty. Please choose another file."
+                );
+                return;
+            }
+
+            showFeedback(
+                `Artwork selected: ${file.name}. It will be uploaded when you submit the request.`,
+                "success"
+            );
         });
-
-        bottom.append(price, addButton);
-        info.appendChild(bottom);
-        card.append(imageWrapper, info);
-
-        return card;
     }
 
-    function renderProducts() {
-        const filtered = getFilteredProducts();
-        grid.replaceChildren();
+    form.addEventListener("input", clearFeedback);
+    form.addEventListener("change", clearFeedback);
 
-        for (const product of filtered) {
-            grid.appendChild(renderProduct(product));
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (isSubmitting) return;
+
+        clearFeedback();
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            showFeedback("Please complete all required fields before continuing.");
+            return;
         }
 
-        emptyState.hidden = filtered.length > 0;
+        const quantity = Number(quantityInput.value);
 
-        if (products.length === 0) {
-            status.textContent = "No printing products are available yet.";
-        } else if (filtered.length === 0) {
-            status.textContent = "No products match your search.";
-        } else {
-            status.textContent =
-                `${filtered.length} ${filtered.length === 1 ? "product" : "products"} available`;
+        if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10000) {
+            showFeedback(
+                "Please enter a whole-number quantity between 1 and 10,000."
+            );
+            quantityInput.focus();
+            return;
         }
-    }
 
-    async function loadProducts() {
-        const currentRequest = ++requestNumber;
+        const designDescription = designInput.value.trim();
 
-        status.textContent = "Loading printing products...";
-        emptyState.hidden = true;
-        grid.replaceChildren();
+        if (designDescription.length < 10) {
+            showFeedback("Please describe your design in at least 10 characters.");
+            designInput.focus();
+            return;
+        }
+
+        const preferredDate =
+            document.getElementById("printDeadline")?.value || "";
+
+        if (preferredDate) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const chosenDate = new Date(`${preferredDate}T00:00:00`);
+
+            if (Number.isNaN(chosenDate.getTime()) || chosenDate < today) {
+                showFeedback("Please choose today or a future preferred date.");
+                return;
+            }
+        }
+
+        const artwork = artworkInput?.files?.[0];
+
+        if (artwork && artwork.size > 5 * 1024 * 1024) {
+            showFeedback("Your artwork must not exceed 5 MB.");
+            return;
+        }
+
+        /*
+         * Map the HTML field names to the backend's expected field names.
+         * The file must be appended as "artwork" for the Multer route.
+         */
+        const payload = new FormData();
+
+        payload.append(
+            "customerName",
+            document.getElementById("printName").value.trim()
+        );
+        payload.append(
+            "customerEmail",
+            document.getElementById("printEmail").value.trim()
+        );
+        payload.append(
+            "customerPhone",
+            document.getElementById("printPhone").value.trim()
+        );
+        payload.append("item", itemSelect.value);
+        payload.append("supplyOption", supplySelect.value);
+        payload.append("quantity", String(quantity));
+        payload.append(
+            "placement",
+            document.getElementById("printPlacement").value
+        );
+        payload.append(
+            "purpose",
+            document.getElementById("printPurpose").value
+        );
+        payload.append("designDetails", designDescription);
+        payload.append("preferredDate", preferredDate);
+
+        if (artwork) {
+            payload.append("artwork", artwork, artwork.name);
+        }
+
+        isSubmitting = true;
+
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.setAttribute("aria-busy", "true");
+            submitButton.dataset.originalText =
+                submitButton.textContent.trim();
+            submitButton.textContent = "Submitting request...";
+        }
 
         try {
-            const response = await fetch(
-                `${API_BASE}/products?category=printing&limit=50`,
-                {
-                    method: "GET",
-                    headers: { Accept: "application/json" }
-                }
-            );
-
-            const data = await response.json().catch(() => ({}));
-
-            if (!response.ok || data.success !== true) {
-                throw new Error(data.message || "Unable to load printing products.");
-            }
-
-            if (currentRequest !== requestNumber) return;
-
-            products = Array.isArray(data.products) ? data.products : [];
-            renderProducts();
-        } catch (error) {
-            if (currentRequest !== requestNumber) return;
-
-            console.error("Boutique products error:", error);
-            products = [];
-            grid.replaceChildren();
-            emptyState.hidden = false;
-            status.textContent =
-                "We couldn't load the boutique right now. Please try again.";
-
-            const message = emptyState.querySelector("p");
-            if (message) {
-                message.textContent =
-                    "Check your connection and try again in a moment.";
-            }
-
-            const heading = emptyState.querySelector("h3");
-            if (heading) heading.textContent = "Unable to load products";
-
-            const button = emptyState.querySelector("button");
-            if (button) button.textContent = "Try again";
-        }
-    }
-
-    if (sortSelect) {
-        sortSelect.addEventListener("change", renderProducts);
-    }
-
-    if (searchForm && searchInput) {
-        searchForm.addEventListener("submit", event => {
-            event.preventDefault();
-            searchTerm = searchInput.value.trim();
-            renderProducts();
-
-            document.getElementById("printSelfiiProducts")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
+            const response = await fetch(`${API_BASE_URL}/print-requests`, {
+                method: "POST",
+                body: payload,
+                credentials: "include"
             });
-        });
-    }
 
-    if (clearSearchButton) {
-        clearSearchButton.addEventListener("click", () => {
-            if (searchInput) searchInput.value = "";
-            searchTerm = "";
+            let result;
 
-            if (products.length === 0) {
-                loadProducts();
-            } else {
-                renderProducts();
+            try {
+                result = await response.json();
+            } catch {
+                result = {};
             }
-        });
-    }
 
-    loadProducts();
+            if (!response.ok || result.success !== true) {
+                throw new Error(
+                    result.message ||
+                    "We couldn't submit your request. Please try again."
+                );
+            }
+
+            form.reset();
+            clearFeedback();
+            updatePricing();
+
+            const requestReference =
+                result.request?.reference ||
+                result.request?.id ||
+                result.requestId ||
+                result.id;
+
+            const referenceMessage = requestReference
+                ? ` Your reference is ${requestReference}.`
+                : "";
+
+            showFeedback(
+                `Your printing request has been submitted successfully.${referenceMessage} SELFII will review your details and contact you about the final quote. This is a request, not a confirmed order.`,
+                "success"
+            );
+        } catch (error) {
+            console.error("PRINT SELFII submission error:", error);
+
+            showFeedback(
+                error.message ||
+                "We couldn't submit your request. Please try again, or email selfiitees@gmail.com if the problem continues."
+            );
+        } finally {
+            isSubmitting = false;
+
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.removeAttribute("aria-busy");
+
+                const originalText = submitButton.dataset.originalText;
+
+                if (originalText) {
+                    submitButton.innerHTML = "";
+                    submitButton.append(
+                        document.createTextNode("Send printing request")
+                    );
+
+                    const icon = document.createElement("i");
+                    icon.className = "fa-solid fa-arrow-right";
+                    submitButton.append(" ", icon);
+                }
+            }
+        }
+    });
+
+    updatePricing();
 })();

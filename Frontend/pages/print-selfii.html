@@ -1,11 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#F7F4EC">
-    <meta name="description" content="Discover Print SELFII — custom T-shirt printing, personalised gifts, and creative printing services.">
-    <title>Print SELFII | SELFII UNIVERSE</title>
+    <meta name="description" content="Custom printing on clothing, mugs, tote bags, caps and more. Bring your own items or let SELFII supply them.">
+    <title>Custom Printing Services | PRINT SELFII</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,14 +14,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/shop.css">
-    <link rel="stylesheet" href="../css/boutique.css">
+    <link rel="stylesheet" href="../css/print-selfii.css">
 </head>
 
-<body class="boutique-page print-selfii-page">
+<body class="print-selfii-page">
 
     <div class="announcement-bar">
-        <p>Wear your story. Express your universe.</p>
+        <p>Your ideas. Your items. Our print.</p>
     </div>
 
     <header class="site-header">
@@ -38,17 +38,12 @@
             </nav>
 
             <div class="header-actions">
-                <button type="button" class="icon-button" id="searchToggle" aria-label="Open search">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
+                <a href="contact.html" class="icon-button" aria-label="Contact SELFII">
+                    <i class="fa-regular fa-envelope"></i>
+                </a>
 
                 <a href="account.html" class="icon-button" aria-label="My account">
                     <i class="fa-regular fa-user"></i>
-                </a>
-
-                <a href="cart.html" class="icon-button cart-link" aria-label="Shopping cart">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <span id="cartCount">0</span>
                 </a>
 
                 <button type="button" class="icon-button menu-toggle" id="menuToggle"
@@ -58,106 +53,355 @@
             </div>
         </div>
 
-        <div class="mobile-nav" id="mobileNav">
+        <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
             <a href="../index.html">Home</a>
             <a href="shop.html">Shop All</a>
             <a href="boutique.html">Boutique</a>
             <a href="selfiitees.html">SELFII Tees</a>
             <a href="print-selfii.html" class="active" aria-current="page">Custom Printing</a>
+            <a href="contact.html">Contact Us</a>
             <a href="account.html">My Account</a>
-        </div>
-
-        <form class="header-search" id="searchForm" role="search">
-            <label for="searchInput">Search printing products</label>
-            <div class="search-input-wrap">
-                <input type="search" id="searchInput" name="search"
-                    placeholder="Search custom prints and gifts..." autocomplete="off">
-                <button type="submit" aria-label="Search products">
-                    <i class="fa-solid fa-arrow-right"></i>
-                </button>
-            </div>
-        </form>
+        </nav>
     </header>
 
     <main>
-        <section class="boutique-hero">
-            <div class="boutique-hero-content">
-                <span class="eyebrow">PRINT SELFII</span>
-                <h1>Your ideas. <em>Beautifully printed.</em></h1>
+        <section class="print-hero">
+            <div class="print-hero-copy">
+                <span class="eyebrow">PRINT SELFII · CUSTOM PRINTING</span>
+                <h1>Your items.<br><em>Your design.</em><br>Our print.</h1>
                 <p>
-                    Turn your ideas into custom prints, personalised gifts, and creative products that celebrate
-                    your personality, brand, and special moments.
+                    Put your ideas on the things you wear, carry, gift and use.
+                    Bring your own items for printing or let us supply them for you.
                 </p>
-                <a href="#boutiqueProducts" class="button button-primary">
-                    Explore printing services
-                    <i class="fa-solid fa-arrow-down"></i>
-                </a>
+
+                <div class="print-hero-actions">
+                    <a class="button button-primary" href="#print-request">
+                        Request a print
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                    <a class="button button-secondary" href="#print-pricing">View starting prices</a>
+                </div>
+
+                <div class="print-hero-note">
+                    <i class="fa-solid fa-check"></i>
+                    <span>Personal orders, gifts, events and business branding</span>
+                </div>
             </div>
 
-            <div class="boutique-hero-image">
+            <div class="print-hero-visual">
                 <img src="../assets/images/studio.jpeg"
-                    alt="Custom printing and creative design by SELFII Studio"
+                    alt="Creative printing and personalised products by SELFII Studio"
                     fetchpriority="high">
-                <div class="hero-image-caption">
-                    <span>SELFII UNIVERSE</span>
-                    <span>Wear your story.</span>
+                <div class="print-hero-label">
+                    <span>MADE PERSONAL</span>
+                    <strong>Bring your idea to life.</strong>
                 </div>
             </div>
         </section>
 
-        <section class="boutique-intro">
+        <section class="print-intro section-shell">
             <span class="eyebrow">MADE FOR YOUR IDEAS</span>
-            <h2>More than printing.<br><em>Make it personal.</em></h2>
+            <h2>From everyday essentials<br>to <em>something unforgettable.</em></h2>
             <p>
-                Bring your designs, business identity, and gift ideas to life with
-                creative printing tailored to your needs.
+                Choose what you want printed, tell us about your design, and select
+                whether you'll supply the item or want SELFII to supply it.
             </p>
         </section>
 
-        <section class="boutique-products-section" id="printSelfiiProducts">
+        <section class="print-services section-shell" id="print-services">
             <div class="section-heading">
                 <div>
-                    <span class="eyebrow">THE COLLECTION</span>
-                    <h2>Explore Print SELFII</h2>
-                    <p>Discover your next favorite piece.</p>
+                    <span class="eyebrow">CHOOSE YOUR ITEM</span>
+                    <h2>What would you like us to print on?</h2>
+                    <p>Select an item to see its provisional starting prices.</p>
                 </div>
-
-                <label class="product-sort">
-                    <span>Sort by</span>
-                    <select id="printSelfiiSort">
-                        <option value="featured">Featured</option>
-                        <option value="newest">Newest</option>
-                        <option value="price-low">Price: low to high</option>
-                        <option value="price-high">Price: high to low</option>
-                        <option value="name">Name: A–Z</option>
-                    </select>
-                </label>
             </div>
 
-            <div class="boutique-status" id="printSelfiiStatus" role="status" aria-live="polite">
-                Loading boutique products...
-            </div>
+            <div class="print-service-grid" id="printServiceGrid">
+                <button type="button" class="print-service-card is-selected"
+                    data-item="T-shirt" aria-pressed="true">
+                    <span class="print-service-icon"><i class="fa-solid fa-shirt"></i></span>
+                    <span class="print-service-name">T-shirts</span>
+                    <span class="print-service-price">From ₦3,000</span>
+                    <span class="print-service-hint">Everyday wear and event tees</span>
+                </button>
 
-            <div class="shop-product-grid boutique-product-grid" id="printSelfiiProductGrid"></div>
+                <button type="button" class="print-service-card"
+                    data-item="Hoodie" aria-pressed="false">
+                    <span class="print-service-icon"><i class="fa-solid fa-user"></i></span>
+                    <span class="print-service-name">Hoodies</span>
+                    <span class="print-service-price">From ₦5,000</span>
+                    <span class="print-service-hint">Personal or team designs</span>
+                </button>
 
-            <div class="boutique-empty" id="printSelfiiEmpty" hidden>
-                <i class="fa-solid fa-bag-shopping"></i>
-                <h3>No products found</h3>
-                <p>Try another search, or check back soon for new arrivals.</p>
-                <button type="button" class="button button-primary" id="clearPrintSelfiiSearch">
-                    View all printing products
+                <button type="button" class="print-service-card"
+                    data-item="Polo shirt" aria-pressed="false">
+                    <span class="print-service-icon"><i class="fa-solid fa-shirt"></i></span>
+                    <span class="print-service-name">Polo shirts</span>
+                    <span class="print-service-price">From ₦3,500</span>
+                    <span class="print-service-hint">Uniforms and brand identity</span>
+                </button>
+
+                <button type="button" class="print-service-card"
+                    data-item="Mug" aria-pressed="false">
+                    <span class="print-service-icon"><i class="fa-solid fa-mug-hot"></i></span>
+                    <span class="print-service-name">Mugs</span>
+                    <span class="print-service-price">From ₦2,500</span>
+                    <span class="print-service-hint">Personalised gifts and keepsakes</span>
+                </button>
+
+                <button type="button" class="print-service-card"
+                    data-item="Tote bag" aria-pressed="false">
+                    <span class="print-service-icon"><i class="fa-solid fa-bag-shopping"></i></span>
+                    <span class="print-service-name">Tote bags</span>
+                    <span class="print-service-price">From ₦2,000</span>
+                    <span class="print-service-hint">Reusable bags and promotions</span>
+                </button>
+
+                <button type="button" class="print-service-card"
+                    data-item="Cap" aria-pressed="false">
+                    <span class="print-service-icon"><i class="fa-solid fa-hat-cowboy"></i></span>
+                    <span class="print-service-name">Caps</span>
+                    <span class="print-service-price">From ₦2,000</span>
+                    <span class="print-service-hint">Personal style and team wear</span>
+                </button>
+
+                <button type="button" class="print-service-card"
+                    data-item="Jersey" aria-pressed="false">
+                    <span class="print-service-icon"><i class="fa-solid fa-shirt"></i></span>
+                    <span class="print-service-name">Jerseys</span>
+                    <span class="print-service-price">From ₦3,500</span>
+                    <span class="print-service-hint">Names, numbers and team designs</span>
+                </button>
+
+                <button type="button" class="print-service-card"
+                    data-item="Other item" aria-pressed="false">
+                    <span class="print-service-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+                    <span class="print-service-name">Other items</span>
+                    <span class="print-service-price">Request a quote</span>
+                    <span class="print-service-hint">Tell us what you have in mind</span>
                 </button>
             </div>
         </section>
 
-        <section class="boutique-note">
-            <span class="eyebrow">CREATED BY SELFII STUDIO</span>
-            <h2>Bring your next idea <em>to life.</em></h2>
-            <p>
-                Personal style has no single definition. Explore pieces that
-                from personalised gifts to custom apparel, let us help make your ideas real.
-            </p>
-            <a href="shop.html" class="button button-secondary">Explore the full store</a>
+        <section class="print-pricing-section" id="print-pricing">
+            <div class="section-shell">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">STRAIGHTFORWARD STARTING PRICES</span>
+                        <h2>Choose how you want to print.</h2>
+                        <p>Prices below are provisional estimates and will be confirmed before production.</p>
+                    </div>
+                </div>
+
+                <div class="print-pricing-grid">
+                    <article class="print-price-card">
+                        <span class="print-price-icon"><i class="fa-solid fa-hand-holding"></i></span>
+                        <p class="print-price-kicker">OPTION 01</p>
+                        <h3>Printing only</h3>
+                        <p>Bring your own suitable item and we'll discuss printing your design on it.</p>
+                        <div class="print-price-value" id="printingOnlyPrice">₦3,000 <small>starting from</small></div>
+                        <button type="button" class="button button-secondary" data-print-option="customer-item">
+                            Choose printing only
+                        </button>
+                    </article>
+
+                    <article class="print-price-card print-price-card-featured">
+                        <span class="print-price-badge">CONVENIENT OPTION</span>
+                        <span class="print-price-icon"><i class="fa-solid fa-box-open"></i></span>
+                        <p class="print-price-kicker">OPTION 02</p>
+                        <h3>Item + printing</h3>
+                        <p>We'll discuss supplying the blank item and printing your design on it.</p>
+                        <div class="print-price-value" id="itemAndPrintingPrice">₦6,000 <small>starting from</small></div>
+                        <button type="button" class="button button-primary" data-print-option="selfii-item">
+                            Choose item + printing
+                        </button>
+                    </article>
+                </div>
+
+                <p class="print-price-disclaimer">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Final quotes can vary by item material, print size, placement, artwork, quantity and production method.
+                    We will confirm availability and the final price with you before proceeding.
+                </p>
+            </div>
+        </section>
+
+        <section class="print-request-section section-shell" id="print-request">
+            <div class="print-request-intro">
+                <span class="eyebrow">LET'S CREATE SOMETHING</span>
+                <h2>Tell us what<br><em>you have in mind.</em></h2>
+                <p>
+                    Share a few details about your order. We'll review your request
+                    and confirm the available options and final price.
+                </p>
+
+                <div class="print-request-points">
+                    <p><i class="fa-solid fa-check"></i> Personal and business orders</p>
+                    <p><i class="fa-solid fa-check"></i> Bring your own item or request supply</p>
+                    <p><i class="fa-solid fa-check"></i> Final quote confirmed before printing</p>
+                </div>
+            </div>
+
+            <form class="print-request-form" id="printRequestForm" novalidate>
+                <div class="print-form-heading">
+                    <span class="eyebrow">PRINT REQUEST</span>
+                    <h3>Request your quote</h3>
+                    <p>Fields marked with * are required.</p>
+                </div>
+
+                <div class="print-form-grid">
+                    <div class="print-form-field">
+                        <label for="printName">Full name *</label>
+                        <input type="text" id="printName" name="name" autocomplete="name"
+                            maxlength="100" required>
+                    </div>
+
+                    <div class="print-form-field">
+                        <label for="printEmail">Email address *</label>
+                        <input type="email" id="printEmail" name="email" autocomplete="email"
+                            maxlength="254" required>
+                    </div>
+
+                    <div class="print-form-field">
+                        <label for="printPhone">Phone number *</label>
+                        <input type="tel" id="printPhone" name="phone" autocomplete="tel"
+                            maxlength="30" required>
+                    </div>
+
+                    <div class="print-form-field">
+                        <label for="printItem">What should we print on? *</label>
+                        <select id="printItem" name="item" required>
+                            <option value="T-shirt">T-shirt</option>
+                            <option value="Hoodie">Hoodie</option>
+                            <option value="Polo shirt">Polo shirt</option>
+                            <option value="Mug">Mug</option>
+                            <option value="Tote bag">Tote bag</option>
+                            <option value="Cap">Cap</option>
+                            <option value="Jersey">Jersey</option>
+                            <option value="Other item">Other item</option>
+                        </select>
+                    </div>
+
+                    <div class="print-form-field">
+                        <label for="printSupplyOption">Item supply option *</label>
+                        <select id="printSupplyOption" name="supplyOption" required>
+                            <option value="customer-item">I'll bring my own item (printing only)</option>
+                            <option value="selfii-item">Please supply the item and print it</option>
+                        </select>
+                    </div>
+
+                    <div class="print-form-field">
+                        <label for="printQuantity">Quantity *</label>
+                        <input type="number" id="printQuantity" name="quantity"
+                            min="1" max="10000" step="1" value="1" required>
+                    </div>
+
+                    <div class="print-form-field">
+                        <label for="printPlacement">Print placement *</label>
+                        <select id="printPlacement" name="placement" required>
+                            <option value="Front">Front</option>
+                            <option value="Back">Back</option>
+                            <option value="Front and back">Front and back</option>
+                            <option value="Sleeve">Sleeve</option>
+                            <option value="Other placement">Other placement / discuss with me</option>
+                        </select>
+                    </div>
+
+                    <div class="print-form-field">
+                        <label for="printPurpose">What is it for?</label>
+                        <select id="printPurpose" name="purpose">
+                            <option value="Personal use">Personal use</option>
+                            <option value="Gift">Gift</option>
+                            <option value="Event">Event</option>
+                            <option value="Business branding">Business branding</option>
+                            <option value="Team or group">Team or group</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="print-form-field print-form-field-full">
+                        <label for="printDesign">Describe your design *</label>
+                        <textarea id="printDesign" name="design" rows="5" minlength="10"
+                            maxlength="3000" required
+                            placeholder="Tell us what you want printed, the colours, size, text, logo or any other important details."></textarea>
+                    </div>
+
+                    <div class="print-form-field print-form-field-full">
+                        <label for="printArtwork">Upload your design (optional)</label>
+                        <input type="file" id="printArtwork" name="artwork"
+                            accept=".png,.jpg,.jpeg,.webp,.pdf">
+                        <small>Accepted formats: PNG, JPG, WEBP or PDF. Maximum file size: 5 MB.</small>
+                    </div>
+
+                    <div class="print-form-field print-form-field-full">
+                        <label for="printDeadline">Preferred date (optional)</label>
+                        <input type="date" id="printDeadline" name="preferredDate">
+                        <small>Your preferred date is a request, not a confirmed turnaround time.</small>
+                    </div>
+                </div>
+
+                <label class="print-form-consent" for="printConsent">
+                    <input type="checkbox" id="printConsent" name="consent" required>
+                    <span>I agree that SELFII may contact me about this printing request. *</span>
+                </label>
+
+                <div class="print-form-feedback" id="printFormFeedback"
+                    role="status" aria-live="polite" hidden></div>
+
+                <button type="submit" class="button button-primary print-submit-button" id="printSubmitButton">
+                    Send printing request
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+                <p class="print-form-footnote">
+                    Submitting a request does not confirm an order or final price.
+                </p>
+            </form>
+        </section>
+
+        <section class="print-process-section">
+            <div class="section-shell">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">HOW IT WORKS</span>
+                        <h2>From your idea to your item.</h2>
+                    </div>
+                </div>
+
+                <div class="print-process-grid">
+                    <article>
+                        <span>01</span>
+                        <h3>Choose your item</h3>
+                        <p>Select what you want printed on and whether you'll supply it.</p>
+                    </article>
+                    <article>
+                        <span>02</span>
+                        <h3>Share your design</h3>
+                        <p>Describe your idea and upload artwork if you have it ready.</p>
+                    </article>
+                    <article>
+                        <span>03</span>
+                        <h3>Confirm the quote</h3>
+                        <p>We'll review the details and confirm availability, price and timing.</p>
+                    </article>
+                    <article>
+                        <span>04</span>
+                        <h3>Approve and print</h3>
+                        <p>Production begins after the details, price and next steps are agreed.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="print-final-cta section-shell">
+            <span class="eyebrow">YOUR IDEA STARTS HERE</span>
+            <h2>Ready to make it <em>personal?</em></h2>
+            <p>Tell us what you'd like to create and let's discuss your printing request.</p>
+            <a href="#print-request" class="button button-primary">
+                Start your print request
+                <i class="fa-solid fa-arrow-up"></i>
+            </a>
         </section>
     </main>
 
@@ -169,9 +413,13 @@
             <div class="footer-links">
                 <a href="shop.html">Shop</a>
                 <a href="boutique.html">Boutique</a>
-                <a href="account.html">My Account</a>
-                <a href="cart.html">Shopping Bag</a>
+                <a href="contact.html">Contact</a>
+                <a href="shipping.html">Shipping</a>
             </div>
+
+            <p class="print-footer-email">
+                <a href="mailto:selfiitees@gmail.com">selfiitees@gmail.com</a>
+            </p>
 
             <p class="footer-copyright">
                 &copy; <span id="footerYear"></span> SELFII UNIVERSE. All rights reserved.
@@ -180,7 +428,6 @@
     </footer>
 
     <script src="../js/main.js"></script>
-    <script src="../js/cart.js"></script>
     <script src="../js/print-selfii.js"></script>
 </body>
 </html>

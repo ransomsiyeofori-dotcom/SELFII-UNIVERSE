@@ -1,0 +1,1913 @@
+/* =========================================
+   PRINT SELFII — CUSTOM PRINTING PORTAL
+   ========================================= */
+
+:root {
+    --print-cream: #F7F4EC;
+    --print-surface: #F0EADF;
+    --print-white: #FFFEFA;
+    --print-dark: #17262D;
+    --print-black: #151515;
+    --print-muted: #68645F;
+    --print-accent: #BF5B40;
+    --print-border: #D8D0C4;
+    --print-radius: 18px;
+    --print-shadow: 0 12px 35px rgba(23, 38, 45, 0.08);
+}
+
+body.print-selfii-page {
+    background: var(--print-cream);
+    color: var(--print-dark);
+    overflow-x: hidden;
+}
+
+.print-selfii-page *,
+.print-selfii-page *::before,
+.print-selfii-page *::after {
+    box-sizing: border-box;
+}
+
+.print-selfii-page img {
+    display: block;
+    max-width: 100%;
+}
+
+.print-selfii-page button,
+.print-selfii-page input,
+.print-selfii-page select,
+.print-selfii-page textarea {
+    font: inherit;
+}
+
+.print-selfii-page button {
+    cursor: pointer;
+}
+
+.print-container {
+    width: min(1160px, calc(100% - 40px));
+    margin-inline: auto;
+}
+
+.print-section {
+    padding: 76px 0;
+}
+
+.print-section-heading {
+    max-width: 700px;
+    margin: 0 auto 38px;
+    text-align: center;
+}
+
+.print-eyebrow {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: var(--print-accent);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.print-section-heading h2,
+.print-request-intro h2 {
+    margin: 0 0 14px;
+    color: var(--print-dark);
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(2rem, 4vw, 3.1rem);
+    font-weight: 600;
+    line-height: 1.15;
+}
+
+.print-section-heading p,
+.print-request-intro p {
+    margin: 0;
+    color: var(--print-muted);
+    font-size: 1rem;
+    line-height: 1.8;
+}
+
+/* Buttons */
+
+.print-btn {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 13px 22px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease,
+        border-color 0.2s ease, transform 0.2s ease;
+}
+
+.print-btn:hover {
+    transform: translateY(-2px);
+}
+
+.print-btn-primary {
+    background: var(--print-accent);
+    color: #fff;
+}
+
+.print-btn-primary:hover {
+    background: #a94c34;
+}
+
+.print-btn-secondary {
+    border-color: var(--print-border);
+    background: var(--print-white);
+    color: var(--print-dark);
+}
+
+.print-btn-secondary:hover {
+    border-color: var(--print-accent);
+    color: var(--print-accent);
+}
+
+/* Hero */
+
+.print-hero {
+    position: relative;
+    padding: 72px 0 82px;
+    overflow: hidden;
+    background: var(--print-surface);
+}
+
+.print-hero-grid {
+    display: grid;
+    grid-template-columns: 1.02fr 0.98fr;
+    align-items: center;
+    gap: clamp(35px, 6vw, 78px);
+}
+
+.print-hero-content {
+    max-width: 610px;
+}
+
+.print-hero-content h1 {
+    margin: 0 0 22px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(2.7rem, 5.5vw, 5rem);
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    line-height: 1.04;
+}
+
+.print-hero-content h1 span {
+    color: var(--print-accent);
+}
+
+.print-hero-content > p {
+    max-width: 520px;
+    margin: 0 0 28px;
+    color: var(--print-muted);
+    font-size: 1.04rem;
+    line-height: 1.85;
+}
+
+.print-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.print-hero-note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 26px;
+    color: var(--print-muted);
+    font-size: 0.86rem;
+}
+
+.print-hero-note i {
+    color: var(--print-accent);
+}
+
+.print-hero-image {
+    position: relative;
+    min-height: 390px;
+    overflow: hidden;
+    border-radius: 180px 180px 20px 20px;
+    background: #ded4c5;
+}
+
+.print-hero-image img {
+    width: 100%;
+    height: 100%;
+    min-height: 390px;
+    object-fit: cover;
+}
+
+.print-hero-image::after {
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: inherit;
+    content: "";
+    pointer-events: none;
+}
+
+/* Item selection */
+
+.print-item-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.print-item-card {
+    position: relative;
+    display: flex;
+    min-height: 145px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 12px;
+    padding: 23px;
+    border: 1px solid var(--print-border);
+    border-radius: var(--print-radius);
+    background: var(--print-white);
+    color: var(--print-dark);
+    text-align: left;
+    transition: border-color 0.2s ease, background 0.2s ease,
+        box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.print-item-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--print-accent);
+}
+
+.print-item-card[aria-pressed="true"],
+.print-item-card.is-selected {
+    border: 2px solid var(--print-accent);
+    background: #fff9f5;
+    box-shadow: 0 8px 24px rgba(191, 91, 64, 0.09);
+}
+
+.print-item-card .print-item-icon {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    place-items: center;
+    border-radius: 14px;
+    background: var(--print-surface);
+    color: var(--print-accent);
+    font-size: 1.25rem;
+}
+
+.print-item-card strong {
+    font-size: 1rem;
+}
+
+.print-item-card small {
+    color: var(--print-muted);
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.print-item-card .print-item-check {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--print-accent);
+    color: white;
+    font-size: 0.7rem;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.print-item-card[aria-pressed="true"] .print-item-check,
+.print-item-card.is-selected .print-item-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Pricing */
+
+.print-pricing-section {
+    background: var(--print-dark);
+    color: var(--print-white);
+}
+
+.print-pricing-section .print-section-heading h2 {
+    color: var(--print-white);
+}
+
+.print-pricing-section .print-section-heading p {
+    color: #d0d5d5;
+}
+
+.print-price-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+.print-price-card {
+    position: relative;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--print-radius);
+    background: rgba(255, 255, 255, 0.055);
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.print-price-card.is-selected,
+.print-price-card[aria-pressed="true"] {
+    border-color: var(--print-accent);
+    background: rgba(191, 91, 64, 0.13);
+}
+
+.print-price-card h3 {
+    margin: 0 0 10px;
+    color: var(--print-white);
+    font-size: 1.2rem;
+}
+
+.print-price-card p {
+    min-height: 48px;
+    margin: 0 0 22px;
+    color: #d0d5d5;
+    font-size: 0.9rem;
+    line-height: 1.65;
+}
+
+.print-price-value {
+    display: block;
+    margin-bottom: 24px;
+    color: #fff;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+.print-price-value small {
+    color: #d0d5d5;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+.print-price-card .print-btn {
+    width: 100%;
+}
+
+.print-price-disclaimer {
+    max-width: 760px;
+    margin: 24px auto 0;
+    color: #d0d5d5;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    text-align: center;
+}
+
+/* Request form */
+
+.print-request-section {
+    background: var(--print-cream);
+}
+
+.print-request-layout {
+    display: grid;
+    grid-template-columns: 0.72fr 1.28fr;
+    align-items: start;
+    gap: 48px;
+}
+
+.print-request-intro {
+    position: sticky;
+    top: 110px;
+}
+
+.print-request-intro h2 {
+    font-size: clamp(2rem, 4vw, 2.8rem);
+}
+
+.print-request-contact {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 26px;
+    padding: 18px;
+    border: 1px solid var(--print-border);
+    border-radius: 14px;
+    background: var(--print-white);
+}
+
+.print-request-contact i {
+    margin-top: 4px;
+    color: var(--print-accent);
+}
+
+.print-request-contact strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.print-request-contact a {
+    overflow-wrap: anywhere;
+    color: var(--print-accent);
+    text-decoration: none;
+}
+
+.print-request-contact a:hover {
+    text-decoration: underline;
+}
+
+.print-form-card {
+    padding: clamp(22px, 4vw, 38px);
+    border: 1px solid var(--print-border);
+    border-radius: 22px;
+    background: var(--print-white);
+    box-shadow: var(--print-shadow);
+}
+
+.print-form-card h3 {
+    margin: 0 0 8px;
+    font-size: 1.35rem;
+}
+
+.print-form-description {
+    margin: 0 0 28px;
+    color: var(--print-muted);
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.print-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.print-form-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.print-form-field-full {
+    grid-column: 1 / -1;
+}
+
+.print-form-field label {
+    color: var(--print-dark);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.print-form-field input,
+.print-form-field select,
+.print-form-field textarea {
+    width: 100%;
+    min-width: 0;
+    min-height: 49px;
+    padding: 13px 14px;
+    border: 1px solid var(--print-border);
+    border-radius: 10px;
+    outline: none;
+    background: #fff;
+    color: var(--print-dark);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.print-form-field textarea {
+    min-height: 140px;
+    resize: vertical;
+    line-height: 1.65;
+}
+
+.print-form-field input:focus,
+.print-form-field select:focus,
+.print-form-field textarea:focus {
+    border-color: var(--print-accent);
+    box-shadow: 0 0 0 3px rgba(191, 91, 64, 0.12);
+}
+
+.print-form-field input[type="file"] {
+    min-height: auto;
+    padding: 12px;
+    background: var(--print-cream);
+}
+
+.print-form-field input[type="file"]::file-selector-button {
+    margin-right: 12px;
+    padding: 9px 12px;
+    border: 0;
+    border-radius: 7px;
+    background: var(--print-dark);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.print-form-field small {
+    color: var(--print-muted);
+    font-size: 0.8rem;
+    line-height: 1.6;
+}
+
+.print-form-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    color: var(--print-muted);
+    font-size: 0.85rem;
+    line-height: 1.65;
+}
+
+.print-form-check input {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 auto;
+    margin-top: 3px;
+    accent-color: var(--print-accent);
+}
+
+.print-form-check a {
+    color: var(--print-accent);
+}
+
+.print-form-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 26px;
+    padding: 18px;
+    border-radius: 12px;
+    background: var(--print-surface);
+}
+
+.print-form-total span {
+    color: var(--print-muted);
+    font-size: 0.88rem;
+}
+
+.print-form-total strong {
+    color: var(--print-dark);
+    font-size: 1.35rem;
+}
+
+.print-form-total small {
+    display: block;
+    margin-top: 5px;
+    color: var(--print-muted);
+    font-size: 0.75rem;
+    font-weight: 400;
+    text-align: right;
+}
+
+.print-form-feedback {
+    display: none;
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+}
+
+.print-form-feedback.is-visible {
+    display: block;
+}
+
+.print-form-feedback.is-error {
+    border: 1px solid #e5b8b0;
+    background: #fff0ed;
+    color: #8b2e21;
+}
+
+.print-form-feedback.is-success {
+    border: 1px solid #a8d5b0;
+    background: #effaf1;
+    color: #205d2d;
+}
+
+.print-form-submit {
+    width: 100%;
+    margin-top: 22px;
+}
+
+.print-form-submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+    transform: none;
+}
+
+/* Process */
+
+.print-process-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.print-process-card {
+    padding: 25px;
+    border: 1px solid var(--print-border);
+    border-radius: var(--print-radius);
+    background: var(--print-white);
+}
+
+.print-process-number {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 20px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--print-accent);
+    color: #fff;
+    font-weight: 800;
+}
+
+.print-process-card h3 {
+    margin: 0 0 10px;
+    font-size: 1.05rem;
+}
+
+.print-process-card p {
+    margin: 0;
+    color: var(--print-muted);
+    font-size: 0.88rem;
+    line-height: 1.75;
+}
+
+/* Final CTA */
+
+.print-final-cta {
+    padding: 64px 20px;
+    background: var(--print-surface);
+    text-align: center;
+}
+
+.print-final-cta h2 {
+    margin: 0 0 14px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.2;
+}
+
+.print-final-cta p {
+    max-width: 600px;
+    margin: 0 auto 25px;
+    color: var(--print-muted);
+    line-height: 1.8;
+}
+
+.print-final-cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+
+/* Accessibility */
+
+.print-selfii-page :focus-visible {
+    outline: 3px solid rgba(191, 91, 64, 0.55);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .print-selfii-page *,
+    .print-selfii-page *::before,
+    .print-selfii-page *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
+
+/* Tablet */
+
+@media (max-width: 900px) {
+    .print-hero {
+        padding: 55px 0 65px;
+    }
+
+    .print-hero-grid {
+        grid-template-columns: 1fr 0.9fr;
+        gap: 30px;
+    }
+
+    .print-hero-image,
+    .print-hero-image img {
+        min-height: 320px;
+    }
+
+    .print-item-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .print-request-layout {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .print-request-intro {
+        position: static;
+        max-width: 650px;
+    }
+
+    .print-process-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+    .print-container {
+        width: min(100% - 28px, 1160px);
+    }
+
+    .print-section {
+        padding: 54px 0;
+    }
+
+    .print-section-heading {
+        margin-bottom: 28px;
+        text-align: left;
+    }
+
+    .print-hero {
+        padding: 42px 0 48px;
+    }
+
+    .print-hero-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .print-hero-content h1 {
+        font-size: clamp(2.55rem, 12vw, 3.8rem);
+    }
+
+    .print-hero-content > p {
+        font-size: 0.96rem;
+    }
+
+    .print-hero-actions {
+        align-items: stretch;
+    }
+
+    .print-hero-actions .print-btn {
+        flex: 1 1 100%;
+    }
+
+    .print-hero-image,
+    .print-hero-image img {
+        min-height: 270px;
+    }
+
+    .print-hero-image {
+        border-radius: 120px 120px 18px 18px;
+    }
+
+    .print-item-grid {
+        gap: 12px;
+    }
+
+    .print-item-card {
+        min-height: 135px;
+        gap: 9px;
+        padding: 16px;
+    }
+
+    .print-item-card .print-item-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    .print-item-card strong {
+        font-size: 0.92rem;
+    }
+
+    .print-item-card small {
+        font-size: 0.75rem;
+    }
+
+    .print-price-options {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .print-price-card {
+        padding: 24px;
+    }
+
+    .print-price-card p {
+        min-height: 0;
+    }
+
+    .print-form-card {
+        padding: 20px 16px;
+        border-radius: 16px;
+    }
+
+    .print-form-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .print-form-field-full {
+        grid-column: auto;
+    }
+
+    .print-process-grid {
+        grid-template-columns: 1fr;
+        gap: 13px;
+    }
+
+    .print-process-card {
+        padding: 21px;
+    }
+
+    .print-process-number {
+        margin-bottom: 14px;
+    }
+
+    .print-form-total {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .print-form-total small {
+        text-align: left;
+    }
+
+    .print-final-cta {
+        padding: 50px 20px;
+        text-align: left;
+    }
+
+    .print-final-cta-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
+
+/* =========================================
+   PRINT SELFII — ACTUAL HTML COMPATIBILITY
+   ========================================= */
+
+.print-selfii-page .section-shell {
+    width: min(1160px, calc(100% - 40px));
+    margin-inline: auto;
+}
+
+.print-selfii-page .print-hero {
+    padding: clamp(42px, 7vw, 82px) 0;
+}
+
+.print-selfii-page .print-hero > .section-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    align-items: center;
+    gap: clamp(28px, 5vw, 68px);
+}
+
+.print-selfii-page .print-hero-copy {
+    min-width: 0;
+}
+
+.print-selfii-page .print-hero-copy h1 {
+    margin: 0 0 22px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(2.6rem, 5.5vw, 4.8rem);
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+}
+
+.print-selfii-page .print-hero-copy p {
+    color: var(--print-muted);
+    line-height: 1.8;
+}
+
+.print-selfii-page .print-hero-visual {
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 180px 180px 20px 20px;
+    background: var(--print-surface);
+}
+
+.print-selfii-page .print-hero-visual img {
+    display: block;
+    width: 100%;
+    height: clamp(300px, 40vw, 470px);
+    object-fit: cover;
+}
+
+.print-selfii-page .print-hero-label {
+    display: inline-block;
+    margin-bottom: 14px;
+    color: var(--print-accent);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.print-selfii-page .print-intro,
+.print-selfii-page .print-services,
+.print-selfii-page .print-pricing-section,
+.print-selfii-page .print-request-section,
+.print-selfii-page .print-process-section {
+    padding-block: clamp(48px, 7vw, 78px);
+}
+
+.print-selfii-page .print-intro {
+    max-width: 850px;
+    text-align: center;
+}
+
+.print-selfii-page .print-intro p {
+    color: var(--print-muted);
+    font-size: 1rem;
+    line-height: 1.85;
+}
+
+.print-selfii-page .section-heading {
+    max-width: 740px;
+    margin: 0 auto 36px;
+    text-align: center;
+}
+
+.print-selfii-page .section-heading h2 {
+    margin: 0 0 14px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(2rem, 4vw, 3.1rem);
+    line-height: 1.15;
+}
+
+.print-selfii-page .section-heading p {
+    margin: 0;
+    color: var(--print-muted);
+    line-height: 1.8;
+}
+
+.print-selfii-page .print-service-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.print-selfii-page .print-service-card {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 165px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 22px;
+    border: 1px solid var(--print-border);
+    border-radius: var(--print-radius);
+    background: var(--print-white);
+    color: var(--print-dark);
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease,
+        box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.print-selfii-page .print-service-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--print-accent);
+}
+
+.print-selfii-page .print-service-card.is-selected,
+.print-selfii-page .print-service-card[aria-pressed="true"] {
+    border: 2px solid var(--print-accent);
+    background: #fff9f5;
+    box-shadow: 0 8px 24px rgba(191, 91, 64, 0.09);
+}
+
+.print-selfii-page .print-service-icon {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 14px;
+    background: var(--print-surface);
+    color: var(--print-accent);
+    font-size: 1.25rem;
+}
+
+.print-selfii-page .print-service-name {
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.print-selfii-page .print-service-price,
+.print-selfii-page .print-service-hint {
+    color: var(--print-muted);
+    font-size: 0.82rem;
+    line-height: 1.55;
+}
+
+.print-selfii-page .print-pricing-section {
+    background: var(--print-dark);
+    color: var(--print-white);
+}
+
+.print-selfii-page .print-pricing-section .section-heading h2 {
+    color: var(--print-white);
+}
+
+.print-selfii-page .print-pricing-section .section-heading p {
+    color: #d0d5d5;
+}
+
+.print-selfii-page .print-pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    max-width: 900px;
+    margin-inline: auto;
+}
+
+.print-selfii-page .print-price-card {
+    min-width: 0;
+    padding: clamp(22px, 4vw, 32px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--print-radius);
+    background: rgba(255, 255, 255, 0.055);
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.print-selfii-page .print-price-card.is-selected {
+    border-color: var(--print-accent);
+    background: rgba(191, 91, 64, 0.14);
+}
+
+.print-selfii-page .print-price-badge {
+    display: inline-block;
+    margin-bottom: 16px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.print-selfii-page .print-price-icon {
+    margin-bottom: 16px;
+    color: #e8a18d;
+    font-size: 1.5rem;
+}
+
+.print-selfii-page .print-price-kicker {
+    color: #d0d5d5;
+    font-size: 0.84rem;
+}
+
+.print-selfii-page .print-price-value {
+    margin: 12px 0 20px;
+    color: #fff;
+    font-size: clamp(1.7rem, 4vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.print-selfii-page .print-price-card button[data-print-option] {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 999px;
+    background: transparent;
+    color: #fff;
+    font-weight: 700;
+}
+
+.print-selfii-page .print-price-card button[data-print-option]:hover,
+.print-selfii-page .print-price-card.is-selected button[data-print-option] {
+    border-color: var(--print-accent);
+    background: var(--print-accent);
+}
+
+.print-selfii-page .print-request-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+    align-items: start;
+    gap: clamp(28px, 5vw, 52px);
+}
+
+.print-selfii-page .print-request-intro {
+    min-width: 0;
+}
+
+.print-selfii-page .print-request-intro h2 {
+    margin: 0 0 16px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    line-height: 1.15;
+}
+
+.print-selfii-page .print-request-intro p {
+    color: var(--print-muted);
+    line-height: 1.8;
+}
+
+.print-selfii-page .print-request-points {
+    display: grid;
+    gap: 13px;
+    margin-top: 24px;
+    padding: 0;
+    list-style: none;
+}
+
+.print-selfii-page .print-request-points li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.65;
+}
+
+.print-selfii-page .print-request-points i {
+    margin-top: 5px;
+    color: var(--print-accent);
+}
+
+.print-selfii-page .print-request-form {
+    display: grid;
+    gap: 24px;
+    min-width: 0;
+    padding: clamp(20px, 4vw, 36px);
+    border: 1px solid var(--print-border);
+    border-radius: 22px;
+    background: var(--print-white);
+    box-shadow: var(--print-shadow);
+}
+
+.print-selfii-page .print-form-heading {
+    margin-bottom: 2px;
+}
+
+.print-selfii-page .print-form-heading .eyebrow {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: var(--print-accent);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+}
+
+.print-selfii-page .print-form-heading h3 {
+    margin: 0 0 8px;
+    font-size: clamp(1.35rem, 3vw, 1.7rem);
+}
+
+.print-selfii-page .print-form-heading p {
+    margin: 0;
+    color: var(--print-muted);
+    font-size: 0.88rem;
+    line-height: 1.65;
+}
+
+.print-selfii-page .print-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.print-selfii-page .print-form-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.print-selfii-page .print-form-field-full {
+    grid-column: 1 / -1;
+}
+
+.print-selfii-page .print-form-field label {
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.print-selfii-page .print-form-field input,
+.print-selfii-page .print-form-field select,
+.print-selfii-page .print-form-field textarea {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 49px;
+    padding: 12px 14px;
+    border: 1px solid var(--print-border);
+    border-radius: 10px;
+    outline: none;
+    background: #fff;
+    color: var(--print-dark);
+}
+
+.print-selfii-page .print-form-field textarea {
+    min-height: 135px;
+    resize: vertical;
+    line-height: 1.7;
+}
+
+.print-selfii-page .print-form-field input:focus,
+.print-selfii-page .print-form-field select:focus,
+.print-selfii-page .print-form-field textarea:focus {
+    border-color: var(--print-accent);
+    box-shadow: 0 0 0 3px rgba(191, 91, 64, 0.12);
+}
+
+.print-selfii-page .print-form-field input[type="file"] {
+    min-height: auto;
+    padding: 12px;
+    background: var(--print-cream);
+}
+
+.print-selfii-page .print-form-field small {
+    color: var(--print-muted);
+    font-size: 0.8rem;
+    line-height: 1.6;
+}
+
+.print-selfii-page .print-form-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    color: var(--print-muted);
+    font-size: 0.87rem;
+    line-height: 1.65;
+}
+
+.print-selfii-page .print-form-consent input {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    margin-top: 3px;
+    accent-color: var(--print-accent);
+}
+
+.print-selfii-page .print-form-feedback {
+    margin: 0;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+}
+
+.print-selfii-page .print-form-feedback[hidden] {
+    display: none !important;
+}
+
+.print-selfii-page .print-form-feedback.is-visible {
+    display: block;
+}
+
+.print-selfii-page .print-form-feedback.is-error {
+    border: 1px solid #e5b8b0;
+    background: #fff0ed;
+    color: #8b2e21;
+}
+
+.print-selfii-page .print-form-feedback.is-success {
+    border: 1px solid #a8d5b0;
+    background: #effaf1;
+    color: #205d2d;
+}
+
+.print-selfii-page .print-submit-button {
+    display: inline-flex;
+    width: 100%;
+    min-height: 50px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--print-accent);
+    color: #fff;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.print-selfii-page .print-submit-button:hover {
+    transform: translateY(-2px);
+    background: #a94c34;
+}
+
+.print-selfii-page .print-submit-button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+    transform: none;
+}
+
+.print-selfii-page .print-form-footnote {
+    margin: -12px 0 0;
+    color: var(--print-muted);
+    font-size: 0.8rem;
+    line-height: 1.65;
+    text-align: center;
+}
+
+.print-selfii-page .print-process-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.print-selfii-page .print-process-grid article {
+    min-width: 0;
+    padding: 24px;
+    border: 1px solid var(--print-border);
+    border-radius: var(--print-radius);
+    background: var(--print-white);
+}
+
+.print-selfii-page .print-process-grid article > span {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 18px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--print-accent);
+    color: #fff;
+    font-weight: 800;
+}
+
+.print-selfii-page .print-process-grid h3 {
+    margin: 0 0 10px;
+    font-size: 1.05rem;
+}
+
+.print-selfii-page .print-process-grid p {
+    margin: 0;
+    color: var(--print-muted);
+    font-size: 0.88rem;
+    line-height: 1.75;
+}
+
+@media (max-width: 900px) {
+    .print-selfii-page .print-service-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .print-selfii-page .print-request-layout {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .print-selfii-page .print-process-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .print-selfii-page .section-shell {
+        width: calc(100% - 28px);
+    }
+
+    .print-selfii-page .print-hero > .section-shell {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+
+    .print-selfii-page .print-hero-copy h1 {
+        font-size: clamp(2.5rem, 11vw, 3.6rem);
+    }
+
+    .print-selfii-page .print-hero-visual,
+    .print-selfii-page .print-hero-visual img {
+        min-height: 260px;
+    }
+
+    .print-selfii-page .print-hero-visual img {
+        height: 280px;
+    }
+
+    .print-selfii-page .print-service-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .print-selfii-page .print-service-card {
+        min-height: 145px;
+        padding: 15px;
+    }
+
+    .print-selfii-page .print-service-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .print-selfii-page .print-pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .print-selfii-page .print-request-form {
+        gap: 20px;
+        padding: 20px 16px;
+        border-radius: 16px;
+    }
+
+    .print-selfii-page .print-form-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .print-selfii-page .print-form-field-full {
+        grid-column: auto;
+    }
+
+    .print-selfii-page .print-process-grid {
+        grid-template-columns: 1fr;
+        gap: 13px;
+    }
+}
+
+@media (max-width: 360px) {
+    .print-selfii-page .print-service-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================
+   PRINT SELFII — PREMIUM HEADER
+   Scoped to this page only
+   ========================================= */
+
+body.print-selfii-page .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    background: rgba(255, 254, 250, 0.97);
+    border-bottom: 1px solid var(--print-border);
+    box-shadow: 0 4px 22px rgba(23, 38, 45, 0.045);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.print-selfii-page .site-header .header-inner {
+    width: min(1240px, calc(100% - 48px));
+    min-height: 82px;
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+}
+
+.print-selfii-page .site-header .brand-logo {
+    flex: 0 0 auto;
+    color: var(--print-dark);
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: -0.07em;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.print-selfii-page .site-header .brand-logo span {
+    color: var(--print-accent);
+}
+
+.print-selfii-page .site-header .desktop-nav {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(15px, 2vw, 29px);
+    min-width: 0;
+}
+
+.print-selfii-page .site-header .desktop-nav a {
+    position: relative;
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    color: #5c625f;
+    font-size: 0.84rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+}
+
+.print-selfii-page .site-header .desktop-nav a::after {
+    position: absolute;
+    right: 0;
+    bottom: 5px;
+    left: 0;
+    height: 2px;
+    border-radius: 10px;
+    background: var(--print-accent);
+    content: "";
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease;
+}
+
+.print-selfii-page .site-header .desktop-nav a:hover,
+.print-selfii-page .site-header .desktop-nav a.active,
+.print-selfii-page .site-header .desktop-nav a[aria-current="page"] {
+    color: var(--print-dark);
+}
+
+.print-selfii-page .site-header .desktop-nav a:hover::after,
+.print-selfii-page .site-header .desktop-nav a.active::after,
+.print-selfii-page .site-header .desktop-nav a[aria-current="page"]::after {
+    transform: scaleX(1);
+}
+
+.print-selfii-page .site-header .header-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 9px;
+}
+
+.print-selfii-page .site-header .icon-button {
+    display: inline-flex;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--print-dark);
+    font-size: 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.print-selfii-page .site-header .icon-button:hover {
+    border-color: var(--print-border);
+    background: var(--print-surface);
+    color: var(--print-accent);
+    transform: translateY(-1px);
+}
+
+.print-selfii-page .site-header .menu-toggle {
+    display: none;
+}
+
+.print-selfii-page .site-header .mobile-nav {
+    display: none;
+}
+
+/* Smaller laptops and tablets */
+
+@media (max-width: 1050px) {
+    .print-selfii-page .site-header .header-inner {
+        width: calc(100% - 32px);
+        gap: 18px;
+    }
+
+    .print-selfii-page .site-header .desktop-nav {
+        gap: 14px;
+    }
+
+    .print-selfii-page .site-header .desktop-nav a {
+        font-size: 0.78rem;
+    }
+
+    .print-selfii-page .site-header .brand-logo {
+        font-size: 1.7rem;
+    }
+
+    .print-selfii-page .site-header .header-actions {
+        gap: 3px;
+    }
+}
+
+/* Mobile navigation */
+
+@media (max-width: 800px) {
+    .print-selfii-page .site-header .header-inner {
+        min-height: 70px;
+        width: calc(100% - 32px);
+        gap: 12px;
+    }
+
+    .print-selfii-page .site-header .brand-logo {
+        font-size: 1.75rem;
+    }
+
+    .print-selfii-page .site-header .desktop-nav {
+        display: none;
+    }
+
+    .print-selfii-page .site-header .header-actions {
+        margin-left: auto;
+        gap: 5px;
+    }
+
+    .print-selfii-page .site-header .icon-button {
+        width: 40px;
+        height: 40px;
+    }
+
+    .print-selfii-page .site-header .menu-toggle {
+        display: inline-flex;
+    }
+
+    .print-selfii-page .site-header .mobile-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        width: 100%;
+        padding: 0 20px;
+        max-height: 0;
+        overflow: hidden;
+        visibility: hidden;
+        opacity: 0;
+        background: var(--print-dark);
+        border-top: 0 solid rgba(255, 255, 255, 0.08);
+        transition: max-height 0.3s ease,
+            padding 0.3s ease,
+            opacity 0.2s ease,
+            visibility 0.2s ease;
+    }
+
+    .print-selfii-page .site-header .mobile-nav.is-open,
+    .print-selfii-page .site-header .mobile-nav.open,
+    .print-selfii-page .site-header .mobile-nav.active {
+        max-height: 480px;
+        padding: 14px 20px 22px;
+        visibility: visible;
+        opacity: 1;
+        border-top-width: 1px;
+    }
+
+    .print-selfii-page .site-header .mobile-nav a {
+        display: flex;
+        min-height: 47px;
+        align-items: center;
+        padding: 11px 14px;
+        border-radius: 9px;
+        color: #f7f4ec;
+        font-size: 0.94rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .print-selfii-page .site-header .mobile-nav a:hover,
+    .print-selfii-page .site-header .mobile-nav a.active,
+    .print-selfii-page .site-header .mobile-nav a[aria-current="page"] {
+        background: rgba(191, 91, 64, 0.2);
+        color: #f1ad98;
+    }
+}
+
+@media (max-width: 380px) {
+    .print-selfii-page .site-header .header-inner {
+        width: calc(100% - 22px);
+        min-height: 64px;
+    }
+
+    .print-selfii-page .site-header .brand-logo {
+        font-size: 1.55rem;
+    }
+
+    .print-selfii-page .site-header .header-actions {
+        gap: 1px;
+    }
+
+    .print-selfii-page .site-header .icon-button {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .print-selfii-page .site-header *,
+    .print-selfii-page .site-header *::before,
+    .print-selfii-page .site-header *::after {
+        transition: none !important;
+    }
+}
+
+/* =========================================
+   PRINT SELFII — PREMIUM FOOTER
+   ========================================= */
+
+.print-selfii-page .site-footer {
+    position: relative;
+    margin-top: 80px;
+    padding: 64px 24px 24px;
+    overflow: hidden;
+    background: #17262D;
+    color: #F7F4EC;
+}
+
+.print-selfii-page .site-footer::before {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: min(1100px, 90%);
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(191, 91, 64, 0.8),
+        transparent
+    );
+    content: "";
+    transform: translateX(-50%);
+}
+
+.print-selfii-page .site-footer .footer-inner {
+    width: min(1180px, 100%);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.print-selfii-page .site-footer .brand-logo {
+    display: inline-block;
+    margin-bottom: 15px;
+    color: #FFFEFA;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.07em;
+    line-height: 1.2;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.print-selfii-page .site-footer .brand-logo span {
+    color: #BF5B40;
+}
+
+.print-selfii-page .site-footer .brand-logo:hover {
+    opacity: 0.8;
+}
+
+.print-selfii-page .site-footer .footer-inner > p:first-of-type {
+    max-width: 420px;
+    margin: 0 auto 28px;
+    color: #C7CECA;
+    font-size: 0.95rem;
+    line-height: 1.8;
+}
+
+.print-selfii-page .site-footer .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 30px;
+    margin: 0 auto 25px;
+}
+
+.print-selfii-page .site-footer .footer-links a {
+    position: relative;
+    padding: 5px 0;
+    color: #F7F4EC;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.print-selfii-page .site-footer .footer-links a::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    background: #BF5B40;
+    content: "";
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease;
+}
+
+.print-selfii-page .site-footer .footer-links a:hover {
+    color: #E7A28F;
+}
+
+.print-selfii-page .site-footer .footer-links a:hover::after {
+    transform: scaleX(1);
+}
+
+.print-selfii-page .site-footer .print-footer-email {
+    margin: 0 0 35px;
+}
+
+.print-selfii-page .site-footer .print-footer-email a {
+    display: inline-block;
+    padding: 12px 20px;
+    border: 1px solid rgba(247, 244, 236, 0.18);
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.035);
+    color: #E7A28F;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.print-selfii-page .site-footer .print-footer-email a:hover {
+    border-color: #BF5B40;
+    background: rgba(191, 91, 64, 0.13);
+}
+
+.print-selfii-page .site-footer .footer-copyright {
+    width: 100%;
+    margin: 0;
+    padding-top: 22px;
+    border-top: 1px solid rgba(247, 244, 236, 0.12);
+    color: #AAB5B0;
+    font-size: 0.78rem;
+    line-height: 1.8;
+}
+
+/* Footer responsiveness */
+
+@media (max-width: 600px) {
+    .print-selfii-page .site-footer {
+        margin-top: 55px;
+        padding: 48px 20px 20px;
+    }
+
+    .print-selfii-page .site-footer .brand-logo {
+        font-size: 2rem;
+    }
+
+    .print-selfii-page .site-footer .footer-inner > p:first-of-type {
+        max-width: 320px;
+        font-size: 0.88rem;
+    }
+
+    .print-selfii-page .site-footer .footer-links {
+        max-width: 320px;
+        gap: 10px 22px;
+        margin-bottom: 24px;
+    }
+
+    .print-selfii-page .site-footer .footer-links a {
+        font-size: 0.84rem;
+    }
+
+    .print-selfii-page .site-footer .print-footer-email {
+        margin-bottom: 28px;
+    }
+
+    .print-selfii-page .site-footer .print-footer-email a {
+        max-width: 100%;
+        padding: 11px 16px;
+        font-size: 0.85rem;
+    }
+
+    .print-selfii-page .site-footer .footer-copyright {
+        padding-top: 18px;
+        font-size: 0.73rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .print-selfii-page .site-footer *,
+    .print-selfii-page .site-footer *::before,
+    .print-selfii-page .site-footer *::after {
+        transition: none !important;
+    }
+}
