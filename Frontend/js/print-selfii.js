@@ -7,7 +7,7 @@
 
     const API_BASE_URL = (
         window.SELFII_API_URL ||
-        "https://selfii-universe-api.onrender.com/api"
+        "/api"
     ).replace(/\/+$/, "");
 
     const prices = {

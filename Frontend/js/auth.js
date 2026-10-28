@@ -5,7 +5,7 @@
 // SELFII UNIVERSE - AUTHENTICATION
 // ==========================================
 
-const API_BASE_URL = "https://selfii-universe-api.onrender.com/api";
+const API_BASE_URL = "/api";
 
 const loginForm = document.getElementById("loginForm");
 const registerForm = document.getElementById("registerForm");

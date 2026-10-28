@@ -32,6 +32,7 @@ app.use(helmet());
 
 const allowedOrigins = [
     process.env.FRONTEND_URL,
+    "https://www.selfiitees.com.ng",
     "http://localhost:8158",
     "http://127.0.0.1:8158"
 ].filter(Boolean);

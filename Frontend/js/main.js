@@ -58,7 +58,7 @@ if (searchToggle && searchForm) {
 const API_BASE = window.SELFII_API_URL ||
     (["localhost", "127.0.0.1"].includes(window.location.hostname)
         ? "http://localhost:5000/api"
-        : "https://selfii-universe-api.onrender.com/api");
+        : "/api");
 
 let products = [];
 
@@ -310,7 +310,7 @@ updateCartCount();
 // ==========================================
 
 (async function initializeHomepageAccount() {
-    const API = "https://selfii-universe-api.onrender.com/api";
+    const API = "/api";
 
     const menu = document.getElementById("accountMenu");
     const link = document.getElementById("accountLink");
