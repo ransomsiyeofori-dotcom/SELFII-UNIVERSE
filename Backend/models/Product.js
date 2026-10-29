@@ -46,6 +46,17 @@ const productSchema = new mongoose.Schema({
         enum: ['boutique', 'selfiitees', 'printing']
     },
 
+    reservedStock: {
+        type: Number,
+        default: 0,
+        min: 0,
+        validate: {
+            validator: Number.isInteger,
+            message: 'Reserved stock must be a whole number.'
+        }
+    },
+
+
     stock: {
         type: Number,
         default: 0,
