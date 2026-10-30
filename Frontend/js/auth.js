@@ -5,7 +5,10 @@
 // SELFII UNIVERSE - AUTHENTICATION
 // ==========================================
 
-const API_BASE_URL = "/api";
+const API_BASE_URL = window.SELFII_API_URL ||
+    (["localhost", "127.0.0.1"].includes(window.location.hostname)
+        ? "http://localhost:5000/api"
+        : "/api");
 
 const loginForm = document.getElementById("loginForm");
 const registerForm = document.getElementById("registerForm");
