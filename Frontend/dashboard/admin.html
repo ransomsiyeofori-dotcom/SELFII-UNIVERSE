@@ -464,6 +464,16 @@
                     </small>
                 </div>
 
+                <div class="form-field product-gallery-field">
+                    <label for="productGalleryFiles">Additional product images</label>
+                    <input id="productGalleryFiles" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+                    <button class="secondary-button" id="chooseProductGalleryButton" type="button">
+                        <i class="fa-solid fa-images"></i> Choose additional images
+                    </button>
+                    <div id="productGalleryPreview" class="product-gallery-preview" aria-live="polite"></div>
+                    <small id="productGalleryStatus">Add up to 5 extra views. JPG, PNG or WebP; maximum 5 MB each.</small>
+                </div>
+
                 <div class="form-field">
                     <label class="checkbox-field">
                         <input id="productFeatured" name="featured" type="checkbox">

@@ -18,6 +18,9 @@
         selectedProductImage: null,
         currentProductImageUrl: "",
         productImagePreviewUrl: "",
+        existingProductImages: [],
+        selectedGalleryFiles: [],
+        galleryPreviewUrls: [],
         orders: [],
         orderPage: 1,
         orderPages: 1,
@@ -39,6 +42,10 @@
         productImageFile: $("#productImageFile"),
         chooseProductImageButton: $("#chooseProductImageButton"),
         removeProductImageButton: $("#removeProductImageButton"),
+        productGalleryFiles: $("#productGalleryFiles"),
+        chooseProductGalleryButton: $("#chooseProductGalleryButton"),
+        productGalleryPreview: $("#productGalleryPreview"),
+        productGalleryStatus: $("#productGalleryStatus"),
         productImagePreview: $("#productImagePreview"),
         productImagePreviewContainer: $("#productImagePreviewContainer"),
         productImageUploadStatus: $("#productImageUploadStatus"),
@@ -258,6 +265,14 @@
         elements.removeProductImageButton.addEventListener("click", () => {
             clearSelectedProductImage(true);
         });
+
+        elements.chooseProductGalleryButton.addEventListener("click", () => {
+            elements.productGalleryFiles.click();
+        });
+
+        elements.productGalleryFiles.addEventListener("change", handleProductGallerySelection);
+
+        elements.productGalleryPreview.addEventListener("click", handleProductGalleryRemoval);
 
         elements.productModal.addEventListener("click", (event) => {
             if (event.target === elements.productModal) {
@@ -982,6 +997,119 @@
         elements.productFormError.hidden = true;
     }
 
+    function renderProductGalleryPreview() {
+        const container = elements.productGalleryPreview;
+        container.replaceChildren();
+
+        const addPreview = (url, label, type, index) => {
+            const item = document.createElement("div");
+            item.className = "product-gallery-preview-item";
+
+            const image = document.createElement("img");
+            image.src = url;
+            image.alt = label;
+
+            const remove = document.createElement("button");
+            remove.type = "button";
+            remove.textContent = "×";
+            remove.setAttribute("aria-label", "Remove " + label);
+            remove.dataset.galleryType = type;
+            remove.dataset.galleryIndex = String(index);
+
+            const caption = document.createElement("small");
+            caption.textContent = label;
+
+            item.append(image, remove, caption);
+            container.append(item);
+        };
+
+        state.existingProductImages.forEach((url, index) => {
+            addPreview(url, "Existing image " + (index + 1), "existing", index);
+        });
+
+        state.selectedGalleryFiles.forEach((file, index) => {
+            addPreview(
+                state.galleryPreviewUrls[index],
+                file.name,
+                "selected",
+                index
+            );
+        });
+
+        const count = state.existingProductImages.length +
+            state.selectedGalleryFiles.length;
+
+        elements.productGalleryStatus.textContent =
+            count + " of 5 additional images selected.";
+    }
+
+    function clearProductGallery() {
+        state.galleryPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+
+        state.existingProductImages = [];
+        state.selectedGalleryFiles = [];
+        state.galleryPreviewUrls = [];
+
+        elements.productGalleryFiles.value = "";
+        renderProductGalleryPreview();
+    }
+
+    function handleProductGallerySelection(event) {
+        const input = event.currentTarget;
+        const files = Array.from(input.files || []);
+        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+        let added = 0;
+        let rejected = 0;
+
+        files.forEach((file) => {
+            const currentCount = state.existingProductImages.length +
+                state.selectedGalleryFiles.length;
+
+            if (!allowedTypes.includes(file.type) ||
+                file.size > 5 * 1024 * 1024 ||
+                currentCount >= 5) {
+                rejected++;
+                return;
+            }
+
+            state.selectedGalleryFiles.push(file);
+            state.galleryPreviewUrls.push(URL.createObjectURL(file));
+            added++;
+        });
+
+        input.value = "";
+        renderProductGalleryPreview();
+
+        if (rejected) {
+            showFormError(
+                rejected + " image(s) were not added. Maximum 5 images, JPG/PNG/WebP, 5 MB each."
+            );
+        } else if (added) {
+            elements.productFormError.hidden = true;
+        }
+    }
+
+    function handleProductGalleryRemoval(event) {
+        const button = event.target.closest("button[data-gallery-type]");
+        if (!button) return;
+
+        const index = Number(button.dataset.galleryIndex);
+
+        if (button.dataset.galleryType === "existing") {
+            state.existingProductImages.splice(index, 1);
+        } else if (button.dataset.galleryType === "selected") {
+            const previewUrl = state.galleryPreviewUrls[index];
+
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+
+            state.selectedGalleryFiles.splice(index, 1);
+            state.galleryPreviewUrls.splice(index, 1);
+        }
+
+        renderProductGalleryPreview();
+    }
+
     async function uploadProductImage(file) {
         const formData = new FormData();
         formData.append("image", file);
@@ -1004,7 +1132,17 @@
         $("#productId").value = "";
 
         clearSelectedProductImage(true);
+        clearProductGallery();
+
         state.currentProductImageUrl = product ? (product.image || "") : "";
+
+        if (product && Array.isArray(product.images)) {
+            state.existingProductImages = product.images.filter(
+                (url) => typeof url === "string" && /^https:\/\//i.test(url)
+            );
+        }
+
+        renderProductGalleryPreview();
 
         if (state.currentProductImageUrl) {
             elements.productImagePreview.src = state.currentProductImageUrl;
@@ -1095,6 +1233,7 @@
         button.disabled = true;
         elements.chooseProductImageButton.disabled = true;
         elements.removeProductImageButton.disabled = true;
+        elements.chooseProductGalleryButton.disabled = true;
 
         try {
             let image = state.currentProductImageUrl;
@@ -1118,6 +1257,23 @@
                 return;
             }
 
+            const galleryImages = [...state.existingProductImages];
+
+            for (let i = 0; i < state.selectedGalleryFiles.length; i++) {
+                button.querySelector("span").textContent =
+                    "Uploading gallery image " + (i + 1) + "...";
+
+                elements.productGalleryStatus.textContent =
+                    "Uploading image " + (i + 1) + " of " +
+                    state.selectedGalleryFiles.length + "...";
+
+                const uploadedUrl = await uploadProductImage(
+                    state.selectedGalleryFiles[i]
+                );
+
+                galleryImages.push(uploadedUrl);
+            }
+
             const payload = {
                 name,
                 description,
@@ -1125,6 +1281,7 @@
                 stock,
                 category,
                 image,
+                images: galleryImages,
                 featured
             };
 
@@ -1156,6 +1313,7 @@
             button.disabled = false;
             elements.chooseProductImageButton.disabled = false;
             elements.removeProductImageButton.disabled = false;
+            elements.chooseProductGalleryButton.disabled = false;
             button.querySelector("span").textContent = originalText;
         }
     }
