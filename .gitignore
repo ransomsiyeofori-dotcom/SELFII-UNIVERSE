@@ -16,3 +16,6 @@ Backend/cookies.txt
 *.backup
 *.broken-backup
 *.before-*
+
+# Protect backend environment secrets
+Backend/env

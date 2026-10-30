@@ -17,7 +17,12 @@
         loadingProducts: false,
         selectedProductImage: null,
         currentProductImageUrl: "",
-        productImagePreviewUrl: ""
+        productImagePreviewUrl: "",
+        orders: [],
+        orderPage: 1,
+        orderPages: 1,
+        orderSearchTimer: null,
+        loadingOrders: false
     };
 
     const elements = {
@@ -38,7 +43,8 @@
         productImagePreviewContainer: $("#productImagePreviewContainer"),
         productImageUploadStatus: $("#productImageUploadStatus"),
         productGrid: $("#productsTable"),
-        recentOrders: $("#recentOrders")
+        recentOrders: $("#recentOrders"),
+        ordersTable: $("#ordersTable")
     };
 
     async function api(path, options = {}) {
@@ -227,10 +233,8 @@
 
         $("#refreshOverview").addEventListener("click", refreshDashboard);
         $("#refreshOrders").addEventListener("click", () => {
-            showNotice(
-                "The orders API has not been connected yet.",
-                "error"
-            );
+            state.orderPage = 1;
+            loadAdminOrders();
         });
 
         $("#refreshCustomers").addEventListener("click", () => {
@@ -278,10 +282,16 @@
         $("#productStatusFilter").addEventListener("change", renderProducts);
 
         $("#orderSearch").addEventListener("input", () => {
-            showNotice(
-                "Order search will be enabled when the orders API is connected.",
-                "error"
-            );
+            clearTimeout(state.orderSearchTimer);
+            state.orderSearchTimer = setTimeout(() => {
+                state.orderPage = 1;
+                loadAdminOrders();
+            }, 350);
+        });
+
+        $("#orderStatusFilter").addEventListener("change", () => {
+            state.orderPage = 1;
+            loadAdminOrders();
         });
 
         $("#customerSearch").addEventListener("input", () => {
@@ -598,28 +608,314 @@
         return names[category] || category || "Uncategorized";
     }
 
-    function updateOverview() {
-        $("#statProducts").textContent = String(state.products.length);
 
-        $("#navProductCount").textContent = String(state.products.length);
+    async function loadAdminOrders() {
+        if (state.loadingOrders) return;
 
-        // Orders, customers, and revenue remain unknown until their real
-        // administrator endpoints are implemented.
-        $("#statOrders").textContent = "—";
-        $("#statCustomers").textContent = "—";
-        $("#statRevenue").textContent = "—";
-
-        elements.recentOrders.replaceChildren();
-
-        const message = createElement(
-            "div",
-            "empty-inline",
-            "Recent orders will appear here after the administrator orders API is connected."
+        state.loadingOrders = true;
+        elements.ordersTable.replaceChildren(
+            createElement("div", "empty-inline", "Loading orders...")
         );
 
-        elements.recentOrders.append(message);
+        try {
+            const params = new URLSearchParams({
+                page: String(state.orderPage),
+                limit: "20"
+            });
+
+            const search = $("#orderSearch").value.trim();
+            const status = $("#orderStatusFilter").value;
+
+            if (search) params.set("search", search);
+            if (status) params.set("status", status);
+
+            const data = await api("/orders/admin?" + params.toString());
+
+            state.orders = Array.isArray(data.orders) ? data.orders : [];
+            state.orderPage = Number(data.pagination?.page || 1);
+            state.orderPages = Math.max(1, Number(data.pagination?.pages || 1));
+
+            renderAdminOrders();
+        } catch (error) {
+            elements.ordersTable.replaceChildren(
+                createElement("div", "empty-inline", "Could not load orders: " + error.message)
+            );
+
+            if (error.status === 401 || error.status === 403) {
+                showNotice(error.message, "error");
+            }
+        } finally {
+            state.loadingOrders = false;
+        }
     }
 
+    function renderAdminOrders() {
+        const wrapper = createElement("div", "orders-table-wrapper");
+
+        if (!state.orders.length) {
+            elements.ordersTable.replaceChildren(
+                createElement("div", "empty-inline", "No orders found.")
+            );
+            return;
+        }
+
+        const table = document.createElement("table");
+        table.className = "admin-orders-table";
+
+        const thead = document.createElement("thead");
+        const headerRow = document.createElement("tr");
+
+        ["Order", "Customer", "Date", "Total", "Payment", "Order status", "Action"]
+            .forEach((label) => headerRow.append(createElement("th", "", label)));
+
+        thead.append(headerRow);
+        table.append(thead);
+
+        const tbody = document.createElement("tbody");
+
+        state.orders.forEach((order) => {
+            const row = document.createElement("tr");
+
+            const orderCell = createElement("td");
+            orderCell.append(
+                createElement("strong", "", order.orderNumber || "Order"),
+                createElement("small", "", String(order._id || ""))
+            );
+            row.append(orderCell);
+
+            const customerCell = createElement("td");
+            customerCell.append(
+                createElement("span", "", order.customerName || "Customer"),
+                createElement("small", "", order.customerEmail || order.customerPhone || "")
+            );
+            row.append(customerCell);
+
+            row.append(createElement("td", "", formatDate(order.createdAt)));
+            row.append(createElement("td", "", formatMoney(order.totalAmount)));
+
+            const paymentCell = createElement("td");
+            paymentCell.append(
+                createElement("span", "", String(order.paymentMethod || "—").replace(/_/g, " ")),
+                createBadge(
+                    String(order.paymentStatus || "pending"),
+                    order.paymentStatus === "paid" ? "success" : "warning"
+                )
+            );
+            row.append(paymentCell);
+
+            const statusCell = createElement("td");
+            const statusSelect = document.createElement("select");
+            statusSelect.className = "order-status-select";
+
+            [
+                ["pending_payment", "Pending payment"],
+                ["processing", "Processing"],
+                ["printing", "Printing"],
+                ["shipped", "Shipped"],
+                ["delivered", "Delivered"],
+                ["cancelled", "Cancelled"]
+            ].forEach(([value, label]) => {
+                const option = document.createElement("option");
+                option.value = value;
+                option.textContent = label;
+                statusSelect.append(option);
+            });
+
+            statusSelect.value = order.orderStatus || "pending_payment";
+            statusCell.append(statusSelect);
+            row.append(statusCell);
+
+            const actionCell = createElement("td");
+            const updateButton = createElement("button", "secondary-button", "Update");
+            updateButton.type = "button";
+
+            updateButton.addEventListener("click", async () => {
+                updateButton.disabled = true;
+
+                try {
+                    await api("/orders/admin/" + encodeURIComponent(order._id), {
+                        method: "PATCH",
+                        body: JSON.stringify({
+                            orderStatus: statusSelect.value
+                        })
+                    });
+
+                    showNotice("Order status updated.", "success");
+                    await loadAdminOrders();
+                } catch (error) {
+                    showNotice("Could not update order: " + error.message, "error");
+                } finally {
+                    updateButton.disabled = false;
+                }
+            });
+
+            actionCell.append(updateButton);
+
+            if (
+                order.paymentMethod === "bank_transfer" &&
+                order.paymentStatus === "pending"
+            ) {
+                const confirmButton = createElement(
+                    "button",
+                    "primary-button",
+                    "Confirm transfer"
+                );
+                confirmButton.type = "button";
+
+                confirmButton.addEventListener("click", async () => {
+                    if (!window.confirm(
+                        "Confirm that you have checked the actual bank account and received this customer's payment?"
+                    )) return;
+
+                    const transactionReference = window.prompt(
+                        "Enter the bank transaction reference:"
+                    );
+
+                    if (!transactionReference || !transactionReference.trim()) {
+                        showNotice("A transaction reference is required.", "error");
+                        return;
+                    }
+
+                    const confirmationNote = window.prompt(
+                        "Optional confirmation note:",
+                        ""
+                    );
+
+                    confirmButton.disabled = true;
+
+                    try {
+                        await api(
+                            "/orders/admin/" + encodeURIComponent(order._id) + "/confirm-bank-transfer",
+                            {
+                                method: "POST",
+                                body: JSON.stringify({
+                                    transactionReference: transactionReference.trim(),
+                                    confirmationNote: (confirmationNote || "").trim()
+                                })
+                            }
+                        );
+
+                        showNotice("Bank transfer confirmed.", "success");
+                        await loadAdminOrders();
+                        await loadAdminStats();
+                    } catch (error) {
+                        showNotice("Could not confirm transfer: " + error.message, "error");
+                    } finally {
+                        confirmButton.disabled = false;
+                    }
+                });
+
+                actionCell.append(confirmButton);
+            }
+
+            row.append(actionCell);
+            tbody.append(row);
+        });
+
+        table.append(tbody);
+        wrapper.append(table);
+
+        const pagination = createElement("div", "orders-pagination");
+        const previous = createElement("button", "secondary-button", "Previous");
+        const pageLabel = createElement(
+            "span",
+            "",
+            "Page " + state.orderPage + " of " + state.orderPages
+        );
+        const next = createElement("button", "secondary-button", "Next");
+
+        previous.type = "button";
+        next.type = "button";
+        previous.disabled = state.orderPage <= 1;
+        next.disabled = state.orderPage >= state.orderPages;
+
+        previous.addEventListener("click", () => {
+            if (state.orderPage > 1) {
+                state.orderPage -= 1;
+                loadAdminOrders();
+            }
+        });
+
+        next.addEventListener("click", () => {
+            if (state.orderPage < state.orderPages) {
+                state.orderPage += 1;
+                loadAdminOrders();
+            }
+        });
+
+        pagination.append(previous, pageLabel, next);
+        wrapper.append(pagination);
+        elements.ordersTable.replaceChildren(wrapper);
+    }
+
+    async function loadAdminStats() {
+        try {
+            const data = await api("/orders/admin/stats");
+            const stats = data.stats || {};
+
+            $("#statOrders").textContent = String(stats.totalOrders ?? 0);
+            $("#statCustomers").textContent = String(stats.totalCustomers ?? 0);
+            $("#statRevenue").textContent = formatMoney(stats.totalRevenue ?? 0);
+
+            return stats;
+        } catch (error) {
+            $("#statOrders").textContent = "—";
+            $("#statCustomers").textContent = "—";
+            $("#statRevenue").textContent = "—";
+
+            if (error.status === 401 || error.status === 403) {
+                showNotice(error.message, "error");
+            }
+        }
+    }
+
+    async function loadRecentOrders() {
+        try {
+            const data = await api("/orders/admin?page=1&limit=5");
+            const orders = Array.isArray(data.orders) ? data.orders : [];
+            elements.recentOrders.replaceChildren();
+
+            if (!orders.length) {
+                elements.recentOrders.append(
+                    createElement("div", "empty-inline", "No orders have been placed yet.")
+                );
+                return;
+            }
+
+            orders.forEach((order) => {
+                const item = createElement("div", "recent-order-item");
+                const details = createElement("div");
+                details.append(
+                    createElement("strong", "", order.orderNumber || "Order"),
+                    createElement("small", "", order.customerName || order.customerEmail || "Customer")
+                );
+
+                const meta = createElement("div");
+                meta.append(
+                    createElement("strong", "", formatMoney(order.totalAmount)),
+                    createBadge(
+                        String(order.orderStatus || "pending_payment").replace(/_/g, " "),
+                        order.paymentStatus === "paid" ? "success" : "warning"
+                    )
+                );
+
+                item.append(details, meta);
+                elements.recentOrders.append(item);
+            });
+        } catch (error) {
+            elements.recentOrders.replaceChildren(
+                createElement("div", "empty-inline", "Could not load recent orders: " + error.message)
+            );
+        }
+    }
+
+    function updateOverview() {
+        $("#statProducts").textContent = String(state.products.length);
+        $("#navProductCount").textContent = String(state.products.length);
+
+        loadAdminStats();
+        loadRecentOrders();
+    }
 
     function clearSelectedProductImage(clearExisting = false) {
         if (state.productImagePreviewUrl) {

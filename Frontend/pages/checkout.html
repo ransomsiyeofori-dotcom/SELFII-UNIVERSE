@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#17262D">
+    <meta name="description" content="Complete your SELFII UNIVERSE order securely.">
+    <title>Checkout | SELFII UNIVERSE</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/checkout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="checkout-page">
+
+    <div class="announcement-bar">
+        Custom printing and creative design by SELFII Studio
+    </div>
+
+    <header class="checkout-header">
+        <a class="checkout-brand" href="../index.html" aria-label="SELFII UNIVERSE home">
+            SELFII <span>UNIVERSE</span>
+        </a>
+        <a class="checkout-back" href="cart.html">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to cart
+        </a>
+    </header>
+
+    <main class="checkout-main">
+        <section class="checkout-intro">
+            <p class="checkout-eyebrow">ALMOST YOURS</p>
+            <h1>Complete your <em>order.</em></h1>
+            <p>Confirm your details and delivery address before proceeding.</p>
+
+            <div class="checkout-progress" aria-label="Checkout progress">
+                <span class="progress-step is-complete"><i class="fa-solid fa-check"></i> Cart</span>
+                <span class="progress-line"></span>
+                <span class="progress-step is-current"><i class="fa-solid fa-location-dot"></i> Delivery</span>
+                <span class="progress-line"></span>
+                <span class="progress-step"><i class="fa-solid fa-lock"></i> Payment</span>
+            </div>
+        </section>
+
+        <div id="checkoutNotice" class="checkout-notice" role="status" aria-live="polite" hidden></div>
+
+        <div class="checkout-layout">
+            <form id="checkoutForm" class="checkout-form" novalidate>
+                <section class="checkout-card">
+                    <div class="checkout-card-heading">
+                        <span class="checkout-number">01</span>
+                        <div>
+                            <h2>Contact information</h2>
+                            <p>Where we can reach you about your order.</p>
+                        </div>
+                    </div>
+
+                    <div class="checkout-field">
+                        <label for="customerName">Full name</label>
+                        <input id="customerName" name="customerName" type="text" autocomplete="name" required maxlength="100" placeholder="Your full name">
+                    </div>
+
+                    <div class="checkout-field">
+                        <label for="customerEmail">Email address</label>
+                        <input id="customerEmail" name="customerEmail" type="email" autocomplete="email" readonly required maxlength="254" placeholder="Your account email">
+                        <small>We'll use your account email for order updates.</small>
+                    </div>
+
+                    <div class="checkout-field">
+                        <label for="customerPhone">Phone number</label>
+                        <input id="customerPhone" name="customerPhone" type="tel" autocomplete="tel" required maxlength="25" placeholder="e.g. 08012345678">
+                    </div>
+                </section>
+
+                <section class="checkout-card">
+                    <div class="checkout-card-heading">
+                        <span class="checkout-number">02</span>
+                        <div>
+                            <h2>Delivery address</h2>
+                            <p>Enter the address where your order should be delivered.</p>
+                        </div>
+                    </div>
+
+                    <div class="checkout-field">
+                        <label for="addressLine">Street address</label>
+                        <input id="addressLine" name="addressLine" type="text" autocomplete="street-address" required maxlength="300" placeholder="House number, street and area">
+                    </div>
+
+                    <div class="checkout-fields-row">
+                        <div class="checkout-field">
+                            <label for="city">City or town</label>
+                            <input id="city" name="city" type="text" autocomplete="address-level2" required maxlength="100" placeholder="City">
+                        </div>
+                        <div class="checkout-field">
+                            <label for="state">State</label>
+                            <input id="state" name="state" type="text" autocomplete="address-level1" required maxlength="100" placeholder="State">
+                        </div>
+                    </div>
+
+                    <div class="checkout-field">
+                        <label for="country">Country</label>
+                        <input id="country" name="country" type="text" autocomplete="country-name" value="Nigeria" required maxlength="100">
+                    </div>
+
+                    <label class="checkout-checkbox">
+                        <input id="confirmAddress" type="checkbox" required>
+                        <span>I confirm that my contact and delivery details are correct.</span>
+                    </label>
+                </section>
+
+                <section class="checkout-card payment-preview">
+                    <div class="checkout-card-heading">
+                        <span class="checkout-number">03</span>
+                        <div>
+                            <h2>Payment</h2>
+                            <p>Your payment status will be verified securely.</p>
+                        </div>
+                    </div>
+
+                    <div class="payment-method-preview">
+                        <span class="payment-icon"><i class="fa-solid fa-building-columns"></i></span>
+                        <div>
+                            <strong>KoraPay</strong>
+                            <p>Bank transfer and other available payment options.</p>
+                        </div>
+                        <span class="payment-pending">Coming next</span>
+                    </div>
+
+                    <p class="payment-safety-note">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Your order will remain unpaid until payment is verified by the server. This page does not collect your card PIN or banking password.
+                    </p>
+                </section>
+
+                <button class="checkout-submit" id="placeOrderButton" type="submit">
+                    <span id="placeOrderText">Create order</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+                <p class="checkout-terms">
+                    By continuing, you confirm that the information above is accurate.
+                </p>
+            </form>
+
+            <aside class="checkout-summary">
+                <div class="checkout-summary-heading">
+                    <h2>Your order</h2>
+                    <a href="cart.html">Edit cart</a>
+                </div>
+
+                <div id="checkoutItems" class="checkout-items"></div>
+
+                <div id="checkoutEmpty" class="checkout-empty" hidden>
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <p>Your cart is empty.</p>
+                    <a href="shop.html">Continue shopping</a>
+                </div>
+
+                <div class="checkout-totals">
+                    <div><span>Subtotal</span><strong id="checkoutSubtotal">₦0</strong></div>
+                    <div><span>Delivery</span><strong id="checkoutDelivery">Confirmed later</strong></div>
+                    <div class="checkout-grand-total"><span>Order total</span><strong id="checkoutTotal">₦0</strong></div>
+                </div>
+
+                <p class="checkout-summary-note">
+                    The final delivery charge must be confirmed before payment.
+                </p>
+
+                <div class="checkout-assurance">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Secure order processing</span>
+                </div>
+            </aside>
+        </div>
+
+        <section id="orderCreatedPanel" class="order-created-panel" hidden>
+            <div class="order-created-icon"><i class="fa-solid fa-check"></i></div>
+            <p class="checkout-eyebrow">ORDER CREATED</p>
+            <h2>Your order has been received.</h2>
+            <p id="createdOrderMessage">Your order is awaiting payment setup. No payment has been taken.</p>
+            <div class="created-order-reference">
+                <span>Order number</span>
+                <strong id="createdOrderNumber"></strong>
+            </div>
+            <a class="checkout-submit created-order-link" href="orders.html">View my orders</a>
+            <a class="created-order-back" href="../index.html">Continue exploring SELFII</a>
+        </section>
+    </main>
+
+    <footer class="checkout-footer">
+        <p>&copy; <span id="currentYear"></span> SELFII UNIVERSE. All rights reserved.</p>
+        <a href="cart.html">Return to cart</a>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/checkout.js"></script>
+</body>
+</html>

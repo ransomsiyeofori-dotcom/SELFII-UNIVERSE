@@ -341,20 +341,40 @@ exports.updateProduct = async (req, res, next) => {
             updates.images = updates.images.map(image => image.trim());
         }
 
-        const product = await Product.findByIdAndUpdate(
-            req.params.id,
+        const filter = { _id: req.params.id };
+
+        if (updates.stock !== undefined) {
+            filter.$expr = {
+                $lte: [
+                    { $ifNull: ["$reservedStock", 0] },
+                    updates.stock
+                ]
+            };
+        }
+
+        const product = await Product.findOneAndUpdate(
+            filter,
             { $set: updates },
             {
                 new: true,
                 runValidators: true,
-                context: 'query'
+                context: "query"
             }
         );
 
         if (!product) {
+            const exists = await Product.exists({ _id: req.params.id });
+
+            if (exists && updates.stock !== undefined) {
+                return res.status(409).json({
+                    success: false,
+                    message: "Stock cannot be lower than the quantity reserved for pending orders."
+                });
+            }
+
             return res.status(404).json({
                 success: false,
-                message: 'Product not found.'
+                message: "Product not found."
             });
         }
 
