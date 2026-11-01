@@ -12,7 +12,9 @@ const {
     getAddresses,
     addAddress,
     updateAddress,
-    deleteAddress
+    deleteAddress,
+    forgotPassword,
+    resetPassword
 } = require('../controllers/authController');
 
 const { requireAuth } = require('../middleware/authMiddleware');
@@ -54,6 +56,20 @@ const authLimiter = rateLimit({
         message: 'Too many attempts. Please try again in 15 minutes.'
     }
 });
+
+const passwordResetLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 5,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    message: {
+        success: false,
+        message: 'Too many password-reset attempts. Please try again later.'
+    }
+});
+
+router.post('/forgot-password', passwordResetLimiter, forgotPassword);
+router.post('/reset-password', passwordResetLimiter, resetPassword);
 
 router.post('/register', authLimiter, register);
 router.post('/login', authLimiter, login);
