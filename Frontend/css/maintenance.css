@@ -312,6 +312,17 @@ h1 span {
     background: rgba(191, 91, 64, .1);
 }
 
+.catalog-button {
+    background: rgba(247, 244, 236, .08);
+    color: var(--cream);
+    border: 1px solid rgba(191, 91, 64, .7);
+}
+
+.catalog-button:hover {
+    background: rgba(191, 91, 64, .16);
+    border-color: var(--terracotta);
+}
+
 .contact-note {
     margin-top: 18px;
     color: #918f89;
