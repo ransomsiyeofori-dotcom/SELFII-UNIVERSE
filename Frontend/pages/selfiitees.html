@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/shop.css">
     <link rel="stylesheet" href="../css/boutique.css">
+    <link rel="stylesheet" href="../css/design-studio.css">
     <script src="../js/maintenance-gate.js"></script>
 </head>
 
@@ -106,6 +107,178 @@
             </div>
         </section>
 
+
+        <section class="design-studio-section" id="selfiiDesignStudio">
+            <div class="design-studio-heading">
+                <span class="eyebrow">YOUR IDEA. YOUR STYLE. YOUR SELFII.</span>
+                <h2>Create something <em>uniquely yours.</em></h2>
+                <p>Upload your photo or artwork, choose what you want it printed on, and create your custom design.</p>
+            </div>
+
+            <div class="design-studio-layout">
+                <div class="design-studio-controls">
+                    <div class="studio-step">
+                        <span class="studio-step-number">01</span>
+                        <div>
+                            <h3>Upload your artwork</h3>
+                            <p>Choose a photo, picture or design from your device.</p>
+                        </div>
+                        <label class="studio-upload-button" for="studioArtwork">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            Choose image
+                        </label>
+                        <input type="file" id="studioArtwork" accept="image/jpeg,image/png,image/webp" hidden>
+                        <p id="studioFileName" class="studio-file-name">No image selected yet.</p>
+                    </div>
+
+                    <div class="studio-step">
+                        <span class="studio-step-number">02</span>
+                        <div>
+                            <h3>Choose your product</h3>
+                            <p>What would you like your design printed on?</p>
+                        </div>
+                        <select id="studioProduct">
+                            <option value="T-shirt">T-shirt</option>
+                            <option value="Hoodie">Hoodie</option>
+                            <option value="Cap">Cap</option>
+                            <option value="Mug">Mug</option>
+                            <option value="Tote bag">Tote bag</option>
+                            <option value="Pillow">Pillow</option>
+                            <option value="iPhone Case">iPhone Case</option>
+                        </select>
+                    </div>
+
+                    <div class="studio-step">
+                        <span class="studio-step-number">03</span>
+                        <div>
+                            <h3>Choose your print style</h3>
+                            <p>Decide how your photo or artwork should appear.</p>
+                        </div>
+                        <label class="studio-choice">
+                            <input type="radio" name="studioPrintStyle" value="full-photo" checked>
+                            <span><strong>Full photo</strong><small>Print the complete image.</small></span>
+                        </label>
+                        <label class="studio-choice">
+                            <input type="radio" name="studioPrintStyle" value="background-removed">
+                            <span><strong>Remove background</strong><small>Keep the subject and remove its background.</small></span>
+                        </label>
+                    </div>
+
+                    
+
+                    <div class="studio-step">
+                        <span class="studio-step-number">04</span>
+                        <div>
+                            <h3>Where should it go?</h3>
+                            <p>Choose where you want the design placed.</p>
+                        </div>
+                        <select id="studioPlacement">
+                            <option value="Front">Front</option>
+                            <option value="Back">Back</option>
+                            <option value="Left chest">Left chest</option>
+                            <option value="Full front">Full front</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="design-studio-preview">
+                    <div class="studio-preview-top">
+                        <span class="eyebrow">YOUR DESIGN PREVIEW</span>
+                        <span class="studio-preview-status" id="studioPreviewStatus">Waiting for artwork</span>
+                    </div>
+                    <div class="studio-preview-stage" id="studioPreviewStage">
+                        <div class="studio-preview-placeholder" id="studioPreviewPlaceholder">
+                            <i class="fa-solid fa-shirt"></i>
+                            <h3>Your creation starts here</h3>
+                            <p>Upload an image to begin your custom design.</p>
+                        </div>
+                        <div class="studio-product-mockup" id="studioProductMockup" hidden>
+                            <div class="studio-mockup-loading" id="studioMockupLoading" hidden role="status" aria-live="polite">
+                                <div class="studio-loading-spinner"></div>
+                                <strong id="studioLoadingTitle">Preparing your mockup...</strong>
+                                <p id="studioLoadingMessage">Uploading your artwork and generating your preview.</p>
+                                <div class="studio-loading-track">
+                                    <div class="studio-loading-progress"></div>
+                                </div>
+                            </div>
+                            <img id="studioProductImage" alt="Selected SELFII product mockup">
+                            <img id="studioArtworkPreview" alt="Uploaded artwork rendering source" hidden>
+                            <canvas id="studioPreviewCanvas" width="930" height="990" aria-label="Live custom clothing print preview"></canvas>
+                            <img id="studioDynamicMockup" alt="Realistic SELFII custom T-shirt preview" hidden>
+                        </div>
+                    </div>
+                    <p class="studio-preview-note">Preview is for design guidance. Final print appearance may vary.</p>
+                    <button type="button" class="button button-primary studio-submit-button" id="studioSubmit">
+                        Continue with this design
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="studio-order-panel" id="studioOrderPanel" hidden>
+                <div class="studio-step">
+                    <span class="studio-step-number">05</span>
+                    <h3>Your order details</h3>
+                    <p>Tell us how to prepare your custom printing request.</p>
+
+                    <form id="studioOrderForm">
+                        <label for="studioCustomerName">Full name</label>
+                        <input type="text" id="studioCustomerName" name="customerName"
+                            placeholder="Your full name" minlength="2" maxlength="100" required>
+
+                        <label for="studioCustomerEmail">Email address</label>
+                        <input type="email" id="studioCustomerEmail" name="customerEmail"
+                            placeholder="you@example.com" maxlength="254" required>
+
+                        <label for="studioCustomerPhone">Phone number</label>
+                        <input type="tel" id="studioCustomerPhone" name="customerPhone"
+                            placeholder="Your phone number" minlength="7" maxlength="25" required>
+
+                        <label for="studioSupplyOption">Who will supply the product?</label>
+                        <select id="studioSupplyOption" name="supplyOption" required>
+                            <option value="customer-item">I'll provide my own item</option>
+                            <option value="selfii-item">SELFII should provide the item</option>
+                        </select>
+
+                        <label for="studioQuantity">Quantity</label>
+                        <input type="number" id="studioQuantity" name="quantity"
+                            min="1" max="10000" value="1" required>
+
+                        <label for="studioPurpose">Purpose of the print</label>
+                        <select id="studioPurpose" name="purpose" required>
+                            <option value="">Select a purpose</option>
+                            <option value="Personal use">Personal use</option>
+                            <option value="Business or brand merchandise">Business or brand merchandise</option>
+                            <option value="Event">Event</option>
+                            <option value="Gift">Gift</option>
+                            <option value="Other">Other</option>
+                        </select>
+
+                        <label for="studioPreferredDate">Preferred date (optional)</label>
+                        <input type="date" id="studioPreferredDate" name="preferredDate">
+
+                        <label for="studioDesignDetails">Additional design instructions</label>
+                        <textarea id="studioDesignDetails" name="designDetails"
+                            rows="5" minlength="10" maxlength="3000"
+                            placeholder="Tell us about colours, sizing, special instructions or other requirements."
+                            required></textarea>
+
+                        <p id="studioOrderStatus" role="status" aria-live="polite"></p>
+
+                        <button type="submit" class="button button-primary studio-submit-button"
+                            id="studioOrderSubmit">
+                            Submit print request
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+
+                        <button type="button" class="studio-back-button" id="studioBackButton">
+                            Back to design preview
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
         <section class="boutique-intro">
             <span class="eyebrow">WEAR YOUR EXPRESSION</span>
             <h2>More than a T-shirt.<br><em>It.s your story.</em></h2>
@@ -182,6 +355,8 @@
 
     <script src="../js/main.js"></script>
     <script src="../js/cart.js"></script>
+    <script src="../js/api-config.js"></script>
     <script src="../js/selfiitees.js"></script>
+    <script src="../js/design-studio.js"></script>
 </body>
 </html>

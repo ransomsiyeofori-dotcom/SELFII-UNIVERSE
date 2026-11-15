@@ -9,6 +9,9 @@ const PRICES = {
     'Mug': { 'customer-item': 2500, 'selfii-item': 4500 },
     'Tote bag': { 'customer-item': 2000, 'selfii-item': 4000 },
     'Cap': { 'customer-item': 2000, 'selfii-item': 4000 },
+    'Trousers': { 'customer-item': null, 'selfii-item': null },
+    'Shorts': { 'customer-item': null, 'selfii-item': null },
+    'Jacket': { 'customer-item': null, 'selfii-item': null },
     'Jersey': { 'customer-item': 3500, 'selfii-item': 7500 },
     'Other item': { 'customer-item': null, 'selfii-item': null }
 };

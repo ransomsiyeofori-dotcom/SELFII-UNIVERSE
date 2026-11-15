@@ -1,0 +1,557 @@
+/* =========================================
+   SELFII UNIVERSE — CUSTOM DESIGN STUDIO
+   Matches the SELFII Tees boutique theme
+========================================= */
+
+.design-studio-section {
+    padding: 100px 5%;
+    background: var(--boutique-cream);
+    color: var(--boutique-dark);
+}
+
+.design-studio-heading {
+    max-width: 760px;
+    margin: 0 auto 55px;
+    text-align: center;
+}
+
+.design-studio-heading .eyebrow {
+    color: var(--boutique-terracotta);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.17em;
+}
+
+.design-studio-heading h2 {
+    margin: 16px 0;
+    font-family: "Playfair Display", serif;
+    font-size: clamp(34px, 5vw, 58px);
+    font-weight: 500;
+    line-height: 1.15;
+}
+
+.design-studio-heading h2 em {
+    color: var(--boutique-terracotta);
+}
+
+.design-studio-heading p {
+    max-width: 590px;
+    margin: 0 auto;
+    color: var(--boutique-muted);
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.design-studio-layout {
+    width: min(1180px, 100%);
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: 28px;
+}
+
+.design-studio-controls {
+    display: grid;
+    gap: 14px;
+}
+
+.studio-step {
+    padding: 25px;
+    background: var(--boutique-white);
+    border: 1px solid var(--boutique-border);
+    border-radius: 4px;
+}
+
+.studio-step-number {
+    display: inline-flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 13px;
+    border-radius: 50%;
+    background: var(--boutique-surface);
+    color: var(--boutique-terracotta);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.studio-step h3 {
+    margin: 0 0 7px;
+    font-family: "Playfair Display", serif;
+    font-size: 21px;
+    font-weight: 600;
+}
+
+.studio-step > div p {
+    margin: 0 0 17px;
+    color: var(--boutique-muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.studio-upload-button {
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 18px;
+    border: 1px dashed var(--boutique-terracotta);
+    background: var(--boutique-cream);
+    color: var(--boutique-dark);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    transition: background 0.2s ease;
+}
+
+.studio-upload-button:hover {
+    background: var(--boutique-surface);
+}
+
+.studio-upload-button i {
+    color: var(--boutique-terracotta);
+}
+
+.studio-file-name {
+    margin: 10px 0 0;
+    color: var(--boutique-muted);
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+
+#studioProduct,
+#studioPlacement {
+    width: 100%;
+    min-height: 47px;
+    padding: 10px 13px;
+    border: 1px solid var(--boutique-border);
+    border-radius: 2px;
+    outline: none;
+    background: var(--boutique-cream);
+    color: var(--boutique-dark);
+    font-size: 13px;
+}
+
+#studioProduct:focus,
+#studioPlacement:focus {
+    border-color: var(--boutique-terracotta);
+}
+
+.studio-choice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px;
+    margin-top: 10px;
+    border: 1px solid var(--boutique-border);
+    background: var(--boutique-cream);
+    cursor: pointer;
+}
+
+.studio-choice input {
+    margin-top: 4px;
+    accent-color: var(--boutique-terracotta);
+}
+
+.studio-choice span {
+    display: grid;
+    gap: 4px;
+}
+
+.studio-choice strong {
+    font-size: 12px;
+}
+
+.studio-choice small {
+    color: var(--boutique-muted);
+    font-size: 11px;
+}
+
+.design-studio-preview {
+    position: sticky;
+    top: 110px;
+    padding: 25px;
+    background: var(--boutique-white);
+    border: 1px solid var(--boutique-border);
+}
+
+.studio-preview-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.studio-preview-top .eyebrow {
+    color: var(--boutique-terracotta);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+}
+
+.studio-preview-status {
+    color: var(--boutique-muted);
+    font-size: 10px;
+}
+
+.studio-preview-stage {
+    position: relative;
+    min-height: 390px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--boutique-surface);
+    border: 1px solid var(--boutique-border);
+}
+
+.studio-preview-placeholder {
+    max-width: 260px;
+    padding: 25px;
+    text-align: center;
+}
+
+.studio-preview-placeholder i {
+    margin-bottom: 17px;
+    color: var(--boutique-terracotta);
+    font-size: 48px;
+}
+
+.studio-preview-placeholder h3 {
+    margin: 0 0 8px;
+    font-family: "Playfair Display", serif;
+    font-size: 22px;
+}
+
+.studio-preview-placeholder p {
+    margin: 0;
+    color: var(--boutique-muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+#studioArtworkPreview {
+    max-width: 85%;
+    max-height: 340px;
+    object-fit: contain;
+    border-radius: 2px;
+}
+
+#studioArtworkPreview[hidden] {
+    display: none;
+}
+
+.studio-preview-note {
+    margin: 14px 0 20px;
+    color: var(--boutique-muted);
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+.studio-submit-button {
+    width: 100%;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 0;
+    cursor: pointer;
+}
+
+@media (max-width: 850px) {
+    .design-studio-section {
+        padding: 75px 5%;
+    }
+
+    .design-studio-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .design-studio-preview {
+        position: static;
+    }
+}
+
+@media (max-width: 520px) {
+    .design-studio-section {
+        padding: 60px 18px;
+    }
+
+    .design-studio-heading {
+        margin-bottom: 35px;
+    }
+
+    .studio-step,
+    .design-studio-preview {
+        padding: 19px;
+    }
+
+    .studio-preview-stage {
+        min-height: 300px;
+    }
+
+    #studioArtworkPreview {
+        max-height: 260px;
+    }
+}
+
+/* SELFII PRODUCT MOCKUP AND ARTWORK OVERLAY */
+
+.studio-product-mockup {
+    position: relative;
+    width: 100%;
+    height: 390px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.studio-product-mockup[hidden] {
+    display: none;
+}
+
+#studioProductImage {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+
+.studio-product-mockup #studioArtworkPreview {
+    position: absolute;
+    z-index: 2;
+    transform: translate(-50%, -50%);
+    max-width: none;
+    max-height: 180px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 0;
+    pointer-events: none;
+}
+
+@media (max-width: 520px) {
+    .studio-product-mockup {
+        height: 300px;
+    }
+
+    .studio-product-mockup #studioArtworkPreview {
+        max-height: 140px;
+    }
+}
+
+/* SELFII PRINTING METHOD PREVIEW EFFECTS */
+
+/* DTG: softer, fabric-blended appearance */
+.studio-product-mockup #studioArtworkPreview.studio-print-dtg {
+    opacity: 0.90;
+    mix-blend-mode: screen;
+    filter: contrast(0.96) saturate(0.92);
+}
+
+/* Screen printing: stronger, defined print */
+.studio-product-mockup #studioArtworkPreview.studio-print-screen-print {
+    opacity: 0.96;
+    mix-blend-mode: normal;
+    filter: contrast(1.12) saturate(1.08);
+}
+
+/* Embroidery: subtle raised, stitched-looking appearance */
+.studio-product-mockup #studioArtworkPreview.studio-print-embroidery {
+    opacity: 0.95;
+    mix-blend-mode: screen;
+    filter:
+        drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.18))
+        drop-shadow(-1px -1px 0 rgba(0, 0, 0, 0.35))
+        drop-shadow(1px 2px 1px rgba(0, 0, 0, 0.25));
+}
+
+/* SELFII CANVAS-BASED GARMENT PREVIEW */
+#studioProductImage {
+    display: none;
+}
+
+#studioPreviewCanvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 3;
+}
+
+/* SELFII CUSTOMER ORDER DETAILS */
+
+.studio-order-panel {
+    width: min(1180px, 100%);
+    margin: 28px auto 0;
+}
+
+.studio-order-panel[hidden] {
+    display: none;
+}
+
+.studio-order-panel .studio-step {
+    max-width: 760px;
+    margin: auto;
+    padding: 35px;
+}
+
+.studio-order-panel h3 {
+    margin: 0 0 8px;
+    font-family: "Playfair Display", serif;
+    font-size: 27px;
+}
+
+.studio-order-panel form {
+    display: grid;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.studio-order-panel label {
+    margin-top: 9px;
+    color: var(--boutique-dark);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.studio-order-panel input,
+.studio-order-panel select,
+.studio-order-panel textarea {
+    width: 100%;
+    min-height: 47px;
+    padding: 12px 13px;
+    border: 1px solid var(--boutique-border);
+    border-radius: 2px;
+    outline: none;
+    background: var(--boutique-cream);
+    color: var(--boutique-dark);
+    font: inherit;
+    font-size: 13px;
+}
+
+.studio-order-panel textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.studio-order-panel input:focus,
+.studio-order-panel select:focus,
+.studio-order-panel textarea:focus {
+    border-color: var(--boutique-terracotta);
+}
+
+.studio-back-button {
+    min-height: 46px;
+    border: 1px solid var(--boutique-border);
+    background: transparent;
+    color: var(--boutique-dark);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+#studioOrderStatus {
+    color: var(--boutique-muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+@media (max-width: 520px) {
+    .studio-order-panel .studio-step {
+        padding: 20px;
+    }
+}
+
+
+/* SELFII DYNAMIC MOCKUPS REALISTIC PREVIEW */
+#studioDynamicMockup {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+}
+
+#studioDynamicMockup[hidden] {
+    display: none;
+}
+
+/* SELFII Dynamic Mockup Loading Indicator */
+.studio-mockup-loading[hidden] {
+    display: none;
+}
+
+.studio-mockup-loading {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 24px;
+    background: rgba(15, 15, 15, 0.72);
+    color: #fff;
+    text-align: center;
+}
+
+.studio-loading-spinner {
+    width: 38px;
+    height: 38px;
+    border: 3px solid rgba(255,255,255,0.25);
+    border-top-color: var(--boutique-terracotta, #c47b61);
+    border-radius: 50%;
+    animation: studioLoadingSpin 0.8s linear infinite;
+}
+
+.studio-mockup-loading p {
+    margin: 0;
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+}
+
+.studio-loading-track {
+    width: min(100%, 260px);
+    height: 5px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.2);
+}
+
+.studio-loading-progress {
+    width: 40%;
+    height: 100%;
+    border-radius: 10px;
+    background: var(--boutique-terracotta, #c47b61);
+    animation: studioLoadingProgress 1.4s ease-in-out infinite;
+}
+
+@keyframes studioLoadingSpin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes studioLoadingProgress {
+    0% { transform: translateX(-110%); }
+    100% { transform: translateX(270%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .studio-loading-spinner,
+    .studio-loading-progress {
+        animation: none;
+    }
+}

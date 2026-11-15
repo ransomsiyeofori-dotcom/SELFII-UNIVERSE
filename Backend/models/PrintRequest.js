@@ -34,6 +34,9 @@ const printRequestSchema = new mongoose.Schema({
             'Mug',
             'Tote bag',
             'Cap',
+            'Trousers',
+            'Shorts',
+            'Jacket',
             'Jersey',
             'Other item'
         ]

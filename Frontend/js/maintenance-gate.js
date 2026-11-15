@@ -2,14 +2,13 @@
 
 /*
  * SELFII UNIVERSE MAINTENANCE GATE
- *
- * Set MAINTENANCE_MODE to false when the website is ready.
- * Password recovery remains accessible during maintenance.
+ * Only SELFII Tees and password recovery remain accessible.
  */
 
 const MAINTENANCE_MODE = true;
 
 const allowedDuringMaintenance = [
+    "selfiitees.html",
     "forgot-password.html",
     "reset-password.html"
 ];
