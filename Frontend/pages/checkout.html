@@ -12,24 +12,89 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/checkout.css">
+    <link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="../js/maintenance-gate.js"></script>
 </head>
 <body class="checkout-page">
 
     <div class="announcement-bar">
-        Custom printing and creative design by SELFII Studio
+        Made personal. Made with care.
+        <span>Discover your universe.</span>
     </div>
 
-    <header class="checkout-header">
-        <a class="checkout-brand" href="../index.html" aria-label="SELFII UNIVERSE home">
-            SELFII <span>UNIVERSE</span>
-        </a>
-        <a class="checkout-back" href="cart.html">
-            <i class="fa-solid fa-arrow-left"></i>
-            Back to cart
-        </a>
+    <header class="header">
+        <button class="icon-button menu-toggle" id="menuToggle"
+            aria-label="Open navigation" aria-expanded="false">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <a href="../index.html" class="logo">SELFII <span>UNIVERSE</span></a>
+
+        <nav class="desktop-nav" aria-label="Main navigation">
+            <a href="../index.html#boutique">Boutique</a>
+            <a href="../index.html#selfiitees">Selfiitees</a>
+            <a href="../index.html#print-selfii">Print Selfii</a>
+        </nav>
+
+        <div class="header-actions">
+            <button type="button" class="icon-button search-toggle"
+                id="searchToggle" aria-label="Search products">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            <a href="cart.html" class="icon-button cart-link" aria-label="Shopping cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-count" id="cartCount">0</span>
+            </a>
+            <div class="account-menu" id="accountMenu">
+                <a href="login.html" class="icon-button account-link" id="accountLink"
+                    aria-label="My account">
+                    <i class="fa-regular fa-user"></i>
+                </a>
+                <div class="account-dropdown" id="accountDropdown" hidden>
+                    <div class="account-dropdown-user">
+                        <img src="" alt="Your profile photo"
+                            class="account-dropdown-photo" id="accountDropdownPhoto" hidden>
+                        <div class="account-dropdown-placeholder" id="accountDropdownPlaceholder">
+                            <i class="fa-regular fa-user"></i>
+                        </div>
+                        <div class="account-dropdown-details">
+                            <strong id="accountDropdownName">My Account</strong>
+                            <span id="accountDropdownEmail"></span>
+                        </div>
+                    </div>
+                    <a href="../dashboard/customer.html">My Dashboard</a>
+                    <a href="../dashboard/customer.html#section-profile">My Profile</a>
+                    <a href="../dashboard/customer.html#section-orders">My Orders</a>
+                    <button type="button" id="accountSignOut">
+                        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                    </button>
+                </div>
+            </div>
+        </div>
     </header>
+
+    <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
+        <a href="../index.html#boutique">SELFII Boutique</a>
+        <a href="../index.html#selfiitees">Selfiitees</a>
+        <a href="../index.html#print-selfii">Print Selfii</a>
+        <a href="../index.html#shop">Shop All Products</a>
+        <a href="contact.html">Contact</a>
+        <a href="login.html">My Account</a>
+    </nav>
+
+    <form class="search-panel" id="searchForm">
+        <input type="search" id="searchInput"
+            placeholder="Search clothing, gifts and prints..."
+            aria-label="Search products">
+        <button type="submit" aria-label="Submit search">
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </form>
+
+    <div class="checkout-back-link">
+        <a href="cart.html"><i class="fa-solid fa-arrow-left"></i> Back to cart</a>
+    </div>
 
     <main class="checkout-main">
         <section class="checkout-intro">
@@ -199,5 +264,6 @@
     <script src="../js/main.js"></script>
     <script src="../js/cart.js"></script>
     <script src="../js/checkout.js"></script>
+    <script src="../js/header.js"></script>
 </body>
 </html>

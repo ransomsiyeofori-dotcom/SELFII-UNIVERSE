@@ -1,0 +1,121 @@
+/* Shared homepage header compatibility for legacy page styles */
+
+.boutique-page .header {
+    min-height: 82px;
+    padding: 12px max(24px, calc((100% - 1180px) / 2));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+}
+
+.boutique-page .desktop-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+}
+
+.boutique-page .desktop-nav a {
+    padding: 0;
+    color: var(--dark);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.boutique-page .desktop-nav a:hover,
+.boutique-page .desktop-nav a.active {
+    color: var(--terracotta);
+}
+
+.boutique-page .desktop-nav a.active::after {
+    content: none;
+}
+
+.boutique-page .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.boutique-page .header .icon-button {
+    width: auto;
+    height: auto;
+    min-width: 28px;
+    min-height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--dark);
+    font-size: 20px;
+}
+
+.boutique-page .header .icon-button:hover {
+    background: transparent;
+    color: var(--terracotta);
+}
+
+.boutique-page .header .cart-link #cartCount {
+    top: 0;
+    right: -8px;
+    width: 17px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0;
+    border-radius: 50%;
+    background: var(--dark);
+    color: #fff;
+    font-size: 9px;
+}
+
+.boutique-page .header .menu-toggle {
+    display: none;
+}
+
+.boutique-page .mobile-nav.active {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 24px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 15px 25px #17262d12;
+}
+
+.boutique-page .mobile-nav a {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--dark);
+    font-size: 14px;
+}
+
+@media (max-width: 900px) {
+    .boutique-page .desktop-nav {
+        display: none;
+    }
+
+    .boutique-page .header .menu-toggle {
+        display: inline-flex;
+    }
+}
+
+@media (max-width: 600px) {
+    .boutique-page .header {
+        padding: 12px 18px;
+    }
+
+    .boutique-page .header-actions {
+        gap: 12px;
+    }
+
+    .boutique-page .mobile-nav {
+        top: 100px;
+    }
+}
