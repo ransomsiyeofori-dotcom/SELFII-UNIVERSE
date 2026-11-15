@@ -5,7 +5,7 @@
  * Only SELFII Tees and password recovery remain accessible.
  */
 
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false;
 
 const allowedDuringMaintenance = [
     "selfiitees.html",
