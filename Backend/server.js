@@ -13,6 +13,7 @@ const productRoutes = require('./routes/productRoutes');
 const printRequestRoutes = require('./routes/printRequestRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const dynamicMockupRoutes = require('./routes/dynamicMockupRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -82,6 +83,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/print-requests', printRequestRoutes);
 app.use('/api/dynamic-mockups', dynamicMockupRoutes);
+app.use('/api/contact', contactRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({

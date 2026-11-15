@@ -1,0 +1,23 @@
+const express = require('express');
+const rateLimit = require('express-rate-limit');
+
+const {
+    submitContactMessage
+} = require('../controllers/contactController');
+
+const router = express.Router();
+
+const contactLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 5,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    message: {
+        success: false,
+        message: 'Too many contact attempts. Please try again in 15 minutes.'
+    }
+});
+
+router.post('/', contactLimiter, submitContactMessage);
+
+module.exports = router;

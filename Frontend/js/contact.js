@@ -90,16 +90,63 @@
             return;
         }
 
-        /*
-         * The backend endpoint will be connected after we inspect
-         * the existing API routes. Do not silently pretend a message
-         * was delivered when no delivery endpoint is configured.
-         */
+        if (!window.SELFII_API_URL) {
+            showFeedback(
+                "The contact service is unavailable. Please email selfiitees@gmail.com.",
+                "error"
+            );
+            return;
+        }
 
-        showFeedback(
-            "The form is ready, but message delivery has not been connected yet. Please email selfiitees@gmail.com for now.",
-            "error"
-        );
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = "Sending...";
+        }
+
+        try {
+            const response = await fetch(`${window.SELFII_API_URL}/contact`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    subject,
+                    orderNumber,
+                    message,
+                    consent
+                })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(
+                    result.message || "We could not send your message. Please try again."
+                );
+            }
+
+            showFeedback(
+                result.message || "Your message has been sent successfully.",
+                "success"
+            );
+
+            contactForm.reset();
+            updateCharacterCount();
+        } catch (error) {
+            showFeedback(
+                error.message === "Failed to fetch"
+                    ? "We couldn't reach the contact service. Please try again shortly."
+                    : error.message || "Something went wrong. Please try again.",
+                "error"
+            );
+        } finally {
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalButtonContent;
+            }
+        }
     });
 
     window.addEventListener("pageshow", () => {
