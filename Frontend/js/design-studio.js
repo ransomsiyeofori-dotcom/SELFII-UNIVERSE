@@ -19,6 +19,17 @@
     const orderPanel = document.getElementById("studioOrderPanel");
     const orderForm = document.getElementById("studioOrderForm");
     const backButton = document.getElementById("studioBackButton");
+    const faceCheckStatus = document.getElementById("studioFaceCheckStatus");
+    const gallery = document.getElementById("studioMockupGallery");
+    const galleryStatus = document.getElementById("studioGalleryStatus");
+
+    const galleryProducts = [
+        { name: "T-shirt", image: "studioGalleryTshirt", status: "studioGalleryTshirtStatus" },
+        { name: "Hoodie", image: "studioGalleryHoodie", status: "studioGalleryHoodieStatus" },
+        { name: "Cap", image: "studioGalleryCap", status: "studioGalleryCapStatus" },
+        { name: "Mug", image: "studioGalleryMug", status: "studioGalleryMugStatus" },
+        { name: "Tote bag", image: "studioGalleryTote", status: "studioGalleryToteStatus" }
+    ];
 
     if (
         !artworkInput || !productSelect || !placementSelect ||
@@ -57,6 +68,7 @@
     let previewURL = null;
     let artworkReady = false;
     let mockupRequestId = 0;
+    let faceCheckRequestId = 0;
 
     function setMockupLoading(visible, title, message) {
         if (!mockupLoading) return;
@@ -103,98 +115,88 @@
             `${product} · ${placementSelect.value} · ${method} · ${style}`;
     }
 
-    async function generateDynamicMockup(file) {
-        const product = productSelect.value;
-
-        if (!dynamicMockupImage || !["T-shirt", "Hoodie", "Cap", "Mug", "Tote bag"].includes(product)) {
-            return;
-        }
-
+    async function renderAllDynamicMockups(file) {
         const requestId = ++mockupRequestId;
 
-        setMockupLoading(
-            true,
-            "Uploading your artwork...",
-            "Please wait while we prepare your realistic mockup."
-        );
+        if (!gallery) return;
 
-        dynamicMockupImage.hidden = true;
-        dynamicMockupImage.removeAttribute("src");
-        canvas.style.display = "none";
-        productImage.hidden = true;
-
-        if (previewStatus) {
-            previewStatus.textContent = `Generating realistic ${product} preview...`;
+        gallery.hidden = false;
+        if (galleryStatus) {
+            galleryStatus.textContent = "Creating five realistic product previews...";
         }
 
-        try {
-            const formData = new FormData();
-            formData.append("artwork", file);
-            formData.append("product", product);
+        galleryProducts.forEach((product) => {
+            const image = document.getElementById(product.image);
+            const status = document.getElementById(product.status);
+            if (image) {
+                image.hidden = true;
+                image.removeAttribute("src");
+            }
+            if (status) status.textContent = "Preparing preview...";
+        });
 
-            const response = await fetch(
-                `${window.SELFII_API_URL}/dynamic-mockups/render`,
-                {
-                    method: "POST",
-                    body: formData
-                }
-            );
+        const results = await Promise.allSettled(
+            galleryProducts.map(async (product) => {
+                const formData = new FormData();
+                formData.append("artwork", file);
+                formData.append("product", product.name);
 
-            const result = await response.json();
-
-            if (requestId !== mockupRequestId) return;
-
-            if (!response.ok || !result.success || !result.previewUrl) {
-                throw new Error(
-                    result.message || "The realistic preview could not be generated."
+                const response = await fetch(
+                    `${window.SELFII_API_URL}/dynamic-mockups/render`,
+                    { method: "POST", body: formData }
                 );
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success || !result.previewUrl) {
+                    throw new Error(result.message || "Preview unavailable");
+                }
+
+                return { product, previewUrl: result.previewUrl };
+            })
+        );
+
+        if (requestId !== mockupRequestId) return;
+
+        let ready = 0;
+
+        results.forEach((result, index) => {
+            const product = galleryProducts[index];
+            const image = document.getElementById(product.image);
+            const status = document.getElementById(product.status);
+
+            if (result.status !== "fulfilled" || !image) {
+                if (status) status.textContent = "Preview unavailable";
+                return;
             }
 
-            setMockupLoading(
-                true,
-                "Your mockup is ready...",
-                "Loading your finished preview."
-            );
-
-            dynamicMockupImage.onload = () => {
+            image.onload = () => {
                 if (requestId !== mockupRequestId) return;
-
-                setMockupLoading(false);
-                dynamicMockupImage.hidden = false;
-                canvas.style.display = "none";
-                productImage.hidden = true;
-
-                if (previewStatus) {
-                    previewStatus.textContent = `Realistic ${product} preview ready`;
+                image.hidden = false;
+                ready++;
+                if (status) status.textContent = "Preview ready";
+                if (galleryStatus) {
+                    galleryStatus.textContent =
+                        `${ready} of 5 product previews ready. Choose a product to continue.`;
                 }
             };
 
-            dynamicMockupImage.onerror = () => {
+            image.onerror = () => {
                 if (requestId !== mockupRequestId) return;
-
-                setMockupLoading(false);
-                dynamicMockupImage.hidden = true;
-                canvas.style.display = "block";
-
-                if (previewStatus) {
-                    previewStatus.textContent = "Could not load realistic preview";
-                }
+                image.hidden = true;
+                if (status) status.textContent = "Could not load preview";
             };
 
-            dynamicMockupImage.src = result.previewUrl;
+            image.src = result.value.previewUrl;
+        });
 
-        } catch (error) {
-            if (requestId !== mockupRequestId) return;
-
-            console.error("SELFII Dynamic Mockups error:", error);
-
-            setMockupLoading(false);
-            dynamicMockupImage.hidden = true;
-            canvas.style.display = "block";
-
-            if (previewStatus) {
-                previewStatus.textContent = "Realistic preview unavailable";
-            }
+        const failed = results.filter((result) => result.status === "rejected").length;
+        if (galleryStatus && failed === 5) {
+            galleryStatus.textContent =
+                "We couldn't create the previews. Please try uploading your selfie again.";
+        } else if (galleryStatus && failed > 0) {
+            galleryStatus.textContent =
+                `${failed} preview(s) could not be generated. Available previews are shown above.`;
         }
     }
 
@@ -315,15 +317,12 @@
         updatePreviewStatus();
     }
 
-    artworkInput.addEventListener("change", () => {
+    artworkInput.addEventListener("change", async () => {
         const file = artworkInput.files?.[0];
         if (!file) return;
 
-        const allowedTypes = [
-            "image/jpeg",
-            "image/png",
-            "image/webp"
-        ];
+        const faceCheckId = ++faceCheckRequestId;
+        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
         if (!allowedTypes.includes(file.type)) {
             artworkInput.value = "";
@@ -337,56 +336,116 @@
             return;
         }
 
-        uploadedArtwork = file;
+        uploadedArtwork = null;
         artworkReady = false;
+        mockupRequestId++;
 
-        if (previewURL) {
-            URL.revokeObjectURL(previewURL);
+        if (faceCheckStatus) {
+            faceCheckStatus.textContent = "Checking your photo for a visible face...";
         }
+        if (fileName) fileName.textContent = file.name;
 
-        previewURL = URL.createObjectURL(file);
+        try {
+            if (typeof window.SELFII_detectFace !== "function") {
+                throw new Error("The face-check service is unavailable.");
+            }
 
-        previewImage.onload = () => {
-            artworkReady = true;
-            renderCanvas();
+            const hasFace = await window.SELFII_detectFace(file);
+
+            if (faceCheckId !== faceCheckRequestId) return;
+
+            if (!hasFace) {
+                artworkInput.value = "";
+                if (faceCheckStatus) {
+                    faceCheckStatus.textContent =
+                        "No clear face was detected. Please upload a selfie with your face visible.";
+                }
+                if (fileName) fileName.textContent = "No selfie uploaded yet.";
+                return;
+            }
+
+            uploadedArtwork = file;
+
+            if (faceCheckStatus) {
+                faceCheckStatus.textContent =
+                    "Face detected. Your selfie has passed the photo check.";
+            }
+
+            if (previewURL) URL.revokeObjectURL(previewURL);
+            previewURL = URL.createObjectURL(file);
+
+            previewImage.onload = () => {
+                artworkReady = true;
+                renderCanvas();
+                updatePreviewStatus();
+            };
+
+            previewImage.onerror = () => {
+                uploadedArtwork = null;
+                artworkReady = false;
+                if (faceCheckStatus) {
+                    faceCheckStatus.textContent =
+                        "The photo could not be loaded. Please try another image.";
+                }
+            };
+
+            previewImage.src = previewURL;
+            previewImage.hidden = true;
+
+            if (placeholder) placeholder.hidden = true;
+            renderAllDynamicMockups(file);
             updatePreviewStatus();
-        };
 
-        previewImage.onerror = () => {
+            console.log("SELFII selfie passed face detection:", file.name);
+        } catch (error) {
+            if (faceCheckId !== faceCheckRequestId) return;
+
+            console.error("SELFII face detection failed:", error);
+            uploadedArtwork = null;
             artworkReady = false;
-            alert("The selected image could not be loaded. Please try another image.");
-        };
+            artworkInput.value = "";
 
-        previewImage.src = previewURL;
-
-        if (["T-shirt", "Hoodie", "Cap", "Mug", "Tote bag"].includes(productSelect.value)) {
-            generateDynamicMockup(file);
+            if (faceCheckStatus) {
+                faceCheckStatus.textContent =
+                    "We couldn't verify this photo. Check your connection and try again.";
+            }
+            if (fileName) fileName.textContent = "No selfie uploaded yet.";
         }
-        previewImage.hidden = true;
-
-        if (fileName) {
-            fileName.textContent = file.name;
-        }
-
-        updatePreviewStatus();
-
-        console.log("SELFII artwork selected:", file.name);
     });
 
     productSelect.addEventListener("change", () => {
-        mockupRequestId++;
-        setMockupLoading(false);
         updateProductPreview();
 
-        if (["T-shirt", "Hoodie", "Cap", "Mug", "Tote bag"].includes(productSelect.value) && uploadedArtwork) {
-            generateDynamicMockup(uploadedArtwork);
-        } else if (dynamicMockupImage) {
-            dynamicMockupImage.hidden = true;
+        document.querySelectorAll(".studio-gallery-card").forEach((card) => {
+            card.classList.toggle(
+                "is-selected",
+                card.dataset.product === productSelect.value
+            );
+        });
 
-            const usesExternalMockup = ["T-shirt", "Hoodie", "Cap", "Mug", "Tote bag"].includes(productSelect.value);
-            canvas.style.display = usesExternalMockup ? "none" : "block";
-            productImage.hidden = usesExternalMockup;
-        }
+        updatePreviewStatus();
+    });
+
+    document.querySelectorAll("[data-select-product]").forEach((button) => {
+        button.addEventListener("click", () => {
+            if (!uploadedArtwork) {
+                alert("Please upload a selfie and wait for the face check first.");
+                artworkInput.click();
+                return;
+            }
+
+            productSelect.value = button.dataset.selectProduct;
+            productSelect.dispatchEvent(new Event("change", { bubbles: true }));
+
+            if (!orderPanel || !orderForm) {
+                alert("The customer details form could not be loaded.");
+                return;
+            }
+
+            orderPanel.hidden = false;
+            if (submitButton) submitButton.hidden = true;
+            orderPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
     });
 
     placementSelect.addEventListener("change", () => {
@@ -425,9 +484,8 @@
             orderPanel.hidden = true;
         }
 
-        if (submitButton) {
-            submitButton.hidden = false;
-            submitButton.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (gallery) {
+            gallery.scrollIntoView({ behavior: "smooth", block: "start" });
         }
     });
 
@@ -446,15 +504,8 @@
         if (!orderForm.reportValidity()) return;
 
         const selectedMethod = getProductionMethod();
-        const selectedStyle = getPrintStyle();
-
-        const styleLabel = selectedStyle === "full-photo"
-            ? "Full photo"
-            : "Background removal requested";
-
         const designDetails = [
             `Print method: ${methodLabels[selectedMethod] || "DTG printing"}`,
-            `Print style: ${styleLabel}`,
             `Additional instructions: ${document.getElementById("studioDesignDetails").value.trim()}`
         ].join("\n");
 

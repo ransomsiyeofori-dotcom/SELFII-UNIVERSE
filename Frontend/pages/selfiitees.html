@@ -97,37 +97,11 @@
     </form>
 
     <main>
-        <section class="boutique-hero">
-            <div class="boutique-hero-content">
-                <span class="eyebrow">SELFII TEES</span>
-                <h1>Wear your story. <em>Make it yours.</em></h1>
-                <p>
-                    Discover expressive T-shirts and wearable designs that celebrate
-                    individuality, culture, and your unique style.
-                </p>
-                <a href="#boutiqueProducts" class="button button-primary">
-                    Explore SELFII Tees
-                    <i class="fa-solid fa-arrow-down"></i>
-                </a>
-            </div>
-
-            <div class="boutique-hero-image">
-                <img src="../assets/images/signature.jpeg"
-                    alt="SELFII Tees wearable designs and personalised fashion"
-                    fetchpriority="high">
-                <div class="hero-image-caption">
-                    <span>SELFII UNIVERSE</span>
-                    <span>Wear your story.</span>
-                </div>
-            </div>
-        </section>
-
-
         <section class="design-studio-section" id="selfiiDesignStudio">
             <div class="design-studio-heading">
-                <span class="eyebrow">YOUR IDEA. YOUR STYLE. YOUR SELFII.</span>
-                <h2>Create something <em>uniquely yours.</em></h2>
-                <p>Upload your photo or artwork, choose what you want it printed on, and create your custom design.</p>
+                <span class="eyebrow">YOUR SELFIE. YOUR STYLE. YOUR SELFII.</span>
+                <h2>Put your face on <em>your favourite things.</em></h2>
+                <p>Start by uploading a clear selfie. We’ll check for a visible face and create realistic previews across our available products.</p>
             </div>
 
             <div class="design-studio-layout">
@@ -135,18 +109,19 @@
                     <div class="studio-step">
                         <span class="studio-step-number">01</span>
                         <div>
-                            <h3>Upload your artwork</h3>
-                            <p>Choose a photo, picture or design from your device.</p>
+                            <h3>Upload your selfie</h3>
+                            <p>Choose a clear photo of yourself with your face visible. Images without a detectable face will not be accepted.</p>
                         </div>
                         <label class="studio-upload-button" for="studioArtwork">
                             <i class="fa-solid fa-cloud-arrow-up"></i>
-                            Choose image
+                            Upload my selfie
                         </label>
                         <input type="file" id="studioArtwork" accept="image/jpeg,image/png,image/webp" hidden>
-                        <p id="studioFileName" class="studio-file-name">No image selected yet.</p>
+                        <p id="studioFileName" class="studio-file-name">No selfie uploaded yet.</p>
+                        <p id="studioFaceCheckStatus" class="studio-face-check-status" role="status" aria-live="polite">Your selfie will be checked before previews are created.</p>
                     </div>
 
-                    <div class="studio-step">
+                    <div class="studio-step" hidden>
                         <span class="studio-step-number">02</span>
                         <div>
                             <h3>Choose your product</h3>
@@ -163,7 +138,7 @@
                         </select>
                     </div>
 
-                    <div class="studio-step">
+                    <div class="studio-step" hidden>
                         <span class="studio-step-number">03</span>
                         <div>
                             <h3>Choose your print style</h3>
@@ -196,7 +171,7 @@
                     </div>
                 </div>
 
-                <div class="design-studio-preview">
+                <div class="design-studio-preview" hidden>
                     <div class="studio-preview-top">
                         <span class="eyebrow">YOUR DESIGN PREVIEW</span>
                         <span class="studio-preview-status" id="studioPreviewStatus">Waiting for artwork</span>
@@ -204,8 +179,8 @@
                     <div class="studio-preview-stage" id="studioPreviewStage">
                         <div class="studio-preview-placeholder" id="studioPreviewPlaceholder">
                             <i class="fa-solid fa-shirt"></i>
-                            <h3>Your creation starts here</h3>
-                            <p>Upload an image to begin your custom design.</p>
+                            <h3>Your selfie goes everywhere</h3>
+                            <p>Upload your selfie to see it on our available products.</p>
                         </div>
                         <div class="studio-product-mockup" id="studioProductMockup" hidden>
                             <div class="studio-mockup-loading" id="studioMockupLoading" hidden role="status" aria-live="polite">
@@ -229,6 +204,58 @@
                     </button>
                 </div>
             </div>
+
+
+            <section class="studio-gallery" id="studioMockupGallery" hidden aria-labelledby="studioGalleryTitle">
+                <div class="studio-gallery-heading">
+                    <span class="eyebrow">ONE SELFIE. FIVE POSSIBILITIES.</span>
+                    <h3 id="studioGalleryTitle">See your selfie on every product</h3>
+                    <p>We’re creating realistic previews across our available products. Choose one to continue with your order.</p>
+                    <p id="studioGalleryStatus" class="studio-gallery-status" role="status" aria-live="polite">Waiting for your selfie.</p>
+                </div>
+                <div class="studio-gallery-grid">
+                    <article class="studio-gallery-card" data-product="T-shirt">
+                        <div class="studio-gallery-image-wrap">
+                            <img id="studioGalleryTshirt" alt="Your selfie preview on a T-shirt" hidden>
+                            <span id="studioGalleryTshirtStatus">Waiting for selfie</span>
+                        </div>
+                        <h4>T-shirt</h4>
+                        <button type="button" class="studio-gallery-select" data-select-product="T-shirt">Choose T-shirt</button>
+                    </article>
+                    <article class="studio-gallery-card" data-product="Hoodie">
+                        <div class="studio-gallery-image-wrap">
+                            <img id="studioGalleryHoodie" alt="Your selfie preview on a Hoodie" hidden>
+                            <span id="studioGalleryHoodieStatus">Waiting for selfie</span>
+                        </div>
+                        <h4>Hoodie</h4>
+                        <button type="button" class="studio-gallery-select" data-select-product="Hoodie">Choose Hoodie</button>
+                    </article>
+                    <article class="studio-gallery-card" data-product="Cap">
+                        <div class="studio-gallery-image-wrap">
+                            <img id="studioGalleryCap" alt="Your selfie preview on a Cap" hidden>
+                            <span id="studioGalleryCapStatus">Waiting for selfie</span>
+                        </div>
+                        <h4>Cap</h4>
+                        <button type="button" class="studio-gallery-select" data-select-product="Cap">Choose Cap</button>
+                    </article>
+                    <article class="studio-gallery-card" data-product="Mug">
+                        <div class="studio-gallery-image-wrap">
+                            <img id="studioGalleryMug" alt="Your selfie preview on a Mug" hidden>
+                            <span id="studioGalleryMugStatus">Waiting for selfie</span>
+                        </div>
+                        <h4>Mug</h4>
+                        <button type="button" class="studio-gallery-select" data-select-product="Mug">Choose Mug</button>
+                    </article>
+                    <article class="studio-gallery-card" data-product="Tote bag">
+                        <div class="studio-gallery-image-wrap">
+                            <img id="studioGalleryTote" alt="Your selfie preview on a Tote bag" hidden>
+                            <span id="studioGalleryToteStatus">Waiting for selfie</span>
+                        </div>
+                        <h4>Tote bag</h4>
+                        <button type="button" class="studio-gallery-select" data-select-product="Tote bag">Choose Tote bag</button>
+                    </article>
+                </div>
+            </section>
 
             <div class="studio-order-panel" id="studioOrderPanel" hidden>
                 <div class="studio-step">
@@ -372,6 +399,7 @@
     <script src="../js/cart.js"></script>
     <script src="../js/api-config.js"></script>
     <script src="../js/selfiitees.js"></script>
+    <script type="module" src="../js/design-studio-face-check.js"></script>
     <script src="../js/design-studio.js"></script>
     <script src="../js/header.js"></script>
 </body>
