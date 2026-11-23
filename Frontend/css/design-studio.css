@@ -684,3 +684,90 @@
         font-size: 12px;
     }
 }
+
+/* Keep inactive preview images hidden on SELFII Tees */
+.selfiitees-page img[hidden] {
+    display: none;
+}
+
+
+/* SELFII interactive 3D T-shirt preview */
+#studio3DViewer {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    overflow: hidden;
+    background: #202020;
+    touch-action: none;
+}
+
+#studio3DViewer[hidden] {
+    display: none;
+}
+
+#studio3DViewer canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    outline: none;
+}
+
+#studio3DViewer .studio-3d-status {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 5;
+    color: #eee;
+    background: rgba(0, 0, 0, 0.55);
+    padding: 7px 10px;
+    border-radius: 4px;
+    font: 12px Arial, sans-serif;
+    pointer-events: none;
+}
+
+
+/* SELFII: keep inactive 3D product viewers completely hidden. */
+#studio3DViewer[hidden],
+#studio3DMugViewer[hidden],
+#studio3DCapViewer[hidden] {
+    display: none !important;
+}
+
+
+/* Hide the old 2D preview canvas whenever a 3D product is selected. */
+#studioPreviewCanvas[hidden] {
+    display: none !important;
+}
+
+
+/* SELFII: make all five gallery previews fill their image areas. */
+.studio-gallery-image-wrap {
+    height: 260px;
+    min-height: 260px;
+    width: 100%;
+    padding: 0;
+}
+
+.studio-gallery-image-wrap img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.studio-gallery-image-wrap img[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 520px) {
+    .studio-gallery-image-wrap {
+        height: 190px;
+        min-height: 190px;
+    }
+}

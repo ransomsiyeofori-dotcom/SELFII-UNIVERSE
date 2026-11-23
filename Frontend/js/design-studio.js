@@ -21,15 +21,17 @@
     const backButton = document.getElementById("studioBackButton");
     const faceCheckStatus = document.getElementById("studioFaceCheckStatus");
     const gallery = document.getElementById("studioMockupGallery");
+    const previewPanel = document.querySelector(".design-studio-preview");
     const galleryStatus = document.getElementById("studioGalleryStatus");
 
     const galleryProducts = [
-        { name: "T-shirt", image: "studioGalleryTshirt", status: "studioGalleryTshirtStatus" },
-        { name: "Hoodie", image: "studioGalleryHoodie", status: "studioGalleryHoodieStatus" },
-        { name: "Cap", image: "studioGalleryCap", status: "studioGalleryCapStatus" },
-        { name: "Mug", image: "studioGalleryMug", status: "studioGalleryMugStatus" },
-        { name: "Tote bag", image: "studioGalleryTote", status: "studioGalleryToteStatus" }
-    ];
+        { name: "T-shirt", image: "studioGalleryTshirt", status: "studioGalleryTshirtStatus", api: "SELFII_3D_TSHIRT" },
+        { name: "Cap", image: "studioGalleryCap", status: "studioGalleryCapStatus", api: "SELFII_3D_CAP" },
+        { name: "Mug", image: "studioGalleryMug", status: "studioGalleryMugStatus", api: "SELFII_3D_MUG" },
+        { name: "Picture Frame", image: "studioGalleryFrame", status: "studioGalleryFrameStatus", api: "SELFII_3D_FRAME" },
+        { name: "Tote bag", image: "studioGalleryTote", status: "studioGalleryToteStatus", api: "SELFII_3D_TOTE" },
+ { name:"Pillow", image:"studioGalleryPillow", status:"studioGalleryPillowStatus", api:"SELFII_3D_PILLOW" }
+];
 
     if (
         !artworkInput || !productSelect || !placementSelect ||
@@ -118,88 +120,117 @@
     async function renderAllDynamicMockups(file) {
         const requestId = ++mockupRequestId;
 
-        if (!gallery) return;
+        if (!gallery || !productMockup) return;
+
+        // Make the 3D viewers measurable before capturing gallery previews.
+        if (previewPanel) previewPanel.hidden = false;
 
         gallery.hidden = false;
+
         if (galleryStatus) {
-            galleryStatus.textContent = "Creating five realistic product previews...";
+            galleryStatus.textContent = "Preparing five interactive product previews...";
         }
 
         galleryProducts.forEach((product) => {
             const image = document.getElementById(product.image);
             const status = document.getElementById(product.status);
+
             if (image) {
                 image.hidden = true;
                 image.removeAttribute("src");
             }
+
             if (status) status.textContent = "Preparing preview...";
         });
 
-        const results = await Promise.allSettled(
-            galleryProducts.map(async (product) => {
-                const formData = new FormData();
-                formData.append("artwork", file);
-                formData.append("product", product.name);
+        let ready = 0;
+        let failed = 0;
 
-                const response = await fetch(
-                    `${window.SELFII_API_URL}/dynamic-mockups/render`,
-                    { method: "POST", body: formData }
-                );
+        try {
+            productMockup.hidden = false;
 
-                const result = await response.json();
+            for (const product of galleryProducts) {
+                if (requestId !== mockupRequestId) return;
 
-                if (!response.ok || !result.success || !result.previewUrl) {
-                    throw new Error(result.message || "Preview unavailable");
+                const image = document.getElementById(product.image);
+                const status = document.getElementById(product.status);
+                const module = window[product.api];
+
+                if (!image || !module || typeof module.capturePreview !== "function") {
+                    failed++;
+                    if (status) status.textContent = "Preview unavailable";
+                    continue;
                 }
 
-                return { product, previewUrl: result.previewUrl };
-            })
-        );
+                try {
+                    galleryProducts.forEach((item) => {
+                        window[item.api]?.setVisible(false);
+                    });
+
+                    productMockup.hidden = false;
+                    module.setVisible(true);
+
+                    let previewUrl = null;
+
+                    // Models load independently. Retry while the selected
+                    // viewer becomes ready and obtains measurable dimensions.
+                    for (let attempt = 0; attempt < 40; attempt++) {
+                        if (requestId !== mockupRequestId) return;
+
+                        previewUrl = await module.capturePreview();
+
+                        if (previewUrl) break;
+
+                        await new Promise(resolve => setTimeout(resolve, 250));
+                    }
+
+                    if (requestId !== mockupRequestId) return;
+
+                    if (!previewUrl) {
+                        throw new Error(
+                            "The 3D model did not become ready, or its viewer has no measurable size after 10 seconds."
+                        );
+                    }
+
+                    image.src = previewUrl;
+                    image.hidden = false;
+
+                    if (status) status.textContent = "Preview ready";
+
+                    ready++;
+
+                    if (galleryStatus) {
+                        galleryStatus.textContent =
+                            `${ready} of 5 product previews ready. Choose a product to continue.`;
+                    }
+                } catch (error) {
+                    console.error(`SELFII ${product.name} gallery capture failed:`, error);
+                    failed++;
+                    if (status) status.textContent = "Preview unavailable";
+                }
+            }
+        } finally {
+            if (requestId === mockupRequestId) {
+                // Restore the product the customer had selected.
+                updateProductPreview();
+            }
+        }
 
         if (requestId !== mockupRequestId) return;
 
-        let ready = 0;
-
-        results.forEach((result, index) => {
-            const product = galleryProducts[index];
-            const image = document.getElementById(product.image);
-            const status = document.getElementById(product.status);
-
-            if (result.status !== "fulfilled" || !image) {
-                if (status) status.textContent = "Preview unavailable";
-                return;
+        if (galleryStatus) {
+            if (ready === 5) {
+                galleryStatus.textContent =
+                    "All five product previews are ready. Choose a product to continue.";
+            } else if (ready === 0) {
+                galleryStatus.textContent =
+                    "We couldn't capture the product previews. Please try again.";
+            } else {
+                galleryStatus.textContent =
+                    `${ready} of 5 previews ready. ${failed} preview(s) unavailable.`;
             }
-
-            image.onload = () => {
-                if (requestId !== mockupRequestId) return;
-                image.hidden = false;
-                ready++;
-                if (status) status.textContent = "Preview ready";
-                if (galleryStatus) {
-                    galleryStatus.textContent =
-                        `${ready} of 5 product previews ready. Choose a product to continue.`;
-                }
-            };
-
-            image.onerror = () => {
-                if (requestId !== mockupRequestId) return;
-                image.hidden = true;
-                if (status) status.textContent = "Could not load preview";
-            };
-
-            image.src = result.value.previewUrl;
-        });
-
-        const failed = results.filter((result) => result.status === "rejected").length;
-        if (galleryStatus && failed === 5) {
-            galleryStatus.textContent =
-                "We couldn't create the previews. Please try uploading your selfie again.";
-        } else if (galleryStatus && failed > 0) {
-            galleryStatus.textContent =
-                `${failed} preview(s) could not be generated. Available previews are shown above.`;
         }
     }
-
     function drawContainedImage(image) {
         const scale = Math.min(
             canvas.width / image.naturalWidth,
@@ -264,10 +295,51 @@
 
     function updateProductPreview() {
         const product = productSelect.value;
+        const use3DPreview = product === "T-shirt";
+        const useMug3DPreview = product === "Mug";
+        const useCap3DPreview = product === "Cap";
+        const useFrame3DPreview = product === "Picture Frame";
+        const useTote3DPreview = product === "Tote bag";
+        const usePillow3DPreview = product === "Pillow";
+
+        if (canvas) canvas.hidden =
+            use3DPreview || useMug3DPreview || useCap3DPreview || useFrame3DPreview || useTote3DPreview || usePillow3DPreview;
+
+        window.SELFII_3D_TSHIRT?.setVisible(use3DPreview);
+        window.SELFII_3D_MUG?.setVisible(useMug3DPreview);
+        window.SELFII_3D_CAP?.setVisible(useCap3DPreview);
+        window.SELFII_3D_FRAME?.setVisible(useFrame3DPreview);
+        window.SELFII_3D_TOTE?.setVisible(useTote3DPreview);
+        window.SELFII_3D_PILLOW?.setVisible(usePillow3DPreview);
+
+        // Enforce one visible 3D product viewer at a time.
+        [
+            ["studio3DViewer", use3DPreview],
+            ["studio3DMugViewer", useMug3DPreview],
+            ["studio3DCapViewer", useCap3DPreview],
+            ["studio3DFrameViewer", useFrame3DPreview],
+            ["studio3DToteViewer", useTote3DPreview],
+            ["studio3DPillowViewer", usePillow3DPreview]
+        ].forEach(([id, visible]) => {
+            const viewer = document.getElementById(id);
+            if (!viewer) return;
+            viewer.hidden = !visible;
+            viewer.style.display = visible ? "block" : "none";
+        });
+
+        if (useMug3DPreview || useFrame3DPreview || useTote3DPreview || usePillow3DPreview) {
+            productMockup.hidden = false;
+            if (placeholder) placeholder.hidden = true;
+            productImage.hidden = true;
+            if (dynamicMockupImage) dynamicMockupImage.hidden = true;
+            updatePreviewStatus();
+            return;
+        }
+
         const image = productImages[product];
 
         if (!image) {
-            if (["T-shirt", "Hoodie", "Cap", "Mug", "Tote bag"].includes(product)) {
+            if (["T-shirt", "Hoodie", "Cap", "Mug", "Tote bag", "Picture Frame"].includes(product)) {
                 productMockup.hidden = false;
 
                 if (placeholder) {
@@ -377,6 +449,14 @@
             previewImage.onload = () => {
                 artworkReady = true;
                 renderCanvas();
+                window.SELFII_3D_TSHIRT?.setArtwork(file);
+                window.SELFII_3D_MUG?.setArtwork(file);
+                window.SELFII_3D_CAP?.setArtwork(file);
+                window.SELFII_3D_FRAME?.setArtwork(file);
+                window.SELFII_3D_TOTE?.setArtwork(file);
+                window.SELFII_3D_PILLOW?.setArtwork(file);
+
+                renderAllDynamicMockups(file);
                 updatePreviewStatus();
             };
 
@@ -393,7 +473,6 @@
             previewImage.hidden = true;
 
             if (placeholder) placeholder.hidden = true;
-            renderAllDynamicMockups(file);
             updatePreviewStatus();
 
             console.log("SELFII selfie passed face detection:", file.name);
@@ -437,6 +516,20 @@
             productSelect.value = button.dataset.selectProduct;
             productSelect.dispatchEvent(new Event("change", { bubbles: true }));
 
+            // T-shirt customers see the interactive 3D design preview first.
+            if (["T-shirt", "Mug", "Cap", "Picture Frame", "Tote bag", "Pillow"].includes(button.dataset.selectProduct)) {
+                if (previewPanel) previewPanel.hidden = false;
+                if (orderPanel) orderPanel.hidden = true;
+                if (submitButton) submitButton.hidden = false;
+
+                previewPanel?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+                return;
+            }
+
+            // Keep the existing order flow for the other products.
             if (!orderPanel || !orderForm) {
                 alert("The customer details form could not be loaded.");
                 return;
