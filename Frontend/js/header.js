@@ -134,11 +134,9 @@ if (searchToggle && searchForm) {
         }
     });
 
-    try {
-        displayPhoto(localStorage.getItem("selfiiProfilePhotoUrl") || "");
-    } catch (error) {
-        console.warn("Could not read the saved profile photo:", error);
-    }
+    // Always start with the default icon.
+    // A profile photo is displayed only after the server confirms login.
+    displayPhoto("");
 
     try {
         const response = await fetch(`${API}/auth/me`, {
