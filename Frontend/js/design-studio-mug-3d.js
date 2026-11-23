@@ -317,8 +317,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
     function animate() {
         requestAnimationFrame(animate);
-        controls.update();
-        renderer.render(scene, camera);
+
+        if (!container.hidden && container.clientWidth > 0 && container.clientHeight > 0) {
+            controls.update();
+            renderer.render(scene, camera);
+        }
     }
 
     animate();
