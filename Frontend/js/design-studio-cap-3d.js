@@ -49,6 +49,17 @@ if (viewer && status) {
   let artworkTexture = null;
   let pendingArtwork = null;
   let currentUrl = null;
+  let artworkRequestId = 0;
+  let artworkReadyPromise = Promise.resolve(false);
+  let resolveArtworkReady = null;
+
+  function finishArtworkReady(ready, requestId = artworkRequestId) {
+    if (requestId !== artworkRequestId || !resolveArtworkReady) return;
+
+    const resolve = resolveArtworkReady;
+    resolveArtworkReady = null;
+    resolve(ready);
+  }
 
   function makeArtworkLayer(texture) {
     if (artworkLayer) {
@@ -60,7 +71,7 @@ if (viewer && status) {
     if (artworkTexture && artworkTexture !== texture) artworkTexture.dispose();
     artworkTexture = texture;
 
-    if (!capModel) return;
+    if (!capModel) return false;
 
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
@@ -75,7 +86,7 @@ if (viewer && status) {
     if (!crownMeshes.length) {
       status.textContent = 'Could not find the cap crown surface.';
       console.error('No cap crown mesh found.');
-      return;
+      return false;
     }
 
     const columns = 48, rows = 36;
@@ -107,7 +118,7 @@ if (viewer && status) {
         if (!hits.length) {
           status.textContent = 'Artwork area extends beyond the crown surface.';
           console.error('No crown hit at artwork grid point:', u, v);
-          return;
+          return false;
         }
 
         const hit = hits[0];
@@ -149,12 +160,11 @@ if (viewer && status) {
     scene.add(artworkLayer);
     status.textContent = 'Artwork conformed to the cap fabric.';
     console.log('SELFII cap artwork conformed to crown geometry.');
+    return true;
   }
 
-  function setArtwork(file) {
-    if (!file) return;
-    pendingArtwork = file;
-    if (!capModel) return;
+  function loadArtwork(file, requestId) {
+    if (!file || !capModel) return;
 
     if (currentUrl) URL.revokeObjectURL(currentUrl);
     currentUrl = URL.createObjectURL(file);
@@ -163,18 +173,48 @@ if (viewer && status) {
     new THREE.TextureLoader().load(
       requestedUrl,
       texture => {
-        if (currentUrl !== requestedUrl) {
+        if (requestId !== artworkRequestId || currentUrl !== requestedUrl) {
           texture.dispose();
           return;
         }
-        makeArtworkLayer(texture);
+
+        const applied = makeArtworkLayer(texture);
+        finishArtworkReady(applied, requestId);
       },
       undefined,
       error => {
+        if (requestId !== artworkRequestId) return;
+
         console.error(error);
         status.textContent = 'Artwork could not be loaded onto the cap.';
+        finishArtworkReady(false, requestId);
       }
     );
+  }
+
+  function setArtwork(file) {
+    if (!file) return;
+
+    pendingArtwork = file;
+    const requestId = ++artworkRequestId;
+
+    if (resolveArtworkReady) {
+      const resolvePrevious = resolveArtworkReady;
+      resolveArtworkReady = null;
+      resolvePrevious(false);
+    }
+
+    artworkReadyPromise = new Promise(resolve => {
+      resolveArtworkReady = resolve;
+    });
+
+    // If the model is still loading, the promise remains pending.
+    // The model-load callback will apply this same request.
+    if (capModel) loadArtwork(file, requestId);
+  }
+
+  function whenArtworkReady() {
+    return artworkReadyPromise;
   }
 
   function setVisible(visible) {
@@ -185,6 +225,8 @@ if (viewer && status) {
 
   async function capturePreview() {
     if (!capModel || !renderer) return null;
+
+    await whenArtworkReady();
 
     await new Promise(resolve =>
       requestAnimationFrame(() =>
@@ -204,6 +246,7 @@ if (viewer && status) {
 
   window.SELFII_3D_CAP = {
     setArtwork,
+    whenArtworkReady,
     setVisible,
     capturePreview
   };
@@ -257,7 +300,7 @@ if (viewer && status) {
       controls.update();
 
       status.textContent = 'White cap loaded. Upload artwork to preview it.';
-      if (pendingArtwork) setArtwork(pendingArtwork);
+      if (pendingArtwork) loadArtwork(pendingArtwork, artworkRequestId);
       resize();
       console.log('SELFII 3D cap loaded.', dimensions);
     },
@@ -265,6 +308,7 @@ if (viewer && status) {
     error => {
       console.error(error);
       status.textContent = 'Cap model failed to load.';
+      finishArtworkReady(false);
     }
   );
 

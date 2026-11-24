@@ -39,6 +39,17 @@ if (viewer && status) {
   let pendingFile = null;
   let artworkTexture = null;
   let artworkURL = null;
+  let artworkRequestId = 0;
+  let artworkReadyPromise = Promise.resolve(false);
+  let resolveArtworkReady = null;
+
+  function finishArtworkReady(ready, requestId = artworkRequestId) {
+    if (requestId !== artworkRequestId || !resolveArtworkReady) return;
+
+    const resolve = resolveArtworkReady;
+    resolveArtworkReady = null;
+    resolve(ready);
+  }
 
   function resize() {
     const w = viewer.clientWidth;
@@ -51,21 +62,27 @@ if (viewer && status) {
 
   new ResizeObserver(resize).observe(viewer);
 
-  function applyArtwork(file) {
+  function applyArtwork(file, requestId) {
     if (!file || !frameModel) return;
 
     if (artworkURL) URL.revokeObjectURL(artworkURL);
     artworkURL = URL.createObjectURL(file);
+    const requestedURL = artworkURL;
 
     new THREE.TextureLoader().load(
-      artworkURL,
+      requestedURL,
       texture => {
+        if (requestId !== artworkRequestId || artworkURL !== requestedURL) {
+          texture.dispose();
+          return;
+        }
+
+        URL.revokeObjectURL(requestedURL);
+        artworkURL = null;
+
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.flipY = false;
         texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-
-        if (artworkTexture) artworkTexture.dispose();
-        artworkTexture = texture;
 
         let found = false;
 
@@ -101,17 +118,57 @@ if (viewer && status) {
           found = true;
         });
 
-        status.textContent = found
-          ? 'Your artwork is on the picture frame'
-          : 'Picture insert material not found';
-        if (!found) console.error('SELFII frame: Warm unprinted paper material not found.');
+        if (found) {
+          if (artworkTexture) artworkTexture.dispose();
+          artworkTexture = texture;
+          status.textContent = 'Your artwork is on the picture frame';
+        } else {
+          texture.dispose();
+          status.textContent = 'Picture insert material not found';
+          console.error('SELFII frame: Warm unprinted paper material not found.');
+        }
+
+        finishArtworkReady(found, requestId);
       },
       undefined,
       error => {
+        if (requestId !== artworkRequestId) return;
+
+        if (artworkURL === requestedURL) {
+          URL.revokeObjectURL(requestedURL);
+          artworkURL = null;
+        }
+
         console.error('SELFII frame artwork texture error:', error);
         status.textContent = 'Could not load your artwork';
+        finishArtworkReady(false, requestId);
       }
     );
+  }
+
+  function setArtwork(file) {
+    if (!file) return;
+
+    pendingFile = file;
+    const requestId = ++artworkRequestId;
+
+    if (resolveArtworkReady) {
+      const resolvePrevious = resolveArtworkReady;
+      resolveArtworkReady = null;
+      resolvePrevious(false);
+    }
+
+    artworkReadyPromise = new Promise(resolve => {
+      resolveArtworkReady = resolve;
+    });
+
+    // If the model has not loaded yet, keep this promise pending.
+    // The model-load callback will apply this same request.
+    if (frameModel) applyArtwork(file, requestId);
+  }
+
+  function whenArtworkReady() {
+    return artworkReadyPromise;
   }
 
   new GLTFLoader().load(
@@ -140,17 +197,20 @@ if (viewer && status) {
       status.textContent = 'Picture frame ready — drag to rotate';
       resize();
 
-      if (pendingFile) applyArtwork(pendingFile);
+      if (pendingFile) applyArtwork(pendingFile, artworkRequestId);
     },
     undefined,
     error => {
       console.error('SELFII picture frame model failed to load:', error);
       status.textContent = 'Could not load picture frame';
+      finishArtworkReady(false);
     }
   );
 
   async function capturePreview() {
     if (!frameModel || !renderer) return null;
+
+    await whenArtworkReady();
 
     await new Promise(resolve =>
       requestAnimationFrame(() =>
@@ -170,11 +230,8 @@ if (viewer && status) {
 
   window.SELFII_3D_FRAME = {
     capturePreview,
-
-    setArtwork(file) {
-      pendingFile = file;
-      if (frameModel) applyArtwork(file);
-    },
+    setArtwork,
+    whenArtworkReady,
     setVisible(visible) {
       viewer.hidden = !visible;
       viewer.style.display = visible ? 'block' : 'none';

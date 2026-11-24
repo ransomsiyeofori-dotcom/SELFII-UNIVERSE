@@ -92,7 +92,22 @@ let printMesh = null;
 let currentTexture = null;
 let pendingArtwork = null;
 let managedArtworkURL = null;
+let artworkRequestId = 0;
+let artworkReadyPromise = Promise.resolve(false);
+let resolveArtworkReady = null;
 let originalCameraPosition = camera.position.clone();
+
+function finishArtworkReady(ready, requestId = artworkRequestId) {
+  if (requestId !== artworkRequestId || !resolveArtworkReady) return;
+
+  const resolve = resolveArtworkReady;
+  resolveArtworkReady = null;
+  resolve(ready);
+}
+
+function whenArtworkReady() {
+  return artworkReadyPromise;
+}
 let originalTarget = controls.target.clone();
 
 function removePrint() {
@@ -109,7 +124,7 @@ function removePrint() {
   }
 }
 
-function applyArtwork(source) {
+function applyArtwork(source, requestId) {
   if (!cushionMesh) {
     pendingArtwork = source;
     status.textContent = 'Pillow is loading...';
@@ -121,6 +136,11 @@ function applyArtwork(source) {
   new THREE.TextureLoader().load(
     source,
     texture => {
+      if (requestId !== artworkRequestId) {
+        texture.dispose();
+        return;
+      }
+
       texture.colorSpace = THREE.SRGBColorSpace;
       texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
@@ -171,11 +191,15 @@ function applyArtwork(source) {
 
       status.textContent = 'Pillow print ready — drag to rotate';
       renderer.render(scene, camera);
+      finishArtworkReady(true, requestId);
     },
     undefined,
     error => {
+      if (requestId !== artworkRequestId) return;
+
       console.error('SELFII Pillow artwork error:', error);
       status.textContent = 'Could not load artwork.';
+      finishArtworkReady(false, requestId);
     }
   );
 }
@@ -213,6 +237,7 @@ new GLTFLoader().load(
     if (!cushionMesh) {
       status.textContent = 'Could not identify the cushion surface.';
       console.error('SELFII Pillow: Cushion mesh not found.');
+      finishArtworkReady(false);
       return;
     }
 
@@ -236,7 +261,7 @@ new GLTFLoader().load(
     status.textContent = 'White pillow ready — upload artwork';
 
     if (pendingArtwork) {
-      applyArtwork(pendingArtwork);
+      applyArtwork(pendingArtwork, artworkRequestId);
     }
 
     console.log('SELFII Pillow loaded:', dimensions);
@@ -245,6 +270,7 @@ new GLTFLoader().load(
   error => {
     console.error('SELFII Pillow model error:', error);
     status.textContent = 'Could not load pillow model.';
+    finishArtworkReady(false);
   }
 );
 
@@ -262,6 +288,8 @@ function resize() {
 async function capturePreview() {
   if (!pillow) return null;
 
+  await whenArtworkReady();
+
   await new Promise(resolve =>
     requestAnimationFrame(() =>
       requestAnimationFrame(resolve)
@@ -276,6 +304,7 @@ async function capturePreview() {
 
 window.SELFII_3D_PILLOW = {
   capturePreview,
+  whenArtworkReady,
 
   setVisible(visible) {
     viewer.hidden = !visible;
@@ -289,6 +318,18 @@ window.SELFII_3D_PILLOW = {
 
   setArtwork(source) {
     if (!source) return;
+
+    const requestId = ++artworkRequestId;
+
+    if (resolveArtworkReady) {
+      const resolvePrevious = resolveArtworkReady;
+      resolveArtworkReady = null;
+      resolvePrevious(false);
+    }
+
+    artworkReadyPromise = new Promise(resolve => {
+      resolveArtworkReady = resolve;
+    });
 
     if (managedArtworkURL) {
       URL.revokeObjectURL(managedArtworkURL);
@@ -305,7 +346,7 @@ window.SELFII_3D_PILLOW = {
     pendingArtwork = artworkSource;
 
     if (cushionMesh) {
-      applyArtwork(artworkSource);
+      applyArtwork(artworkSource, requestId);
     }
   },
 

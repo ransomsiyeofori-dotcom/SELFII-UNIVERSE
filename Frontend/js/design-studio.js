@@ -25,13 +25,13 @@
     const galleryStatus = document.getElementById("studioGalleryStatus");
 
     const galleryProducts = [
-        { name: "T-shirt", image: "studioGalleryTshirt", status: "studioGalleryTshirtStatus", api: "SELFII_3D_TSHIRT" },
-        { name: "Cap", image: "studioGalleryCap", status: "studioGalleryCapStatus", api: "SELFII_3D_CAP" },
-        { name: "Mug", image: "studioGalleryMug", status: "studioGalleryMugStatus", api: "SELFII_3D_MUG" },
-        { name: "Picture Frame", image: "studioGalleryFrame", status: "studioGalleryFrameStatus", api: "SELFII_3D_FRAME" },
-        { name: "Tote bag", image: "studioGalleryTote", status: "studioGalleryToteStatus", api: "SELFII_3D_TOTE" },
- { name:"Pillow", image:"studioGalleryPillow", status:"studioGalleryPillowStatus", api:"SELFII_3D_PILLOW" }
-];
+        { name: "T-shirt", image: "studioGalleryTshirt", status: "studioGalleryTshirtStatus", api: "SELFII_3D_TSHIRT", viewer: "studio3DViewer" },
+        { name: "Cap", image: "studioGalleryCap", status: "studioGalleryCapStatus", api: "SELFII_3D_CAP", viewer: "studio3DCapViewer" },
+        { name: "Mug", image: "studioGalleryMug", status: "studioGalleryMugStatus", api: "SELFII_3D_MUG", viewer: "studio3DMugViewer" },
+        { name: "Picture Frame", image: "studioGalleryFrame", status: "studioGalleryFrameStatus", api: "SELFII_3D_FRAME", viewer: "studio3DFrameViewer" },
+        { name: "Tote bag", image: "studioGalleryTote", status: "studioGalleryToteStatus", api: "SELFII_3D_TOTE", viewer: "studio3DToteViewer" },
+        { name: "Pillow", image: "studioGalleryPillow", status: "studioGalleryPillowStatus", api: "SELFII_3D_PILLOW", viewer: "studio3DPillowViewer" }
+    ];
 
     if (
         !artworkInput || !productSelect || !placementSelect ||
@@ -71,6 +71,9 @@
     let artworkReady = false;
     let mockupRequestId = 0;
     let faceCheckRequestId = 0;
+    let galleryGenerationId = 0;
+    let galleryGenerating = false;
+    let galleryThumbnailURLs = new Set();
 
     function setMockupLoading(visible, title, message) {
         if (!mockupLoading) return;
@@ -117,18 +120,16 @@
             `${product} · ${placementSelect.value} · ${method} · ${style}`;
     }
 
-    async function renderAllDynamicMockups(file) {
-        const requestId = ++mockupRequestId;
-
-        if (!gallery || !productMockup) return;
-
-        // Make the 3D viewers measurable before capturing gallery previews.
-        if (previewPanel) previewPanel.hidden = false;
+    function prepareProductGallery() {
+        if (!gallery) return;
 
         gallery.hidden = false;
 
+        galleryThumbnailURLs.forEach((url) => URL.revokeObjectURL(url));
+        galleryThumbnailURLs.clear();
+
         if (galleryStatus) {
-            galleryStatus.textContent = "Preparing five interactive product previews...";
+            galleryStatus.textContent = "Preparing your six product previews...";
         }
 
         galleryProducts.forEach((product) => {
@@ -140,97 +141,180 @@
                 image.removeAttribute("src");
             }
 
-            if (status) status.textContent = "Preparing preview...";
+            if (status) {
+                status.textContent = "Waiting for preview...";
+            }
         });
+    }
 
-        let ready = 0;
-        let failed = 0;
+    function showGalleryProductViewer(activeViewerId) {
+        galleryProducts.forEach((product) => {
+            const viewer = document.getElementById(product.viewer);
+            if (!viewer) return;
+
+            const visible = product.viewer === activeViewerId;
+            viewer.hidden = !visible;
+            viewer.style.display = visible ? "block" : "none";
+        });
+    }
+
+    function waitForAnimationFrame() {
+        return new Promise(resolve => requestAnimationFrame(resolve));
+    }
+
+    async function makeSmallThumbnail(dataURL) {
+        if (!dataURL) return null;
+
+        const sourceImage = new Image();
 
         try {
-            productMockup.hidden = false;
+            await new Promise((resolve, reject) => {
+                sourceImage.onload = resolve;
+                sourceImage.onerror = reject;
+                sourceImage.src = dataURL;
+            });
 
+            const maxDimension = 360;
+            const scale = Math.min(
+                1,
+                maxDimension / Math.max(
+                    sourceImage.naturalWidth,
+                    sourceImage.naturalHeight
+                )
+            );
+
+            const width = Math.max(1, Math.round(sourceImage.naturalWidth * scale));
+            const height = Math.max(1, Math.round(sourceImage.naturalHeight * scale));
+
+            const thumbnailCanvas = document.createElement("canvas");
+            thumbnailCanvas.width = width;
+            thumbnailCanvas.height = height;
+
+            const thumbnailContext = thumbnailCanvas.getContext("2d");
+
+            if (!thumbnailContext) return null;
+
+            thumbnailContext.drawImage(sourceImage, 0, 0, width, height);
+
+            const blob = await new Promise(resolve => {
+                thumbnailCanvas.toBlob(resolve, "image/jpeg", 0.78);
+            });
+
+            thumbnailCanvas.width = 1;
+            thumbnailCanvas.height = 1;
+            sourceImage.src = "";
+
+            if (!blob) return null;
+
+            return URL.createObjectURL(blob);
+        } catch (error) {
+            sourceImage.src = "";
+            console.error("SELFII: Could not create gallery thumbnail:", error);
+            return null;
+        }
+    }
+
+    async function generateProductGallery(artwork, generationId) {
+        let completed = 0;
+
+        try {
             for (const product of galleryProducts) {
-                if (requestId !== mockupRequestId) return;
+                if (generationId !== galleryGenerationId) return;
 
                 const image = document.getElementById(product.image);
                 const status = document.getElementById(product.status);
                 const module = window[product.api];
 
-                if (!image || !module || typeof module.capturePreview !== "function") {
-                    failed++;
+                if (!image || !status || !module ||
+                    typeof module.setArtwork !== "function" ||
+                    typeof module.whenArtworkReady !== "function" ||
+                    typeof module.capturePreview !== "function") {
                     if (status) status.textContent = "Preview unavailable";
                     continue;
                 }
 
-                try {
-                    galleryProducts.forEach((item) => {
-                        window[item.api]?.setVisible(false);
-                    });
+                status.textContent = "Preparing " + product.name + "...";
 
-                    productMockup.hidden = false;
-                    module.setVisible(true);
+                // Only one product viewer is visible while its thumbnail is captured.
+                showGalleryProductViewer(product.viewer);
 
-                    let previewUrl = null;
+                productMockup.hidden = false;
+                if (placeholder) placeholder.hidden = true;
+                productImage.hidden = true;
+                if (dynamicMockupImage) dynamicMockupImage.hidden = true;
+                canvas.hidden = true;
 
-                    // Models load independently. Retry while the selected
-                    // viewer becomes ready and obtains measurable dimensions.
-                    for (let attempt = 0; attempt < 40; attempt++) {
-                        if (requestId !== mockupRequestId) return;
+                module.setVisible?.(true);
+                module.setArtwork(artwork);
+                artworkAppliedToModules.set(module, artwork);
 
-                        previewUrl = await module.capturePreview();
+                const artworkApplied = await module.whenArtworkReady();
 
-                        if (previewUrl) break;
+                if (generationId !== galleryGenerationId) return;
 
-                        await new Promise(resolve => setTimeout(resolve, 250));
-                    }
-
-                    if (requestId !== mockupRequestId) return;
-
-                    if (!previewUrl) {
-                        throw new Error(
-                            "The 3D model did not become ready, or its viewer has no measurable size after 10 seconds."
-                        );
-                    }
-
-                    image.src = previewUrl;
-                    image.hidden = false;
-
-                    if (status) status.textContent = "Preview ready";
-
-                    ready++;
-
-                    if (galleryStatus) {
-                        galleryStatus.textContent =
-                            `${ready} of 5 product previews ready. Choose a product to continue.`;
-                    }
-                } catch (error) {
-                    console.error(`SELFII ${product.name} gallery capture failed:`, error);
-                    failed++;
-                    if (status) status.textContent = "Preview unavailable";
+                if (!artworkApplied) {
+                    status.textContent = "Preview unavailable";
+                    continue;
                 }
+
+                // Allow the visible viewer to render before capturing it.
+                await waitForAnimationFrame();
+
+                if (generationId !== galleryGenerationId) return;
+
+                const capturedImage = await module.capturePreview();
+
+                if (generationId !== galleryGenerationId) return;
+
+                if (!capturedImage) {
+                    status.textContent = "Preview unavailable";
+                    continue;
+                }
+
+                // Convert immediately to a small JPEG instead of retaining full PNG captures.
+                const thumbnailURL = await makeSmallThumbnail(capturedImage);
+
+                if (generationId !== galleryGenerationId) {
+                    if (thumbnailURL) URL.revokeObjectURL(thumbnailURL);
+                    return;
+                }
+
+                if (!thumbnailURL) {
+                    status.textContent = "Could not create thumbnail";
+                    continue;
+                }
+
+                galleryThumbnailURLs.add(thumbnailURL);
+                image.src = thumbnailURL;
+                image.hidden = false;
+                status.textContent = "Preview ready";
+                completed++;
+
+                // Give the browser a chance to release temporary image memory.
+                await waitForAnimationFrame();
+            }
+
+            if (generationId === galleryGenerationId && galleryStatus) {
+                galleryStatus.textContent =
+                    completed === galleryProducts.length
+                        ? "All six product previews are ready. Choose your product."
+                        : `${completed} of 6 product previews are ready. Choose a product to continue.`;
+            }
+        } catch (error) {
+            console.error("SELFII gallery generation failed:", error);
+
+            if (generationId === galleryGenerationId && galleryStatus) {
+                galleryStatus.textContent =
+                    "Some previews could not be generated. You can still select a product.";
             }
         } finally {
-            if (requestId === mockupRequestId) {
-                // Restore the product the customer had selected.
+            if (generationId === galleryGenerationId) {
+                galleryGenerating = false;
                 updateProductPreview();
             }
         }
-
-        if (requestId !== mockupRequestId) return;
-
-        if (galleryStatus) {
-            if (ready === 5) {
-                galleryStatus.textContent =
-                    "All five product previews are ready. Choose a product to continue.";
-            } else if (ready === 0) {
-                galleryStatus.textContent =
-                    "We couldn't capture the product previews. Please try again.";
-            } else {
-                galleryStatus.textContent =
-                    `${ready} of 5 previews ready. ${failed} preview(s) unavailable.`;
-            }
-        }
     }
+
     function drawContainedImage(image) {
         const scale = Math.min(
             canvas.width / image.naturalWidth,
@@ -293,6 +377,8 @@
         drawArtwork();
     }
 
+    let artworkAppliedToModules = new WeakMap();
+
     function updateProductPreview() {
         const product = productSelect.value;
         const use3DPreview = product === "T-shirt";
@@ -311,6 +397,25 @@
         window.SELFII_3D_FRAME?.setVisible(useFrame3DPreview);
         window.SELFII_3D_TOTE?.setVisible(useTote3DPreview);
         window.SELFII_3D_PILLOW?.setVisible(usePillow3DPreview);
+
+        const selected3DModule = {
+            "T-shirt": window.SELFII_3D_TSHIRT,
+            "Mug": window.SELFII_3D_MUG,
+            "Cap": window.SELFII_3D_CAP,
+            "Picture Frame": window.SELFII_3D_FRAME,
+            "Tote bag": window.SELFII_3D_TOTE,
+            "Pillow": window.SELFII_3D_PILLOW
+        }[product];
+
+        if (
+            uploadedArtwork &&
+            !galleryGenerating &&
+            selected3DModule &&
+            artworkAppliedToModules.get(selected3DModule) !== uploadedArtwork
+        ) {
+            selected3DModule.setArtwork(uploadedArtwork);
+            artworkAppliedToModules.set(selected3DModule, uploadedArtwork);
+        }
 
         // Enforce one visible 3D product viewer at a time.
         [
@@ -412,6 +517,11 @@
         artworkReady = false;
         mockupRequestId++;
 
+        galleryGenerationId++;
+        galleryGenerating = false;
+        artworkAppliedToModules = new WeakMap();
+        prepareProductGallery();
+
         if (faceCheckStatus) {
             faceCheckStatus.textContent = "Checking your photo for a visible face...";
         }
@@ -449,15 +559,14 @@
             previewImage.onload = () => {
                 artworkReady = true;
                 renderCanvas();
-                window.SELFII_3D_TSHIRT?.setArtwork(file);
-                window.SELFII_3D_MUG?.setArtwork(file);
-                window.SELFII_3D_CAP?.setArtwork(file);
-                window.SELFII_3D_FRAME?.setArtwork(file);
-                window.SELFII_3D_TOTE?.setArtwork(file);
-                window.SELFII_3D_PILLOW?.setArtwork(file);
+                prepareProductGallery();
 
-                renderAllDynamicMockups(file);
+                galleryGenerating = true;
+                updateProductPreview();
                 updatePreviewStatus();
+
+                const generationId = galleryGenerationId;
+                generateProductGallery(uploadedArtwork, generationId);
             };
 
             previewImage.onerror = () => {
@@ -665,6 +774,9 @@
         if (previewURL) {
             URL.revokeObjectURL(previewURL);
         }
+
+        galleryThumbnailURLs.forEach((url) => URL.revokeObjectURL(url));
+        galleryThumbnailURLs.clear();
     });
 
     console.log("SELFII Canvas Design Studio initialized.");

@@ -22,12 +22,18 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     let resizeObserver = null;
     let artworkReadyPromise = Promise.resolve(true);
     let resolveArtworkReady = null;
+    let artworkRequestId = 0;
 
-    function finishArtworkReady(ready) {
-        if (resolveArtworkReady) {
-            resolveArtworkReady(ready);
-            resolveArtworkReady = null;
+    function finishArtworkReady(ready, requestId = artworkRequestId) {
+        if (
+            requestId !== artworkRequestId ||
+            !resolveArtworkReady
+        ) {
+            return;
         }
+
+        resolveArtworkReady(ready);
+        resolveArtworkReady = null;
     }
 
     const status = document.createElement('div');
@@ -186,23 +192,43 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     function setArtwork(file) {
         if (!file) return;
 
+        const requestId = ++artworkRequestId;
+
+        if (resolveArtworkReady) {
+            resolveArtworkReady(false);
+            resolveArtworkReady = null;
+        }
+
         if (artworkURL) URL.revokeObjectURL(artworkURL);
+
         artworkURL = URL.createObjectURL(file);
+        currentArtworkImage = null;
 
         artworkReadyPromise = new Promise(resolve => {
             resolveArtworkReady = resolve;
         });
 
         const image = new Image();
+
         image.onload = () => {
+            if (requestId !== artworkRequestId) return;
+
             currentArtworkImage = image;
             tryApplyArtwork();
         };
+
         image.onerror = () => {
+            if (requestId !== artworkRequestId) return;
+
             setStatus('Could not load the selected artwork.');
-            finishArtworkReady(false);
+            finishArtworkReady(false, requestId);
         };
+
         image.src = artworkURL;
+    }
+
+    function whenArtworkReady() {
+        return artworkReadyPromise;
     }
 
     function setVisible(visible) {
@@ -244,7 +270,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     window.SELFII_3D_TSHIRT = {
         setArtwork,
         setVisible,
-        capturePreview
+        capturePreview,
+        whenArtworkReady
     };
 
     // The regular Design Studio script runs before this module.

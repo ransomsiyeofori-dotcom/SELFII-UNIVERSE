@@ -61,6 +61,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     let currentTexture = null;
     let currentArtworkURL = null;
     let mugReady = false;
+    let artworkReadyPromise = Promise.resolve(true);
+    let resolveArtworkReady = null;
+    let artworkRequestId = 0;
+
+    function finishArtworkReady(ready, requestId = artworkRequestId) {
+        if (requestId !== artworkRequestId || !resolveArtworkReady) return;
+
+        resolveArtworkReady(ready);
+        resolveArtworkReady = null;
+    }
 
     function resize() {
         const width = container.clientWidth;
@@ -73,18 +83,20 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         renderer.setSize(width, height);
     }
 
-    function setArtwork(file) {
-        if (!file) return;
-
-        currentArtworkFile = file;
-
-        if (!mugReady) return;
+    function applyArtwork(file, requestId) {
+        if (!file || !mugReady || requestId !== artworkRequestId) return;
 
         const url = URL.createObjectURL(file);
 
         new THREE.TextureLoader().load(
             url,
             texture => {
+                if (requestId !== artworkRequestId) {
+                    URL.revokeObjectURL(url);
+                    texture.dispose();
+                    return;
+                }
+
                 if (currentArtworkURL) {
                     URL.revokeObjectURL(currentArtworkURL);
                 }
@@ -92,7 +104,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
                 if (currentTexture) currentTexture.dispose();
 
                 currentArtworkURL = url;
-                currentTexture = texture;
 
                 // Build a white mug texture with artwork printed only on the front.
                 const sourceImage = texture.image;
@@ -106,7 +117,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
                 context.fillStyle = '#ffffff';
                 context.fillRect(0, 0, printCanvas.width, printCanvas.height);
 
-                // Front centre matches the mug's initial camera direction.
+                // Preserve the approved front-only artwork placement.
                 const centerU = 0.88;
                 const centerV = 0.5;
                 const maxPrintWidth = printCanvas.width * 0.58;
@@ -145,15 +156,51 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
                     material.needsUpdate = true;
                 });
 
-                if (status) status.textContent = 'Your artwork is printed on the front of the mug. Drag to rotate.';
+                if (status) {
+                    status.textContent = 'Your artwork is printed on the front of the mug. Drag to rotate.';
+                }
+
+                finishArtworkReady(true, requestId);
             },
             undefined,
             error => {
                 URL.revokeObjectURL(url);
+
+                if (requestId !== artworkRequestId) return;
+
                 console.error('SELFII mug artwork failed to load:', error);
-                if (status) status.textContent = 'Could not load mug artwork.';
+
+                if (status) {
+                    status.textContent = 'Could not load mug artwork.';
+                }
+
+                finishArtworkReady(false, requestId);
             }
         );
+    }
+
+    function setArtwork(file) {
+        if (!file) return;
+
+        currentArtworkFile = file;
+        const requestId = ++artworkRequestId;
+
+        if (resolveArtworkReady) {
+            resolveArtworkReady(false);
+            resolveArtworkReady = null;
+        }
+
+        artworkReadyPromise = new Promise(resolve => {
+            resolveArtworkReady = resolve;
+        });
+
+        if (mugReady) {
+            applyArtwork(file, requestId);
+        }
+    }
+
+    function whenArtworkReady() {
+        return artworkReadyPromise;
     }
 
     function setVisible(visible) {
@@ -167,6 +214,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
     async function capturePreview() {
         if (!mugReady || !renderer) return null;
+
+        if (!await whenArtworkReady()) return null;
 
         await new Promise(resolve =>
             requestAnimationFrame(() =>
@@ -187,7 +236,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     window.SELFII_3D_MUG = {
         setArtwork,
         setVisible,
-        capturePreview
+        capturePreview,
+        whenArtworkReady
     };
 
     setVisible(productSelect?.value === 'Mug');
@@ -297,7 +347,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
             mugReady = true;
 
             if (currentArtworkFile) {
-                setArtwork(currentArtworkFile);
+                applyArtwork(currentArtworkFile, artworkRequestId);
             }
 
             resize();
@@ -312,6 +362,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         error => {
             console.error('SELFII mug model failed to load:', error);
             if (status) status.textContent = 'Mug preview could not be loaded.';
+            finishArtworkReady(false);
         }
     );
 

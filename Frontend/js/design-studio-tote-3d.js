@@ -81,18 +81,33 @@ let currentTexture=null;
 let artworkDecals=[];
 let originalCameraPosition=null;
 let originalTarget=null;
+let artworkRequestId=0;
+let artworkReadyPromise=Promise.resolve(false);
+let resolveArtworkReady=null;
+
+function finishArtworkReady(ready,requestId=artworkRequestId){
+  if(requestId!==artworkRequestId || !resolveArtworkReady)return;
+  const resolve=resolveArtworkReady;
+  resolveArtworkReady=null;
+  resolve(ready);
+}
 
 
 
 
 
-function applyArtwork(source){
+function applyArtwork(source,requestId){
   if(!toteBody || !canvasMaterials.length){
     status.textContent="Tote canvas is not ready yet";
     return;
   }
 
   new THREE.TextureLoader().load(source,texture=>{
+    if(requestId!==artworkRequestId){
+      texture.dispose();
+      return;
+    }
+
     texture.colorSpace=THREE.SRGBColorSpace;
     texture.flipY=true;
     texture.anisotropy=renderer.capabilities.getMaxAnisotropy();
@@ -126,6 +141,9 @@ function applyArtwork(source){
     if(!canvasGroup){
       status.textContent="Could not isolate cotton canvas geometry";
       console.error("Canvas material group not found",groups,canvasIndex);
+      texture.dispose();
+      currentTexture=null;
+      finishArtworkReady(false,requestId);
       return;
     }
 
@@ -188,6 +206,9 @@ function applyArtwork(source){
     if(!selectedTriangles){
       status.textContent="No front/back canvas faces detected";
       console.error("No suitable triangles found",canvasGroup);
+      texture.dispose();
+      currentTexture=null;
+      finishArtworkReady(false,requestId);
       return;
     }
 
@@ -237,9 +258,12 @@ function applyArtwork(source){
       width:maxX-minX,
       height:maxY-minY
     });
+    finishArtworkReady(true,requestId);
   },undefined,error=>{
+    if(requestId!==artworkRequestId)return;
     console.error(error);
     status.textContent="Could not load artwork";
+    finishArtworkReady(false,requestId);
   });
 }
 
@@ -332,7 +356,10 @@ new GLTFLoader().load(
       : "Model loaded, but cotton canvas material was not found";
 
     if(pendingArtworkSource && canvasMaterials.length){
-      applyArtwork(pendingArtworkSource);
+      applyArtwork(pendingArtworkSource,artworkRequestId);
+    }else if(pendingArtworkSource){
+      status.textContent="Tote canvas material was not found";
+      finishArtworkReady(false);
     }
 
     if(!canvasMaterials.length)console.warn('Canvas material not found. Check material names.');
@@ -343,12 +370,15 @@ new GLTFLoader().load(
   error=>{
     console.error(error);
     status.textContent="Could not load tote model — check console";
+    finishArtworkReady(false);
   }
 );
 
 
 async function capturePreview(){
   if(!tote || !renderer) return null;
+
+  await whenArtworkReady();
 
   await new Promise(resolve =>
     requestAnimationFrame(() =>
@@ -366,8 +396,13 @@ async function capturePreview(){
   return renderer.domElement.toDataURL("image/png");
 }
 
+function whenArtworkReady(){
+  return artworkReadyPromise;
+}
+
 window.SELFII_3D_TOTE = {
   capturePreview,
+  whenArtworkReady,
 
   setVisible(visible){
     viewer.hidden = !visible;
@@ -378,24 +413,34 @@ window.SELFII_3D_TOTE = {
   setArtwork(source){
     if(!source) return;
 
-    pendingArtworkSource = source;
+    const requestId=++artworkRequestId;
+
+    if(resolveArtworkReady){
+      const resolvePrevious=resolveArtworkReady;
+      resolveArtworkReady=null;
+      resolvePrevious(false);
+    }
+
+    artworkReadyPromise=new Promise(resolve=>{
+      resolveArtworkReady=resolve;
+    });
 
     if(managedArtworkURL){
       URL.revokeObjectURL(managedArtworkURL);
-      managedArtworkURL = null;
+      managedArtworkURL=null;
     }
 
-    let artworkSource = source;
+    let artworkSource=source;
 
     if(source instanceof Blob){
-      managedArtworkURL = URL.createObjectURL(source);
-      artworkSource = managedArtworkURL;
+      managedArtworkURL=URL.createObjectURL(source);
+      artworkSource=managedArtworkURL;
     }
 
-    pendingArtworkSource = artworkSource;
+    pendingArtworkSource=artworkSource;
 
     if(toteBody && canvasMaterials.length){
-      applyArtwork(artworkSource);
+      applyArtwork(artworkSource,requestId);
     }
   },
 
